@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: 'postgres:14'
+    environment:
+      - 'POSTGRES_DB=message_db'
+      - 'POSTGRES_USER=ccadmin'
+      - 'POSTGRES_PASSWORD=message'
+    ports:
+      - '8922:5432'
