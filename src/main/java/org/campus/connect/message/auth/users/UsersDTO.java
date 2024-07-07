@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.campus.connect.message.constants.Enums.Roles_user;
+import org.campus.connect.message.files.ArquivoDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 
 import java.util.List;
@@ -20,6 +21,9 @@ public class UsersDTO extends AbstractEntityDTO {
   private String name;
   private String email;
   private String password;
+  private String telefone;
+  private ArquivoDTO foto_perfil;
+  private ArquivoDTO foto_capa;
   private List<Roles_user> roles;
 
 }

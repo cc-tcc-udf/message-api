@@ -2,6 +2,9 @@ package org.campus.connect.message.auth.users;
 
 import org.campus.connect.message.auth.users.records.RegisterDTO;
 import org.campus.connect.message.constants.Enums.Roles_user;
+import org.campus.connect.message.files.ArquivoDTO;
+import org.campus.connect.message.files.ArquivoMapper;
+import org.campus.connect.message.files.ArquivoService;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,15 +17,19 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   private final UsersRepository repository;
   private final UsersMapper mapper;
   private final PasswordEncoder passwordEncoder;
+  private final ArquivoService arquivoService;
+  private final ArquivoMapper arquivoMapper;
 
   public UsersServiceImpl(
     UsersRepository repository,
-    UsersMapper mapper, PasswordEncoder passwordEncoder
-  ) {
+    UsersMapper mapper, PasswordEncoder passwordEncoder,
+    ArquivoService arquivoService, ArquivoMapper arquivoMapper) {
     super(repository, mapper);
     this.repository = repository;
     this.mapper = mapper;
     this.passwordEncoder = passwordEncoder;
+    this.arquivoService = arquivoService;
+    this.arquivoMapper = arquivoMapper;
   }
 
   @Override
@@ -43,26 +50,29 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     user.setName(obj.getName());
     user.setUid(UUID.randomUUID());
     user.setRoles(Collections.singleton(Roles_user.USER));
+    user.setTelefone(obj.getTelefone());
     user.setPassword(passwordEncoder.encode(obj.getPassword()));
-//    user.setFoto_capa(
-//      this.arquivoMapper.toEntity(
-//        arquivoService.save(new ArquivoDTO())
-//      )
-//    );
-//    user.setFoto_perfil(
-//      this.arquivoMapper.toEntity(
-//        arquivoService.save(new ArquivoDTO())
-//      )
-//    );
+    user.setFoto_capa(
+      this.arquivoMapper.toEntity(
+        arquivoService.save(new ArquivoDTO())
+      )
+    );
+    user.setFoto_perfil(
+      this.arquivoMapper.toEntity(
+        arquivoService.save(new ArquivoDTO())
+      )
+    );
     this.save(mapper.toDto(user));
     return user;
   }
+
   @Override
   public UsersDTO adminCreate() throws Exception {
     Users user = new Users();
     user.setEmail("admin@admin.com");
-    user.setName("Taui silva Lima");
+    user.setName("Taui Silva Lima");
     user.setUid(UUID.randomUUID());
+    user.setTelefone("admin");
     user.setRoles(Collections.singleton(Roles_user.ADMIN));
     user.setPassword(passwordEncoder.encode("sousen1902*"));
     return this.save(mapper.toDto(user));
@@ -76,8 +86,9 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     usr.setName(user.getName());
     usr.setRoles(new ArrayList<>(user.getRoles()));
     usr.setUid(user.getUid());
-//    usr.setFoto_capa(arquivoMapper.toDto(user.getFoto_capa()));
-//    usr.setFoto_perfil(arquivoMapper.toDto(user.getFoto_perfil()));
+    usr.setTelefone(user.getTelefone());
+    usr.setFoto_capa(arquivoMapper.toDto(user.getFoto_capa()));
+    usr.setFoto_perfil(arquivoMapper.toDto(user.getFoto_perfil()));
     return usr;
   }
 

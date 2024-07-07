@@ -1,9 +1,16 @@
+version: '3'
+
 services:
-  postgres:
-    image: 'postgres:14'
+  events_db:
+    container_name: message_db
+    image: postgres:14
     environment:
-      - 'POSTGRES_DB=message_db'
-      - 'POSTGRES_USER=ccadmin'
-      - 'POSTGRES_PASSWORD=message'
+      POSTGRES_DB: message_db
+      POSTGRES_USER: ccadmin
+      POSTGRES_PASSWORD: message
     ports:
       - '8922:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata: { }

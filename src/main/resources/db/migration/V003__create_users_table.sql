@@ -6,6 +6,7 @@ CREATE TABLE messages.Users_tb
     name           VARCHAR(255)                        NOT NULL,
     email          VARCHAR(255)                        NOT NULL,
     password       VARCHAR(255)                        NOT NULL,
+    telefone       VARCHAR(255)                        NOT NULL,
     foto_perfil_id BIGINT,
     foto_capa_id   BIGINT,
     excluded       BOOLEAN   DEFAULT FALSE,

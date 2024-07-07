@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.campus.connect.message.constants.Enums.Roles_user;
 import org.campus.connect.message.constants.SchemaConstants;
+import org.campus.connect.message.files.Arquivo;
 import org.campus.connect.message.utils.AbstractEntity;
 
 import java.util.HashSet;
@@ -21,10 +22,17 @@ import java.util.UUID;
 @Table(name = "Users_tb", schema = SchemaConstants.MESSAGES)
 public class Users extends AbstractEntity {
 
-  private UUID uid;
-  private String name;
   private String email;
+  private String name;
   private String password;
+  private UUID uid;
+  private String telefone;
+
+  @ManyToOne
+  private Arquivo foto_perfil;
+
+  @ManyToOne
+  private Arquivo foto_capa;
 
   @ElementCollection(fetch = FetchType.EAGER)
   @Enumerated(EnumType.STRING)
