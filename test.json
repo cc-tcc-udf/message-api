@@ -1,0 +1,40 @@
+{
+  "titulo": "Exemplo de Título",
+  "resumo": "Este é um resumo de exemplo para a mensagem.",
+  "data_envio": "2024-08-24T21:31:02.110Z",
+  "status": "ENVIADO",
+  "message": "Esta é uma mensagem de exemplo para teste.",
+  "resp": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "anexos": [
+    {
+      "id": 1,
+      "name": "Imagem do WhatsApp de 2024-03-23 à(s) 16.11.28_2b12efc3.jpg",
+      "type": "image/jpeg",
+      "url": "null/api/public/arquivo/get/1",
+      "size": 117135,
+      "key": "4b7971e6-18a9-4e25-b6e5-ae14069ca858.jpg",
+      "uid": "4b7971e6-18a9-4e25-b6e5-ae14069ca858",
+      "id_ext": null
+    },
+    {
+      "id": 2,
+      "name": "GKxbBsjWoAAWIOC.jpg",
+      "type": "image/jpeg",
+      "url": "null/api/public/arquivo/get/2",
+      "size": 258077,
+      "key": "d95fa8cf-f39d-49d8-839f-a5d00ddbad11.jpg",
+      "uid": "d95fa8cf-f39d-49d8-839f-a5d00ddbad11",
+      "id_ext": null
+    }
+  ],
+  "links": [
+    {
+      "titulo": "Link Exemplo 1",
+      "link": "https://example.com/link1"
+    },
+    {
+      "titulo": "Link Exemplo 2",
+      "link": "https://example.com/link2"
+    }
+  ]
+}

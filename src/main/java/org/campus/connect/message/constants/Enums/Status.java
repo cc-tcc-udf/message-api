@@ -4,17 +4,18 @@ import lombok.Getter;
 
 @Getter
 public enum Status {
-  C("Em construção"),
-  AV("Avaliação"),
-  R("Recusado"),
-  IN("Inativo"),
-  F("Finalizado"),
-  AP("Aprovado");
+  ENVIADO("Enviado"),
+  NAO_ENVIADO("Não enviado"),
+  RECEBIDO("Recebido"),
+  VISUALIZADO("Visualizado"),
+  REMOVIDA("Removida");
 
-  private String descricao;
 
-  Status(final String descricao) {
-    this.descricao = descricao;
+
+  private final String description;
+
+  Status(final String description) {
+    this.description = description;
   }
 
 }

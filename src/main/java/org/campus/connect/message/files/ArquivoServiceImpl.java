@@ -59,6 +59,11 @@ public class ArquivoServiceImpl extends GenericServiceImpl<Arquivo, ArquivoDTO> 
   }
 
   @Override
+  public List<ArquivoDTO> findByIdExt(final Long id) {
+    return this.mapper.toDto(this.repository.findAllById_ext(id));
+  }
+
+  @Override
   public Resource getFile(Long id) throws Exception {
     Optional<ArquivoDTO> arquivo = findOneById(id);
     if (arquivo.isPresent()) {

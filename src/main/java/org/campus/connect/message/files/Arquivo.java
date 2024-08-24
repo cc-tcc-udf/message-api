@@ -24,4 +24,5 @@ public class Arquivo extends AbstractEntity {
   private Long size;
   private String key;
   private UUID uid;
+  private Long id_ext;
 }

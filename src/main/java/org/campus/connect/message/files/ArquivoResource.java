@@ -24,8 +24,8 @@ public class ArquivoResource extends GenericResource<ArquivoDTO, ArquivoResource
     this.service = service;
   }
 
-  @PostMapping(value = "/private/arquivo/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<ArquivoDTO> crate(@RequestParam("file") MultipartFile file) throws Exception {
+  @PostMapping(value = "/public/arquivo/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<ArquivoDTO> create(@RequestParam("file") MultipartFile file) throws Exception {
     ArquivoDTO arquivo = this.service.create(file);
     return ResponseEntity.ok().body(arquivo);
   }

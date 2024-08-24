@@ -18,6 +18,7 @@ public class ArquivoDTO extends AbstractEntityDTO {
   private Long size;
   private String key;
   private UUID uid;
+  private Long id_ext;
 
 
   public String getUrl() {
