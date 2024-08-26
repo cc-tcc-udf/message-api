@@ -1,5 +1,5 @@
 -- Migração para criar a tabela Users_tb
-CREATE TABLE messages.Users_tb
+CREATE TABLE IF NOT EXISTS messages.Users_tb
 (
     id             SERIAL PRIMARY KEY,
     uid UUID DEFAULT gen_random_uuid() NOT NULL,
@@ -13,11 +13,14 @@ CREATE TABLE messages.Users_tb
     created_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by     VARCHAR(255),
     updated_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_by     VARCHAR(255)
+    updated_by     VARCHAR(255),
+    CONSTRAINT fk_foto_perfil FOREIGN KEY (foto_perfil_id) REFERENCES messages.arquivo_tb (id),
+    CONSTRAINT fk_foto_capa FOREIGN KEY (foto_capa_id) REFERENCES messages.arquivo_tb (id)
+
 );
 
 -- Migração para criar a tabela auxiliar user_permissions
-CREATE TABLE messages.user_permissions
+CREATE TABLE IF NOT EXISTS messages.user_permissions
 (
     user_id BIGINT       NOT NULL,
     roles   VARCHAR(255) NOT NULL,
