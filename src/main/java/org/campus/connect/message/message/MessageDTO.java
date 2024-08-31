@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.campus.connect.message.constants.Enums.Status;
-import org.campus.connect.message.files.ArquivoDTO;
+import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.links.LinksDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 
@@ -18,12 +18,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class MessageDTO extends AbstractEntityDTO {
-  private String titulo;
-  private String resumo;
-  private LocalDateTime data_envio;
+  private String title;
+  private String summary;
+  private LocalDateTime sendDate;
   private Status status;
   private String message;
-  private UUID resp;
-  private List<ArquivoDTO> anexos;
+  private UUID response;
+  private List<FileDTO> attachments;
   private List<LinksDTO> links;
 }

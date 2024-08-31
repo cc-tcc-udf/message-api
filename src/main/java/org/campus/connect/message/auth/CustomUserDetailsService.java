@@ -2,7 +2,7 @@ package org.campus.connect.message.auth;
 
 import org.campus.connect.message.auth.users.Users;
 import org.campus.connect.message.auth.users.UsersRepository;
-import org.campus.connect.message.constants.Enums.Roles_user;
+import org.campus.connect.message.constants.Enums.UserRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     );
   }
 
-  private Collection<? extends GrantedAuthority> getAuthorities(Set<Roles_user> rolesusers) {
+  private Collection<? extends GrantedAuthority> getAuthorities(Set<UserRoles> rolesusers) {
     return rolesusers.stream()
       .map(permission -> new SimpleGrantedAuthority("ROLE_" + permission.name()))
       .collect(Collectors.toList());

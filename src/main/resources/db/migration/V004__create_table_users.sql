@@ -1,4 +1,4 @@
--- Migração para criar a tabela Users_tb
+-- Migration to create the Users_tb table
 CREATE TABLE IF NOT EXISTS messages.Users_tb
 (
     id             SERIAL PRIMARY KEY,
@@ -6,20 +6,19 @@ CREATE TABLE IF NOT EXISTS messages.Users_tb
     name           VARCHAR(255) NOT NULL,
     email          VARCHAR(255) NOT NULL,
     password       VARCHAR(255) NOT NULL,
-    telefone       VARCHAR(255) NOT NULL,
-    foto_perfil_id BIGINT,
-    foto_capa_id   BIGINT,
+    phone          VARCHAR(255) NOT NULL,
+    profile_photo_id BIGINT,
+    cover_photo_id   BIGINT,
     excluded       BOOLEAN   DEFAULT FALSE,
     created_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by     VARCHAR(255),
     updated_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_by     VARCHAR(255),
-    CONSTRAINT fk_foto_perfil FOREIGN KEY (foto_perfil_id) REFERENCES messages.arquivo_tb (id),
-    CONSTRAINT fk_foto_capa FOREIGN KEY (foto_capa_id) REFERENCES messages.arquivo_tb (id)
-
+    CONSTRAINT fk_profile_photo FOREIGN KEY (profile_photo_id) REFERENCES messages.file_tb (id),
+    CONSTRAINT fk_cover_photo FOREIGN KEY (cover_photo_id) REFERENCES messages.file_tb (id)
 );
 
--- Migração para criar a tabela auxiliar user_permissions
+-- Migration to create the auxiliary table user_permissions
 CREATE TABLE IF NOT EXISTS messages.user_permissions
 (
     user_id BIGINT       NOT NULL,

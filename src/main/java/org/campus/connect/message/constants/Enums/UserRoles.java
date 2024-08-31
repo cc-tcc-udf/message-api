@@ -1,6 +1,6 @@
 package org.campus.connect.message.constants.Enums;
 
-public enum Roles_user {
+public enum UserRoles {
   ADMIN,
   PROF,
   AUDIT,

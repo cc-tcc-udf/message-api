@@ -16,7 +16,7 @@ import org.campus.connect.message.utils.AbstractEntity;
 @Entity
 @Table(name = "Links_tb", schema = SchemaConstants.MESSAGES)
 public class Links extends AbstractEntity {
-  private String titulo;
+  private String title;
   private String link;
   private Long id_msg;
 }

@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class ArquivoDTO extends AbstractEntityDTO {
+public class FileDTO extends AbstractEntityDTO {
   private String name;
   private String type;
   private String url;
@@ -23,7 +23,7 @@ public class ArquivoDTO extends AbstractEntityDTO {
 
   public String getUrl() {
     if (getKey() != null) {
-      return UrlConstant.getAbsoluteUrl() + "/api/public/arquivo/get/" + getId();
+      return UrlConstant.getAbsoluteUrl() + "/api/public/file/get/" + getId();
     }
     return null;
   }

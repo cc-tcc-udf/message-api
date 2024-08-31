@@ -24,17 +24,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ArquivoServiceImpl extends GenericServiceImpl<Arquivo, ArquivoDTO> implements ArquivoService {
+public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implements FileService {
 
-  private final ArquivoRepository repository;
-  private final ArquivoMapper mapper;
+  private final FileRepository repository;
+  private final FileMapper mapper;
   private final Path fileStorageLocation;
   private final Integer maxWidth;
   private final Integer maxHeight;
 
-  public ArquivoServiceImpl(
-    ArquivoRepository repository,
-    ArquivoMapper mapper,
+  public FileServiceImpl(
+    FileRepository repository,
+    FileMapper mapper,
     @Value("${server.storagePath}") String storagePath,
     @Value("${image.maxWidth}") Integer maxWidth,
     @Value("${image.maxHeight}") Integer maxHeight
@@ -54,20 +54,20 @@ public class ArquivoServiceImpl extends GenericServiceImpl<Arquivo, ArquivoDTO> 
 
   //Get and Find's
   @Override
-  public List<ArquivoDTO> findAll() {
+  public List<FileDTO> findAll() {
     return this.repository.findAllByExcluded(Boolean.FALSE);
   }
 
   @Override
-  public List<ArquivoDTO> findByIdExt(final Long id) {
+  public List<FileDTO> findByIdExt(final Long id) {
     return this.mapper.toDto(this.repository.findAllById_ext(id));
   }
 
   @Override
   public Resource getFile(Long id) throws Exception {
-    Optional<ArquivoDTO> arquivo = findOneById(id);
+    Optional<FileDTO> arquivo = findOneById(id);
     if (arquivo.isPresent()) {
-      Arquivo file = mapper.toEntity(arquivo.get());
+      File file = mapper.toEntity(arquivo.get());
       return this.loadFileAsResource(file.getKey());
     }
     return null;
@@ -89,25 +89,25 @@ public class ArquivoServiceImpl extends GenericServiceImpl<Arquivo, ArquivoDTO> 
 
   // Create arquivo
   @Override
-  public ArquivoDTO create(final MultipartFile file) throws Exception {
-    Arquivo arquivo = setArquivo(file, new Arquivo());
-    this.setStorage(arquivo.getKey(), file);
-    return save(mapper.toDto(arquivo));
+  public FileDTO create(final MultipartFile multipartFile) throws Exception {
+    File file = setArquivo(multipartFile, new File());
+    this.setStorage(file.getKey(), multipartFile);
+    return save(mapper.toDto(file));
   }
 
   //Update arquivo
   @Override
-  public ArquivoDTO update(final Long id, final MultipartFile file) throws Exception {
-    Optional<ArquivoDTO> arquivo = findOneById(id);
-    if (arquivo.isPresent()) {
-      Arquivo newFile = setArquivo(file, mapper.toEntity(arquivo.get()));
-      this.setStorage(newFile.getKey(), file);
+  public FileDTO update(final Long id, final MultipartFile multipartFile) throws Exception {
+    Optional<FileDTO> file = findOneById(id);
+    if (file.isPresent()) {
+      File newFile = setArquivo(multipartFile, mapper.toEntity(file.get()));
+      this.setStorage(newFile.getKey(), multipartFile);
       return save(mapper.toDto(newFile));
     }
     return null;
   }
 
-  public Arquivo setArquivo(final MultipartFile file, final Arquivo arquivo) {
+  public File setArquivo(final MultipartFile file, final File arquivo) {
     arquivo.setName(StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())));
     arquivo.setSize(file.getSize());
     arquivo.setUid(arquivo.getUid() != null ? arquivo.getUid() : UUID.randomUUID());

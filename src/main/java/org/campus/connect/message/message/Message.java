@@ -1,5 +1,6 @@
 package org.campus.connect.message.message;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -20,10 +21,12 @@ import java.util.UUID;
 @Entity
 @Table(name = "Message_tb", schema = SchemaConstants.MESSAGES)
 public class Message extends AbstractEntity {
-  private String titulo;
-  private String resumo;
-  private LocalDateTime data_envio;
+  private String title;
+  private String summary;
+  @Column(name = "send_date")
+  private LocalDateTime sendDate;
   private Status status;
   private String message;
-  private UUID resp;
+  private UUID response;
 }
+

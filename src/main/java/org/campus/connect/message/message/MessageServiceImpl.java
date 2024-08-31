@@ -1,6 +1,6 @@
 package org.campus.connect.message.message;
 
-import org.campus.connect.message.files.ArquivoService;
+import org.campus.connect.message.files.FileService;
 import org.campus.connect.message.links.LinksService;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.springframework.stereotype.Service;
@@ -12,16 +12,16 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
 
   private final MessageRepository repository;
   private final MessageMapper mapper;
-  private final ArquivoService arquivoService;
+  private final FileService fileService;
   private final LinksService linksService;
 
   public MessageServiceImpl(
     final MessageRepository repository,
-    final MessageMapper mapper, final ArquivoService arquivoService, final LinksService linksService) {
+    final MessageMapper mapper, final FileService fileService, final LinksService linksService) {
     super(repository, mapper);
     this.repository = repository;
     this.mapper = mapper;
-    this.arquivoService = arquivoService;
+    this.fileService = fileService;
     this.linksService = linksService;
   }
 
@@ -30,7 +30,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     List<MessageDTO> list = this.mapper.toDto(this.repository.findAll());
     list.forEach(m -> {
       m.setLinks(this.linksService.findByIdMsg(m.getId()));
-      m.setAnexos(this.arquivoService.findByIdExt(m.getId()));
+      m.setAttachments(this.fileService.findByIdExt(m.getId()));
     });
     return list;
   }
@@ -46,10 +46,10 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
         throw new RuntimeException(e);
       }
     });
-    message.getAnexos().forEach(anexo -> {
-      anexo.setId_ext(msg.getId());
+    message.getAttachments().forEach(attachment -> {
+      attachment.setId_ext(msg.getId());
       try {
-        this.arquivoService.save(anexo);
+        this.fileService.save(attachment);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }

@@ -16,8 +16,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Table(name = "Arquivo_tb", schema = SchemaConstants.MESSAGES)
-public class Arquivo extends AbstractEntity {
+@Table(name = "File_tb", schema = SchemaConstants.MESSAGES)
+public class File extends AbstractEntity {
   private String name;
   private String type;
   private String url;

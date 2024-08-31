@@ -3,7 +3,7 @@ version: '3'
 services:
   events_db:
     container_name: message_db
-    image: postgres:16
+    image: postgres:15
     environment:
       POSTGRES_DB: message_db
       POSTGRES_USER: ccadmin

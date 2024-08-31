@@ -7,7 +7,7 @@ import org.campus.connect.message.auth.users.records.LoginDTO;
 import org.campus.connect.message.auth.users.records.RegisterDTO;
 import org.campus.connect.message.auth.users.records.ResponseDTO;
 import org.campus.connect.message.auth.users.records.RolesDTO;
-import org.campus.connect.message.constants.Enums.Roles_user;
+import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.utils.GenericResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -121,7 +121,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     Optional<Users> usr = this.repository.findByEmail(dto.email());
     if (usr.isPresent()) {
       Users user = usr.get();
-      Set<Roles_user> usr_roles = user.getRoles();
+      Set<UserRoles> usr_roles = user.getRoles();
       usr_roles.addAll(dto.roles());
       this.service.save(mapper.toDto(user));
       return ResponseEntity.ok().build();

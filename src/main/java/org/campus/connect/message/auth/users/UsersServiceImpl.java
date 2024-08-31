@@ -1,10 +1,10 @@
 package org.campus.connect.message.auth.users;
 
 import org.campus.connect.message.auth.users.records.RegisterDTO;
-import org.campus.connect.message.constants.Enums.Roles_user;
-import org.campus.connect.message.files.ArquivoDTO;
-import org.campus.connect.message.files.ArquivoMapper;
-import org.campus.connect.message.files.ArquivoService;
+import org.campus.connect.message.constants.Enums.UserRoles;
+import org.campus.connect.message.files.FileDTO;
+import org.campus.connect.message.files.FileMapper;
+import org.campus.connect.message.files.FileService;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,24 +17,24 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   private final UsersRepository repository;
   private final UsersMapper mapper;
   private final PasswordEncoder passwordEncoder;
-  private final ArquivoService arquivoService;
-  private final ArquivoMapper arquivoMapper;
+  private final FileService fileService;
+  private final FileMapper fileMapper;
 
   public UsersServiceImpl(
     UsersRepository repository,
     UsersMapper mapper, PasswordEncoder passwordEncoder,
-    ArquivoService arquivoService, ArquivoMapper arquivoMapper) {
+    FileService fileService, FileMapper fileMapper) {
     super(repository, mapper);
     this.repository = repository;
     this.mapper = mapper;
     this.passwordEncoder = passwordEncoder;
-    this.arquivoService = arquivoService;
-    this.arquivoMapper = arquivoMapper;
+    this.fileService = fileService;
+    this.fileMapper = fileMapper;
   }
 
   @Override
-  public Optional<Users> findByEmail(String login) {
-    return this.repository.findByEmail(login);
+  public Optional<Users> findByEmail(String email) {
+    return this.repository.findByEmail(email);
   }
 
   @Override
@@ -44,22 +44,22 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   }
 
   @Override
-  public Users register(RegisterDTO obj) throws Exception {
+  public Users register(RegisterDTO dto) throws Exception {
     Users user = new Users();
-    user.setEmail(obj.getEmail());
-    user.setName(obj.getName());
+    user.setEmail(dto.getEmail());
+    user.setName(dto.getName());
     user.setUid(UUID.randomUUID());
-    user.setRoles(Collections.singleton(Roles_user.USER));
-    user.setTelefone(obj.getTelefone());
-    user.setPassword(passwordEncoder.encode(obj.getPassword()));
-    user.setFoto_capa(
-      this.arquivoMapper.toEntity(
-        arquivoService.save(new ArquivoDTO())
+    user.setRoles(Collections.singleton(UserRoles.USER));
+    user.setPhone(dto.getPhone());
+    user.setPassword(passwordEncoder.encode(dto.getPassword()));
+    user.setCoverPhoto(
+      this.fileMapper.toEntity(
+        fileService.save(new FileDTO())
       )
     );
-    user.setFoto_perfil(
-      this.arquivoMapper.toEntity(
-        arquivoService.save(new ArquivoDTO())
+    user.setProfilePhoto(
+      this.fileMapper.toEntity(
+        fileService.save(new FileDTO())
       )
     );
     this.save(mapper.toDto(user));
@@ -72,35 +72,35 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     user.setEmail("admin@admin.com");
     user.setName("Taui Silva Lima");
     user.setUid(UUID.randomUUID());
-    user.setTelefone("admin");
-    user.setRoles(Collections.singleton(Roles_user.ADMIN));
+    user.setPhone("admin");
+    user.setRoles(Collections.singleton(UserRoles.ADMIN));
     user.setPassword(passwordEncoder.encode("sousen1902*"));
     return this.save(mapper.toDto(user));
   }
 
   @Override
   public UsersDTO getUser(Users user) {
-    UsersDTO usr = new UsersDTO();
-    usr.setEmail(user.getEmail());
-    usr.setId(user.getId());
-    usr.setName(user.getName());
-    usr.setRoles(new ArrayList<>(user.getRoles()));
-    usr.setUid(user.getUid());
-    usr.setTelefone(user.getTelefone());
-    usr.setFoto_capa(arquivoMapper.toDto(user.getFoto_capa()));
-    usr.setFoto_perfil(arquivoMapper.toDto(user.getFoto_perfil()));
-    return usr;
+    UsersDTO dto = new UsersDTO();
+    dto.setEmail(user.getEmail());
+    dto.setId(user.getId());
+    dto.setName(user.getName());
+    dto.setRoles(new ArrayList<>(user.getRoles()));
+    dto.setUid(user.getUid());
+    dto.setPhone(user.getPhone());
+    dto.setCoverPhoto(fileMapper.toDto(user.getCoverPhoto()));
+    dto.setProfilePhoto(fileMapper.toDto(user.getProfilePhoto()));
+    return dto;
   }
 
   @Override
-  public UsersDTO update(final UsersDTO obj) throws Exception {
-    Optional<Users> usr = findByEmail(obj.getEmail());
-    if (usr.isPresent()) {
-      Users user = usr.get();
-      obj.setPassword(user.getPassword());
-      obj.setUpdatedBy(String.valueOf(user.getUid()));
+  public UsersDTO update(final UsersDTO dto) throws Exception {
+    Optional<Users> userOptional = findByEmail(dto.getEmail());
+    if (userOptional.isPresent()) {
+      Users user = userOptional.get();
+      dto.setPassword(user.getPassword());
+      dto.setUpdatedBy(String.valueOf(user.getUid()));
     }
-    return this.save(obj);
+    return this.save(dto);
   }
 
 }

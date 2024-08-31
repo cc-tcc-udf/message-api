@@ -11,7 +11,7 @@ import org.campus.connect.message.utils.AbstractEntityDTO;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class LinksDTO extends AbstractEntityDTO {
-  private String titulo;
+  private String title;
   private String link;
   private Long id_msg;
 }

@@ -1,5 +1,4 @@
--- Cria a tabela "messages.Arquivo_tb".
-CREATE TABLE IF NOT EXISTS messages.arquivo_tb
+CREATE TABLE IF NOT EXISTS messages.file_tb
 (
     id           SERIAL PRIMARY KEY,
     excluded     BOOLEAN   DEFAULT FALSE,

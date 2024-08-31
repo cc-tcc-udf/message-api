@@ -14,32 +14,32 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api")
-@Tag(name = "Arquivos", description = "Gerenciamento de Arquivos")
-public class ArquivoResource extends GenericResource<ArquivoDTO, ArquivoResource> {
+@Tag(name = "Files", description = "Gerenciamento de Arquivos")
+public class FileResource extends GenericResource<FileDTO, FileResource> {
 
-  private final ArquivoService service;
+  private final FileService service;
 
-  public ArquivoResource(final ArquivoService service) {
+  public FileResource(final FileService service) {
     super(service, "api/");
     this.service = service;
   }
 
-  @PostMapping(value = "/public/arquivo/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<ArquivoDTO> create(@RequestParam("file") MultipartFile file) throws Exception {
-    ArquivoDTO arquivo = this.service.create(file);
-    return ResponseEntity.ok().body(arquivo);
+  @PostMapping(value = "/public/file/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<FileDTO> create(@RequestParam("file") MultipartFile multipartFile) throws Exception {
+    FileDTO file = this.service.create(multipartFile);
+    return ResponseEntity.ok().body(file);
   }
 
-  @PostMapping(value = "/private/arquivo/{id}/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<?> update(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws Exception {
-    ArquivoDTO arquivo = this.service.update(id, file);
-    if (arquivo != null) {
-      return ResponseEntity.ok().body(arquivo);
+  @PostMapping(value = "/private/file/{id}/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<?> update(@PathVariable Long id, @RequestParam("file") MultipartFile multipartFile) throws Exception {
+    FileDTO file = this.service.update(id, multipartFile);
+    if (file != null) {
+      return ResponseEntity.ok().body(file);
     }
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"Arquivo não encontrado\"}");
   }
 
-  @GetMapping(value = "/public/arquivo/get/{id}")
+  @GetMapping(value = "/public/file/get/{id}")
   public ResponseEntity<Resource> download(@PathVariable Long id, HttpServletRequest request) throws Exception {
     Resource resource = this.service.getFile(id);
     String contenType = request.getServletContext()

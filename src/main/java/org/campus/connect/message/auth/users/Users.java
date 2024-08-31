@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.campus.connect.message.constants.Enums.Roles_user;
+import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.constants.SchemaConstants;
-import org.campus.connect.message.files.Arquivo;
+import org.campus.connect.message.files.File;
 import org.campus.connect.message.utils.AbstractEntity;
 
 import java.util.HashSet;
@@ -26,17 +26,17 @@ public class Users extends AbstractEntity {
   private String name;
   private String password;
   private UUID uid;
-  private String telefone;
+  private String phone;
 
   @ManyToOne
-  private Arquivo foto_perfil;
+  private File profilePhoto;
 
   @ManyToOne
-  private Arquivo foto_capa;
+  private File coverPhoto;
 
   @ElementCollection(fetch = FetchType.EAGER)
   @Enumerated(EnumType.STRING)
   @CollectionTable(name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"))
-  private Set<Roles_user> roles = new HashSet<>();
+  private Set<UserRoles> roles = new HashSet<>();
 
 }
