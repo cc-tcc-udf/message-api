@@ -1,5 +1,6 @@
 package org.campus.connect.message.infra;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/static")
 public class SwaggerCss {
+  @Hidden
   @GetMapping("/dark-swagger-ui.css")
   public ResponseEntity<Resource> getCss() {
     Resource cssResource = new ClassPathResource("static/dark-swagger-ui.css");

@@ -70,12 +70,12 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   public ResponseEntity<?> login(@RequestBody LoginDTO body) {
     Optional<Users> optionalUser = this.repository.findByEmail(body.email());
     if (optionalUser.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"Usuário não encontrado\"}");
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"Usuário não cadastrado!\"}");
     }
 
     Users user = optionalUser.get();
     if (!passwordEncoder.matches(body.password(), user.getPassword())) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\": \"Senha incorreta\"}");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\": \"Senha incorreta!\"}");
 
     }
 

@@ -36,7 +36,7 @@ public class Users extends AbstractEntity {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @Enumerated(EnumType.STRING)
-  @CollectionTable(name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"))
+  @CollectionTable(schema = SchemaConstants.MESSAGES, name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"))
   private Set<UserRoles> roles = new HashSet<>();
 
 }

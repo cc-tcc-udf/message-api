@@ -54,12 +54,12 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     user.setPassword(passwordEncoder.encode(dto.getPassword()));
     user.setCoverPhoto(
       this.fileMapper.toEntity(
-        fileService.save(new FileDTO())
+        this.fileService.save(new FileDTO())
       )
     );
     user.setProfilePhoto(
       this.fileMapper.toEntity(
-        fileService.save(new FileDTO())
+        this.fileService.save(new FileDTO())
       )
     );
     this.save(mapper.toDto(user));

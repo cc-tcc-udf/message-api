@@ -3,6 +3,7 @@ package org.campus.connect.message.utils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Data
 @ToString
 @JsonIgnoreProperties({"createdBy", "updatedBy", "created", "updated", "excluded"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class AbstractEntityDTO implements Serializable {
 
   protected AbstractEntityDTO() {
@@ -22,19 +24,14 @@ public abstract class AbstractEntityDTO implements Serializable {
   }
 
   private Long id;
-
   private String createdBy;
-
   private String updatedBy;
-
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonFormat(pattern = UtilsConstants.DATE_TIME_PATTERN)
   private LocalDateTime created;
-
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonFormat(pattern = UtilsConstants.DATE_TIME_PATTERN)
   private LocalDateTime updated;
-
   private Boolean excluded = false;
 
 }

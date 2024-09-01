@@ -28,6 +28,7 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
   }
 
   @PostMapping(value = "/public/msg/create")
+  @Operation(summary = "Criar mensagem", description = "criação de mensagem")
   public ResponseEntity<MessageDTO> createMessage(@RequestBody MessageDTO message) throws Exception {
     return ResponseEntity.ok(service.create(message));
 
