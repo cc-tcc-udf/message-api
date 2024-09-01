@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public abstract class GenericServiceImpl<E extends AbstractEntity, D extends AbstractEntityDTO> implements GenericService<D> {
 
-  private JpaRepository<E, Long> repository;
+  private final JpaRepository<E, Long> repository;
 
   private final EntityMapper<D, E> mapper;
 

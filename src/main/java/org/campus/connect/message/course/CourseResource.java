@@ -36,10 +36,19 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     tags = {"Cursos"}
   )
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Cursos listados com sucesso",
+    @ApiResponse(
+      responseCode = "200",
+      description = "Lista de cursos recuperada com sucesso",
       content = @Content(
-        schema = @Schema(implementation = ReturnObjDTO.class),
-        examples = @ExampleObject(value = "{ \"success\": true, \"message\": \"Requisição realizada com sucesso\", \"dataList\": [[{ \"name\": \"Curso A\", \"description\": \"Descrição A\", \"abbreviation\": \"CA\", \"isGroup\": false, \"courseGroupId\": null }]] }")
+        mediaType = "application/json",
+        examples = @ExampleObject(
+          value = "{ \"success\": true, \"message\": \"Requisição realizada com sucesso\", \"dataList\": [[{ " +
+            "\"name\": \"Curso A\", \"description\": \"Descrição A\", \"abbreviation\": \"CA\", " +
+            "\"isGroup\": true, \"courses\": [" +
+            "{ \"name\": \"Subcurso 1\", \"description\": \"Descrição do Subcurso 1\", \"abbreviation\": \"SC1\", \"isGroup\": false, \"courseGroupId\": 1 }, " +
+            "{ \"name\": \"Subcurso 2\", \"description\": \"Descrição do Subcurso 2\", \"abbreviation\": \"SC2\", \"isGroup\": false, \"courseGroupId\": 1 }" +
+            "] }]] }"
+        )
       )
     ),
     @ApiResponse(responseCode = "400", description = "Erro na requisição",
@@ -60,7 +69,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
       List<CourseDTO> list = this.service.findAll(isGroup);
       dto.setMessage("Requisição realizada com sucesso");
       dto.setSuccess(true);
-      dto.setDataList(Collections.singletonList(list));
+      dto.setData(list);
     } catch (Exception e) {
       dto.setSuccess(false);
       dto.setMessage("Erro ao realizar requisição: " + e.getMessage());
@@ -70,18 +79,50 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
 
   @PostMapping(value = "/public/course/create")
   @Operation(
-    summary = "Criar curso",
-    description = "Cria um novo curso. Se o curso for um grupo, não deve ter um grupo pai.",
+    summary = "Criar um Novo Curso",
+    description = "Este endpoint permite a criação de um novo curso. A requisição deve incluir todos os detalhes necessários para a criação do curso," +
+      " como nome, descrição, abreviação, responsável, e se o curso pertence a um grupo ou não. Se o curso estiver marcado como um grupo (i.e., `isGroup` é `true`)," +
+      " ele não deve ter um grupo pai (`courseGroupId` deve ser `null`). Caso contrário, se o curso não for um grupo (`isGroup` é `false`)," +
+      " ele deve ser associado a um grupo pai existente por meio do `courseGroupId`, porém um curso não obrigatoriamente precisa esta em grupo. Este endpoint retorna as informações do curso criado," +
+      " incluindo um identificador único gerado para o curso.",
     tags = {"Cursos"}
   )
+
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Curso criado com sucesso",
-      content = @Content(schema = @Schema(implementation = ReturnObjDTO.class))),
-    @ApiResponse(responseCode = "400", description = "Erro na criação do curso",
-      content = @Content(schema = @Schema(implementation = ReturnObjDTO.class)))
+    @ApiResponse(
+      responseCode = "200",
+      description = "Curso criado com sucesso",
+      content = @Content(
+        schema = @Schema(implementation = ReturnObjDTO.class),
+        examples = @ExampleObject(
+          value = "{ \"success\": true, \"message\": \"Curso criado com sucesso\", \"data\": { " +
+            "\"id\": 3, " +
+            "\"name\": \"Curso Novo\", " +
+            "\"description\": \"Descrição do Curso Novo\", " +
+            "\"abbreviation\": \"CN\", " +
+            "\"resp\": 1, " +
+            "\"courseGroupId\": null, " +
+            "\"isGroup\": false " +
+            "} }"
+        )
+      )
+    ),
+    @ApiResponse(
+      responseCode = "400",
+      description = "Erro na criação do curso",
+      content = @Content(
+        schema = @Schema(implementation = ReturnObjDTO.class),
+        examples = @ExampleObject(
+          value = "{ \"success\": false, \"message\": \"Erro ao criar curso: <detalhes do erro>\" }"
+        )
+      )
+    )
   })
   public ResponseEntity<ReturnObjDTO> create(
-    @Parameter(description = "DTO contendo as informações do curso a ser criado", required = true)
+    @Parameter(
+      description = "DTO contendo as informações do curso a ser criado",
+      required = true
+    )
     @RequestBody CourseDTO dto) {
     ReturnObjDTO dtoReturn = new ReturnObjDTO();
     try {
@@ -95,4 +136,52 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     }
     return ResponseEntity.ok(dtoReturn);
   }
+
+  @PutMapping(value = "/public/course/update")
+  @Operation(
+    summary = "Atualizar um Curso Existente",
+    description = "Este endpoint permite a atualização dos detalhes de um curso existente." +
+      " A requisição deve incluir o identificador do curso (`id`) e os novos detalhes que devem ser atualizados." +
+      " Se o curso for um grupo (`isGroup` é `true`), ele não deve ter um grupo pai (`courseGroupId` deve ser `null`)." +
+      " Caso contrário, se o curso não for um grupo (`isGroup` é `false`), ele deve estar associado a um grupo pai existente por meio do `courseGroupId`, " +
+      "porém um curso não obrigatoriamente precisa esta em grupo. " +
+      "O endpoint retorna as informações do curso atualizado.",
+    tags = {"Cursos"}
+  )
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Curso atualizado com sucesso",
+      content = @Content(
+        schema = @Schema(implementation = ReturnObjDTO.class),
+        examples = @ExampleObject(
+          value = "{ \"success\": true, \"message\": \"Curso atualizado com sucesso\", \"data\": { " +
+            "\"id\": 3, " +
+            "\"name\": \"Nome editado\", " +
+            "\"description\": \"Descrição editado\", " +
+            "\"abbreviation\": \"NE\", " +
+            "\"resp\": 1, " +
+            "\"courseGroupId\": 1, " +
+            "\"isGroup\": false " +
+            "} }"
+        )
+      )
+    ),
+    @ApiResponse(responseCode = "400", description = "Erro na atualização do curso",
+      content = @Content(schema = @Schema(implementation = ReturnObjDTO.class)))
+  })
+  public ResponseEntity<ReturnObjDTO> update(
+    @Parameter(description = "DTO contendo as informações do curso a ser atualizado", required = true)
+    @RequestBody CourseDTO dto) {
+    ReturnObjDTO dtoReturn = new ReturnObjDTO();
+    try {
+      CourseDTO updatedCourse = this.service.update(dto);
+      dtoReturn.setMessage("Curso atualizado com sucesso");
+      dtoReturn.setSuccess(true);
+      dtoReturn.setData(updatedCourse);
+    } catch (Exception e) {
+      dtoReturn.setSuccess(false);
+      dtoReturn.setMessage("Erro ao atualizar curso: " + e.getMessage());
+    }
+    return ResponseEntity.ok(dtoReturn);
+  }
+
 }
