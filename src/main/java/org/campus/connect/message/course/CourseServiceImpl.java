@@ -23,6 +23,9 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
       List<CourseDTO> list = repository.findCourses(true);
       list.forEach(c -> {
         List<SubCourseDTO> subs = repository.findSubsByIdGroup(c.getId());
+        subs.forEach(sub -> {
+          sub.setSiglaGroup(c.getAbbreviation());
+        });
         c.setCourses(subs);
       });
       return list;

@@ -18,6 +18,7 @@ public class SubCourseDTO extends AbstractEntityDTO {
   private String abbreviation;
   private Long resp;
   private Long courseGroupId;
+  private String siglaGroup;
   private Boolean isGroup;
 
   public SubCourseDTO(Course obj) {
