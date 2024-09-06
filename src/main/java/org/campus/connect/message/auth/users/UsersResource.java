@@ -8,6 +8,8 @@ import org.campus.connect.message.auth.users.records.RegisterDTO;
 import org.campus.connect.message.auth.users.records.ResponseDTO;
 import org.campus.connect.message.auth.users.records.RolesDTO;
 import org.campus.connect.message.constants.Enums.UserRoles;
+import org.campus.connect.message.constants.GenericMessages;
+import org.campus.connect.message.responseReturn.ReturnObjDTO;
 import org.campus.connect.message.utils.GenericResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +45,21 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     this.mapper = mapper;
   }
 
-  @GetMapping(value = "/private/auth/listUsers")
+  @GetMapping(value = "/private/auth/adm/list")
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   @Operation(summary = "Listar usuarios", description = "Lista todos os usuarios para o administrador")
-  public List<UsersDTO> listUsers() {
-    return service.findAll();
+  public ReturnObjDTO listUsers() {
+    ReturnObjDTO obj = new ReturnObjDTO();
+    try {
+      List<UsersDTO> users = service.findAll();
+      obj.setData(users);
+      obj.setSuccess(Boolean.TRUE);
+      obj.setMessage(GenericMessages.ResponseSuccess);
+    } catch (Exception e) {
+      obj.setSuccess(Boolean.FALSE);
+      obj.setMessage(GenericMessages.ResponseError);
+    }
+    return obj;
   }
 
   @PostMapping("/private/auth/create")

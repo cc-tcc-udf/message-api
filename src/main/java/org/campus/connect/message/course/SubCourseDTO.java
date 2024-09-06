@@ -11,7 +11,6 @@ import org.campus.connect.message.utils.AbstractEntityDTO;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SubCourseDTO extends AbstractEntityDTO {
   private String name;
   private String description;

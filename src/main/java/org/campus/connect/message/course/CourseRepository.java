@@ -17,4 +17,9 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
   @Query("SELECT new org.campus.connect.message.course.CourseDTO(c) FROM Course c WHERE c.isGroup = :isGroup")
   List<CourseDTO> findCourses(@Param("isGroup") Boolean isGroup);
 
+  @Query("SELECT new org.campus.connect.message.course.CourseDTO(c) FROM Course c WHERE c.isGroup = false AND c.courseGroupId IS NULL")
+  List<CourseDTO> findCoursesNoGrouped();
+
+  List<Course> findAllByIsGroupIsTrue();
+
 }

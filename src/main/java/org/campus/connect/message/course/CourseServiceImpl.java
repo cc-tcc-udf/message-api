@@ -28,10 +28,19 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
         });
         c.setCourses(subs);
       });
+      list.addAll(this.repository.findCoursesNoGrouped());
       return list;
     } else {
       return this.repository.findCourses(false);
     }
+  }
+
+  @Override
+  public List<CourseDTO> findGroups() {
+    List<Course> all = this.repository.findAllByIsGroupIsTrue();
+    return all.stream()
+      .map(course -> new CourseDTO(course.getId(), course.getName(), course.getAbbreviation()))
+      .toList();
   }
 
   @Override
@@ -60,7 +69,6 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
   public CourseDTO update(final CourseDTO dto) {
     return null;
   }
-
 
   @Override
   public List<CourseDTO> findAll() {

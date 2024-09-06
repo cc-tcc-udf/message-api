@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CourseDTO extends AbstractEntityDTO {
   private String name;
   private String description;
@@ -34,5 +33,10 @@ public class CourseDTO extends AbstractEntityDTO {
     this.resp = c.getResp();
     this.courseGroupId = c.getCourseGroupId();
     this.isGroup = c.getIsGroup();
+  }
+
+  public CourseDTO(final Long id, final String name, final String abbreviation) {
+    this.setId(id);
+    this.setName(name + "(" + abbreviation + ")");
   }
 }

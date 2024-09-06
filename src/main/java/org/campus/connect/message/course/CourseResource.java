@@ -13,7 +13,6 @@ import org.campus.connect.message.utils.GenericResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -27,6 +26,22 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     super(service, "api/");
     this.service = service;
     this.mapper = mapper;
+  }
+
+  @GetMapping(value = "/public/course/groups")
+  public ResponseEntity<ReturnObjDTO> groups() {
+    ReturnObjDTO returnObjDTO = new ReturnObjDTO();
+    try {
+      List<CourseDTO> list = service.findGroups();
+      returnObjDTO.setData(list);
+      returnObjDTO.setSuccess(true);
+      returnObjDTO.setMessage("Requisição realizada com sucesso!");
+    } catch (Exception e) {
+      returnObjDTO.setSuccess(false);
+      returnObjDTO.setMessage("Erro ao realizar requisição: " + e.getMessage());
+    }
+
+    return ResponseEntity.ok(returnObjDTO);
   }
 
   @GetMapping(value = "/public/course/list")

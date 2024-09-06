@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Data
 @ToString
 @JsonIgnoreProperties({"createdBy", "updatedBy", "created", "updated", "excluded"})
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class AbstractEntityDTO implements Serializable {
 
   protected AbstractEntityDTO() {

@@ -9,6 +9,8 @@ public interface CourseService extends GenericService<CourseDTO> {
 
   List<CourseDTO> findAll();
 
+  List<CourseDTO> findGroups();
+
   CourseDTO create(CourseDTO dto) throws Exception;
 
   CourseDTO update(CourseDTO dto);
