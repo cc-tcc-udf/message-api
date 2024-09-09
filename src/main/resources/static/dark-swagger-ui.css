@@ -394,6 +394,10 @@
     .swagger-ui .json-schema-2020-12__attribute {
         color: var(--primary-text-color);
     }
+
+    .swagger-ui .opblock-tag small {
+        color: var(--primary-text-color);
+    }
 }
 
 :root {

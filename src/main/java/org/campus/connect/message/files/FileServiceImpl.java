@@ -1,13 +1,13 @@
 package org.campus.connect.message.files;
 
 
+import org.campus.connect.message.files.FileDrive.FileDriveService;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -21,7 +21,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implements FileService {
@@ -31,13 +30,17 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
   private final Path fileStorageLocation;
   private final Integer maxWidth;
   private final Integer maxHeight;
+  private final String profile;
+  private final FileDriveService driveService;
 
   public FileServiceImpl(
-    FileRepository repository,
-    FileMapper mapper,
+    final FileRepository repository,
+    final FileMapper mapper,
     @Value("${server.storagePath}") String storagePath,
     @Value("${image.maxWidth}") Integer maxWidth,
-    @Value("${image.maxHeight}") Integer maxHeight
+    @Value("${image.maxHeight}") Integer maxHeight,
+    @Value("${spring.profiles.active}") String profile,
+    final FileDriveService driveService
   ) {
     super(repository, mapper);
     this.repository = repository;
@@ -45,10 +48,14 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
     this.maxWidth = maxWidth;
     this.maxHeight = maxHeight;
     this.fileStorageLocation = Paths.get(storagePath).toAbsolutePath().normalize();
-    try {
-      Files.createDirectories(this.fileStorageLocation);
-    } catch (Exception ex) {
-      throw new RuntimeException("Erro ao criar local de arquivos");
+    this.profile = profile;
+    this.driveService = driveService;
+    if ("local".equals(profile)) {
+      try {
+        Files.createDirectories(this.fileStorageLocation);
+      } catch (Exception ex) {
+        throw new RuntimeException("Erro ao criar local de arquivos");
+      }
     }
   }
 
@@ -89,34 +96,45 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
 
   // Create arquivo
   @Override
-  public FileDTO create(final MultipartFile multipartFile) throws Exception {
-    File file = setArquivo(multipartFile, new File());
-    this.setStorage(file.getKey(), multipartFile);
-    return save(mapper.toDto(file));
+  public FileDTO create(final MultipartFile multipartFile, final Long id) throws Exception {
+    System.out.println("Profile AQUI: " + profile);
+
+    if ("dev".equals(profile)) {
+      FileDTO file = driveService.createDrive(multipartFile);
+      file.setId_ext(id);
+      this.save(file);
+      return file;
+    }
+
+    return this.createLocal(multipartFile, id);
   }
+
+  private FileDTO createLocal(final MultipartFile multipartFile, final Long id) throws Exception {
+    File file = setArquivo(multipartFile, new File(multipartFile));
+    file.setId_ext(id);
+    this.setStorage(file.getKey(), multipartFile);
+    return this.save(mapper.toDto(file));
+  }
+
 
   //Update arquivo
   @Override
   public FileDTO update(final Long id, final MultipartFile multipartFile) throws Exception {
     Optional<FileDTO> file = findOneById(id);
     if (file.isPresent()) {
-      File newFile = setArquivo(multipartFile, mapper.toEntity(file.get()));
+      File newFile = setArquivo(multipartFile, new File(multipartFile));
       this.setStorage(newFile.getKey(), multipartFile);
       return save(mapper.toDto(newFile));
     }
     return null;
   }
 
-  public File setArquivo(final MultipartFile file, final File arquivo) {
-    arquivo.setName(StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())));
-    arquivo.setSize(file.getSize());
-    arquivo.setUid(arquivo.getUid() != null ? arquivo.getUid() : UUID.randomUUID());
-    arquivo.setType(file.getContentType());
-    arquivo.setKey(arquivo.getUid() +
-      file.getOriginalFilename().substring(
-        file.getOriginalFilename().lastIndexOf(".")
+  public File setArquivo(final MultipartFile multipartFile, final File file) {
+    file.setKey(file.getUid() +
+      Objects.requireNonNull(multipartFile.getOriginalFilename()).substring(
+        multipartFile.getOriginalFilename().lastIndexOf(".")
       ));
-    return arquivo;
+    return file;
   }
 
   private void setStorage(final String key, final MultipartFile file) {

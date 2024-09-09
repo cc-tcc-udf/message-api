@@ -4,6 +4,7 @@ package org.campus.connect.message.files;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.campus.connect.message.utils.GenericResource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,9 @@ public class FileResource extends GenericResource<FileDTO, FileResource> {
     this.service = service;
   }
 
-  @PostMapping(value = "/public/file/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<FileDTO> create(@RequestParam("file") MultipartFile multipartFile) throws Exception {
-    FileDTO file = this.service.create(multipartFile);
+  @PostMapping(value = "/public/file/create/{id_ext}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<FileDTO> create(@PathVariable Long id_ext, @RequestParam("file") MultipartFile multipartFile) throws Exception {
+    FileDTO file = this.service.create(multipartFile, id_ext);
     return ResponseEntity.ok().body(file);
   }
 

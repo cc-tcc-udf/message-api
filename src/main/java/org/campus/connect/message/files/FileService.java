@@ -11,7 +11,7 @@ public interface FileService extends GenericService<FileDTO> {
 
   List<FileDTO> findAll();
 
-  FileDTO create(MultipartFile file) throws Exception;
+  FileDTO create(MultipartFile file, final Long id) throws Exception;
 
   List<FileDTO> findByIdExt(Long id);
 

@@ -40,6 +40,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   @Override
   public List<UsersDTO> findAll() {
     List<Users> listUsers = this.repository.findAllByExcluded(Boolean.FALSE);
+    listUsers.forEach(user -> user.setPassword(null));
     return this.mapper.toDto(listUsers);
   }
 
