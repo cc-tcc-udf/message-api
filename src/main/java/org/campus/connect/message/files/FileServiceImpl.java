@@ -1,7 +1,8 @@
 package org.campus.connect.message.files;
 
 
-import org.campus.connect.message.files.FileDrive.FileDriveService;
+import org.campus.connect.message.files.FileCloud.CloudinaryService;
+import org.campus.connect.message.files.FileCloud.FileDriveService;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,7 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
   private final Integer maxHeight;
   private final String profile;
   private final FileDriveService driveService;
+  private final CloudinaryService cloudinaryService;
 
   public FileServiceImpl(
     final FileRepository repository,
@@ -40,7 +42,8 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
     @Value("${image.maxWidth}") Integer maxWidth,
     @Value("${image.maxHeight}") Integer maxHeight,
     @Value("${spring.profiles.active}") String profile,
-    final FileDriveService driveService
+    final FileDriveService driveService,
+    final CloudinaryService cloudinaryService
   ) {
     super(repository, mapper);
     this.repository = repository;
@@ -50,6 +53,7 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
     this.fileStorageLocation = Paths.get(storagePath).toAbsolutePath().normalize();
     this.profile = profile;
     this.driveService = driveService;
+    this.cloudinaryService = cloudinaryService;
     if ("local".equals(profile)) {
       try {
         Files.createDirectories(this.fileStorageLocation);
@@ -100,9 +104,9 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
     System.out.println("Profile AQUI: " + profile);
 
     if ("dev".equals(profile)) {
-      FileDTO file = driveService.createDrive(multipartFile);
+      FileDTO file = cloudinaryService.uploadToCloudinary(multipartFile);
       file.setId_ext(id);
-      this.save(file);
+      file = this.save(file);
       return file;
     }
 

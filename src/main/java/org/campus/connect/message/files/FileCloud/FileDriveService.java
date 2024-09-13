@@ -1,4 +1,4 @@
-package org.campus.connect.message.files.FileDrive;
+package org.campus.connect.message.files.FileCloud;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.FileContent;
