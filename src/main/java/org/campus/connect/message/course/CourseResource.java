@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api")
@@ -28,7 +29,80 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     this.mapper = mapper;
   }
 
+  @GetMapping(value = "/public/course/{id}")
+  @Operation(
+    summary = "Retorna um curso existente pelo ID",
+    description = "Este endpoint retorna os detalhes de um curso específico com base no seu identificador único (ID). Se o curso existir, os detalhes completos serão retornados, incluindo informações sobre o curso e seus subcursos, se aplicável.",
+    tags = {"Cursos"}
+  )
+  @ApiResponses(value = {
+    @ApiResponse(
+      responseCode = "200",
+      description = "Curso encontrado com sucesso",
+      content = @Content(
+        schema = @Schema(implementation = SubCourseDTO.class),
+        examples = @ExampleObject(
+          value = "{ \"id\": 1, \"name\": \"Subcurso 1\", \"description\": \"Descrição Subcurso 1\", \"abbreviation\": \"SC1\", \"isGroup\": false }, "
+        )
+      )
+    ),
+    @ApiResponse(
+      responseCode = "404",
+      description = "Curso não encontrado",
+      content = @Content(
+        schema = @Schema(implementation = ReturnObjDTO.class),
+        examples = @ExampleObject(
+          value = "{ \"success\": false, \"message\": \"Curso não encontrado\" }"
+        )
+      )
+    )
+  })
+  public ResponseEntity<SubCourseDTO> getCourse(
+    @Parameter(description = "ID do curso a ser retornado", required = true)
+    @PathVariable final Long id
+  ) {
+    SubCourseDTO dto = new SubCourseDTO();
+
+    Optional<CourseDTO> optionalCourse = service.findOneById(id);
+    if (optionalCourse.isPresent()) {
+      dto = new SubCourseDTO(mapper.toEntity(optionalCourse.get()));
+    }
+
+    return ResponseEntity.ok(dto);
+  }
+
+
   @GetMapping(value = "/public/course/groups")
+  @Operation(
+    summary = "Listar grupos de cursos",
+    description = "Este endpoint retorna uma lista de grupos de cursos disponíveis.",
+    tags = {"Cursos"}
+  )
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Lista de grupos recuperada com sucesso",
+      content = @Content(
+        schema = @Schema(implementation = ReturnObjDTO.class),
+        examples = @ExampleObject(
+          value = "{ " +
+            "\"success\": true, " +
+            "\"message\": \"Requisição realizada com sucesso!\", " +
+            "\"data\": [" +
+            "  { " +
+            "    \"id\": 1,    \"name\": \"Grupo 1(G1)\",     \"courses\": [" +
+            "{ \"id\": 3, \"name\": \"Curso 1 do Grupo 1(C1G1)\" }, { \"id\": 5, \"name\": \"Curso 2 do Grupo 1(C2G1)\" }" +
+            "]}]}"
+        )
+      )
+    ),
+    @ApiResponse(responseCode = "400", description = "Erro na requisição",
+      content = @Content(
+        schema = @Schema(implementation = ReturnObjDTO.class),
+        examples = @ExampleObject(
+          value = "{ \"success\": false, \"message\": \"Erro ao realizar requisição: <detalhes do erro>\" }"
+        )
+      )
+    )
+  })
   public ResponseEntity<ReturnObjDTO> groups() {
     ReturnObjDTO returnObjDTO = new ReturnObjDTO();
     try {
@@ -44,10 +118,12 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     return ResponseEntity.ok(returnObjDTO);
   }
 
+
   @GetMapping(value = "/public/course/list")
   @Operation(
     summary = "Listar cursos",
-    description = "Lista todos os cursos com base no parâmetro 'isGroup'. Se 'isGroup' for verdadeiro, lista apenas os cursos que são grupos. Se for falso, lista cursos que não são grupos.",
+    description = "Lista todos os cursos com base no parâmetro 'isGroup'. Se 'isGroup' for verdadeiro," +
+      " lista apenas os cursos que são grupos. Se for falso, lista cursos que não são grupos.",
     tags = {"Cursos"}
   )
   @ApiResponses(value = {
@@ -134,10 +210,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     )
   })
   public ResponseEntity<ReturnObjDTO> create(
-    @Parameter(
-      description = "DTO contendo as informações do curso a ser criado",
-      required = true
-    )
+    @Parameter(description = "Dados do curso a ser criado", required = true)
     @RequestBody CourseDTO dto) {
     ReturnObjDTO dtoReturn = new ReturnObjDTO();
     try {

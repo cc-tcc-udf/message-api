@@ -1,6 +1,5 @@
 package org.campus.connect.message.course;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,5 +30,9 @@ public class SubCourseDTO extends AbstractEntityDTO {
     this.resp = obj.getResp();
     this.courseGroupId = obj.getCourseGroupId();
     this.isGroup = obj.getIsGroup();
+  }
+  public SubCourseDTO(final Long id, final String name, final String abbreviation) {
+    this.setId(id);
+    this.setName(name + "(" + abbreviation + ")");
   }
 }

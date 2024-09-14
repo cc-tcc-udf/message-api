@@ -47,9 +47,18 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
   public List<CourseDTO> findGroups() {
     List<Course> all = this.repository.findAllByIsGroupIsTrue();
     return all.stream()
-      .map(course -> new CourseDTO(course.getId(), course.getName(), course.getAbbreviation()))
+      .map(course -> {
+        CourseDTO courseDTO = new CourseDTO(course.getId(), course.getName(), course.getAbbreviation());
+        List<SubCourseDTO> subs = repository.findSubsByIdGroup(course.getId()).stream()
+          .map(sub -> new SubCourseDTO(sub.getId(), sub.getName(), sub.getAbbreviation()))
+          .toList();
+        courseDTO.setCourses(subs);
+
+        return courseDTO;
+      })
       .toList();
   }
+
 
   @Override
   public CourseDTO create(CourseDTO dto) throws Exception {
