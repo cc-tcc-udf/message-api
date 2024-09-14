@@ -33,7 +33,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
   @Operation(
     summary = "Retorna um curso existente pelo ID",
     description = "Este endpoint retorna os detalhes de um curso específico com base no seu identificador único (ID). Se o curso existir, os detalhes completos serão retornados, incluindo informações sobre o curso e seus subcursos, se aplicável.",
-    tags = {"Cursos"}
+    tags = {"Course"}
   )
   @ApiResponses(value = {
     @ApiResponse(
@@ -76,7 +76,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
   @Operation(
     summary = "Listar grupos de cursos",
     description = "Este endpoint retorna uma lista de grupos de cursos disponíveis.",
-    tags = {"Cursos"}
+    tags = {"Course"}
   )
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Lista de grupos recuperada com sucesso",
@@ -124,7 +124,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     summary = "Listar cursos",
     description = "Lista todos os cursos com base no parâmetro 'isGroup'. Se 'isGroup' for verdadeiro," +
       " lista apenas os cursos que são grupos. Se for falso, lista cursos que não são grupos.",
-    tags = {"Cursos"}
+    tags = {"Course"}
   )
   @ApiResponses(value = {
     @ApiResponse(
@@ -176,7 +176,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
       " ele não deve ter um grupo pai (`courseGroupId` deve ser `null`). Caso contrário, se o curso não for um grupo (`isGroup` é `false`)," +
       " ele deve ser associado a um grupo pai existente por meio do `courseGroupId`, porém um curso não obrigatoriamente precisa esta em grupo. Este endpoint retorna as informações do curso criado," +
       " incluindo um identificador único gerado para o curso.",
-    tags = {"Cursos"}
+    tags = {"Course"}
   )
 
   @ApiResponses(value = {
@@ -234,7 +234,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
       " Caso contrário, se o curso não for um grupo (`isGroup` é `false`), ele deve estar associado a um grupo pai existente por meio do `courseGroupId`, " +
       "porém um curso não obrigatoriamente precisa esta em grupo. " +
       "O endpoint retorna as informações do curso atualizado.",
-    tags = {"Cursos"}
+    tags = {"Course"}
   )
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Curso atualizado com sucesso",

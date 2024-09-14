@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> implements CourseService {
@@ -46,19 +47,26 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
   @Override
   public List<CourseDTO> findGroups() {
     List<Course> all = this.repository.findAllByIsGroupIsTrue();
-    return all.stream()
+    List<CourseDTO> dto = all.stream()
       .map(course -> {
         CourseDTO courseDTO = new CourseDTO(course.getId(), course.getName(), course.getAbbreviation());
         List<SubCourseDTO> subs = repository.findSubsByIdGroup(course.getId()).stream()
           .map(sub -> new SubCourseDTO(sub.getId(), sub.getName(), sub.getAbbreviation()))
-          .toList();
+          .collect(Collectors.toList());
         courseDTO.setCourses(subs);
 
         return courseDTO;
       })
-      .toList();
+      .collect(Collectors.toList());
+    List<CourseDTO> subs = this.repository.findCoursesNoGrouped();
+    CourseDTO courseDTO = new CourseDTO();
+    courseDTO.setName("Outros");
+    List<SubCourseDTO> noGroupedCourses = subs.stream()
+      .map(c -> new SubCourseDTO(c.getId(), c.getName(), c.getAbbreviation())).toList();
+    courseDTO.setCourses(noGroupedCourses);
+    dto.add(courseDTO);
+    return dto;
   }
-
 
   @Override
   public CourseDTO create(CourseDTO dto) throws Exception {
