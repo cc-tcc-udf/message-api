@@ -92,7 +92,9 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     dto.setRoles(new ArrayList<>(user.getRoles()));
     dto.setUid(user.getUid());
     dto.setPhone(user.getPhone());
-    dto.setCourse(courseService.findById(user.getId_curso()));
+    if (user.getId_curso() != null) {
+      dto.setCourse(courseService.findById(user.getId_curso()));
+    }
     dto.setCoverPhoto(fileMapper.toDto(user.getCoverPhoto()));
     dto.setProfilePhoto(fileMapper.toDto(user.getProfilePhoto()));
     return dto;
