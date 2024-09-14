@@ -2,6 +2,7 @@ package org.campus.connect.message.auth.users;
 
 import org.campus.connect.message.auth.users.records.RegisterDTO;
 import org.campus.connect.message.constants.Enums.UserRoles;
+import org.campus.connect.message.course.CourseServiceImpl;
 import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.files.FileMapper;
 import org.campus.connect.message.files.FileService;
@@ -19,17 +20,20 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   private final PasswordEncoder passwordEncoder;
   private final FileService fileService;
   private final FileMapper fileMapper;
+  private final CourseServiceImpl courseService;
 
   public UsersServiceImpl(
-    UsersRepository repository,
-    UsersMapper mapper, PasswordEncoder passwordEncoder,
-    FileService fileService, FileMapper fileMapper) {
+    final UsersRepository repository,
+    final UsersMapper mapper, final PasswordEncoder passwordEncoder,
+    final FileService fileService, final FileMapper fileMapper,
+    final CourseServiceImpl courseService) {
     super(repository, mapper);
     this.repository = repository;
     this.mapper = mapper;
     this.passwordEncoder = passwordEncoder;
     this.fileService = fileService;
     this.fileMapper = fileMapper;
+    this.courseService = courseService;
   }
 
   @Override
@@ -88,6 +92,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     dto.setRoles(new ArrayList<>(user.getRoles()));
     dto.setUid(user.getUid());
     dto.setPhone(user.getPhone());
+    dto.setCourse(courseService.findById(user.getId_curso()));
     dto.setCoverPhoto(fileMapper.toDto(user.getCoverPhoto()));
     dto.setProfilePhoto(fileMapper.toDto(user.getProfilePhoto()));
     return dto;
@@ -99,6 +104,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     if (userOptional.isPresent()) {
       Users user = userOptional.get();
       dto.setPassword(user.getPassword());
+      dto.setRoles(new ArrayList<>(user.getRoles()));
       dto.setUpdatedBy(String.valueOf(user.getUid()));
     }
     return this.save(dto);

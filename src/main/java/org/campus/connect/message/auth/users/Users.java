@@ -27,6 +27,7 @@ public class Users extends AbstractEntity {
   private String password;
   private UUID uid;
   private String phone;
+  private Long id_curso;
 
   @ManyToOne
   private File profilePhoto;

@@ -8,9 +8,6 @@ import java.util.List;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
-  @Query("SELECT s FROM Course s WHERE s.courseGroupId = :courseGroupId")
-  List<Course> findByCourseGroupId(@Param("courseGroupId") Long courseGroupId);
-
   @Query("SELECT new org.campus.connect.message.course.SubCourseDTO(s) FROM Course s WHERE s.courseGroupId = :courseGroupId")
   List<SubCourseDTO> findSubsByIdGroup(@Param("courseGroupId") Long courseGroupId);
 
@@ -21,5 +18,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
   List<CourseDTO> findCoursesNoGrouped();
 
   List<Course> findAllByIsGroupIsTrue();
+
+  @Query("SELECT new org.campus.connect.message.course.CourseDTO(c) FROM Course c WHERE c.id = :id")
+  CourseDTO findCourseByid(@Param("id") Long id);
 
 }

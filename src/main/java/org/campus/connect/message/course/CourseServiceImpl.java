@@ -35,6 +35,14 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
     }
   }
 
+  public CourseDTO findById(final Long idCurso) {
+    CourseDTO course = this.repository.findCourseByid(idCurso);
+    if (course.getIsGroup()) {
+      course.setCourses(this.repository.findSubsByIdGroup(idCurso));
+    }
+    return course;
+  }
+
   @Override
   public List<CourseDTO> findGroups() {
     List<Course> all = this.repository.findAllByIsGroupIsTrue();
@@ -75,4 +83,5 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
     List<Course> courses = this.repository.findAll();
     return this.mapper.toDto(courses);
   }
+
 }
