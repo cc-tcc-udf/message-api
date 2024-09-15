@@ -10,12 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
-@RequestMapping("/static")
-public class SwaggerCss {
+@RequestMapping("")
+public class infraEndpoints {
   @Hidden
-  @GetMapping("/dark-swagger-ui.css")
+  @GetMapping("/static/dark-swagger-ui.css")
   public ResponseEntity<Resource> getCss() {
     Resource cssResource = new ClassPathResource("static/dark-swagger-ui.css");
     try {
@@ -30,5 +31,10 @@ public class SwaggerCss {
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+  }
+
+  @GetMapping("")
+  public RedirectView redirectToSwagger() {
+    return new RedirectView("/swagger-ui/index.html");
   }
 }

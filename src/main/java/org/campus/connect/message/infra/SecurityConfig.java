@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,14 +38,17 @@ public class SecurityConfig {
       .authorizeHttpRequests(authorize -> authorize
         .requestMatchers(
           "/api/public/**",
-          "/swagger-ui/**",
-          "/swagger-resources/*",
-          "/v3/api-docs/**",
-          "/api-docs/**",
           "/static/**"
         ).permitAll()
+        .requestMatchers(
+          "/swagger-ui/**",
+          "/swagger-resources/**",
+          "/v3/api-docs/**",
+          "/api-docs/**"
+        ).authenticated()
         .anyRequest().authenticated()
       )
+      .httpBasic(Customizer.withDefaults())
       .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
       .build();
   }

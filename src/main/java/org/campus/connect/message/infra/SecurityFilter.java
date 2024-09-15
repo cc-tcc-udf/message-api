@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import org.campus.connect.message.auth.TokenService;
 import org.campus.connect.message.auth.users.Users;
 import org.campus.connect.message.auth.users.UsersRepository;
@@ -31,9 +32,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-    HttpServletRequest request,
-    HttpServletResponse response,
-    FilterChain filterChain
+    final @NonNull HttpServletRequest request,
+    final @NonNull HttpServletResponse response,
+    final @NonNull FilterChain filterChain
   ) throws ServletException, IOException {
     var token = this.recoverToken(request);
     var login = tokenService.validateToken(token);
@@ -48,11 +49,12 @@ public class SecurityFilter extends OncePerRequestFilter {
       var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
       SecurityContextHolder.getContext().setAuthentication(authentication);
     }
-    filterChain.doFilter(request, response);
+
+    filterChain.doFilter(request, response); // Verifique se este método não causa recursão
   }
 
 
-  private String recoverToken(HttpServletRequest request) {
+  private String recoverToken(final HttpServletRequest request) {
     var authHeader = request.getHeader("Authorization");
     if (authHeader == null) return null;
     return authHeader.replace("Bearer ", "");
