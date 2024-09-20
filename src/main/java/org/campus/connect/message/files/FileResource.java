@@ -43,10 +43,10 @@ public class FileResource extends GenericResource<FileDTO, FileResource> {
   @GetMapping(value = "/public/file/get/{id}")
   public ResponseEntity<Resource> download(@PathVariable Long id, HttpServletRequest request) throws Exception {
     Resource resource = this.service.getFile(id);
-    String contenType = request.getServletContext()
+    String contentType = request.getServletContext()
       .getMimeType(resource.getFile().getAbsolutePath());
     return ResponseEntity.ok()
-      .contentType(MediaType.parseMediaType(contenType))
+      .contentType(MediaType.parseMediaType(contentType))
       .header(HttpHeaders.CONTENT_DISPOSITION,
         "attachment; filename=\"" + resource.getFilename() + "\"")
       .body(resource);

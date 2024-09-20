@@ -3,7 +3,6 @@ package org.campus.connect.message.auth.users;
 import org.campus.connect.message.auth.users.records.RegisterDTO;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.course.CourseServiceImpl;
-import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.files.FileMapper;
 import org.campus.connect.message.files.FileService;
 import org.campus.connect.message.utils.GenericServiceImpl;
@@ -57,16 +56,6 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     user.setRoles(Collections.singleton(UserRoles.USER));
     user.setPhone(dto.getPhone());
     user.setPassword(passwordEncoder.encode(dto.getPassword()));
-    user.setCoverPhoto(
-      this.fileMapper.toEntity(
-        this.fileService.save(new FileDTO())
-      )
-    );
-    user.setProfilePhoto(
-      this.fileMapper.toEntity(
-        this.fileService.save(new FileDTO())
-      )
-    );
     this.save(mapper.toDto(user));
     return user;
   }
@@ -95,8 +84,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     if (user.getId_curso() != null) {
       dto.setCourse(courseService.findById(user.getId_curso()));
     }
-    dto.setCoverPhoto(fileMapper.toDto(user.getCoverPhoto()));
-    dto.setProfilePhoto(fileMapper.toDto(user.getProfilePhoto()));
+    dto.setProfilePhoto(fileService.findByIdExt(user.getId()));
     return dto;
   }
 
@@ -110,6 +98,19 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
       dto.setUpdatedBy(String.valueOf(user.getUid()));
     }
     return this.save(dto);
+  }
+
+  @Override
+  public List<UsersDTO> findResp() {
+    List<Users> users = this.repository.findByRolesContains(UserRoles.PROF);
+    return users.stream()
+      .map(usr -> {
+        UsersDTO userDTO = new UsersDTO();
+        userDTO.setId(usr.getId());
+        userDTO.setProfilePhoto(fileService.findByIdExt(usr.getId()));
+        userDTO.setName(usr.getName());
+        return userDTO;
+      }).toList();
   }
 
 }

@@ -70,8 +70,13 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
   }
 
   @Override
-  public List<FileDTO> findByIdExt(final Long id) {
+  public List<FileDTO> findAllByIdExt(final Long id) {
     return this.mapper.toDto(this.repository.findAllById_ext(id));
+  }
+
+  @Override
+  public FileDTO findByIdExt(final Long id) {
+    return this.mapper.toDto(this.repository.findById_ext(id));
   }
 
   @Override

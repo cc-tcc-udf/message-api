@@ -28,13 +28,10 @@ public class Users extends AbstractEntity {
   private UUID uid;
   private String phone;
   private Long id_curso;
-
   @ManyToOne
   private File profilePhoto;
-
   @ManyToOne
   private File coverPhoto;
-
   @ElementCollection(fetch = FetchType.EAGER)
   @Enumerated(EnumType.STRING)
   @CollectionTable(schema = SchemaConstants.MESSAGES, name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"))

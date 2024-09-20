@@ -30,7 +30,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     List<MessageDTO> list = this.mapper.toDto(this.repository.findAll());
     list.forEach(m -> {
       m.setLinks(this.linksService.findByIdMsg(m.getId()));
-      m.setAttachments(this.fileService.findByIdExt(m.getId()));
+      m.setAttachments(this.fileService.findAllByIdExt(m.getId()));
     });
     return list;
   }

@@ -17,9 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("api")
@@ -62,12 +60,30 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     return obj;
   }
 
-  @PostMapping("/private/auth/create")
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @GetMapping(value = "/public/auth/adm/listResp")
+//  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+  @Operation(summary = "Listar usuarios", description = "Lista todos os usuarios para o administrador")
+  public ReturnObjDTO listResp() {
+    ReturnObjDTO obj = new ReturnObjDTO();
+    try {
+      List<UsersDTO> users = service.findResp();
+      obj.setData(users);
+      obj.setSuccess(Boolean.TRUE);
+      obj.setMessage(GenericMessages.ResponseSuccess);
+    } catch (Exception e) {
+      obj.setSuccess(Boolean.FALSE);
+      obj.setMessage(GenericMessages.ResponseError);
+    }
+    return obj;
+  }
+
+  @PostMapping("/public/auth/create")
+  // @PreAuthorize("hasRole('ROLE_ADMIN')")
   @Operation(summary = "Criar usuarios adm", description = "Para o administrador cadastrar usuarios")
   public ResponseEntity<UsersDTO> create(@RequestBody UsersDTO user) throws Exception {
+    user.setUid(UUID.randomUUID());
     super.createObject(user);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok().body(user);
   }
 
   @PutMapping("/private/auth/update")
