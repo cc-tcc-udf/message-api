@@ -1,7 +1,6 @@
 package org.campus.connect.message.infra;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,9 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
-  @Autowired
-  SecurityFilter securityFilter;
+  private final SecurityFilter securityFilter;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

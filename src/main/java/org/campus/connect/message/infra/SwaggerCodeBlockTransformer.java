@@ -21,7 +21,11 @@ import java.util.stream.Collectors;
 public class SwaggerCodeBlockTransformer extends SwaggerIndexPageTransformer {
 
 
-  public SwaggerCodeBlockTransformer(final SwaggerUiConfigProperties swaggerUiConfig, final SwaggerUiOAuthProperties swaggerUiOAuthProperties, final SwaggerUiConfigParameters swaggerUiConfigParameters, final SwaggerWelcomeCommon swaggerWelcomeCommon, final ObjectMapperProvider objectMapperProvider) {
+  public SwaggerCodeBlockTransformer(final SwaggerUiConfigProperties swaggerUiConfig,
+                                     final SwaggerUiOAuthProperties swaggerUiOAuthProperties,
+                                     final SwaggerUiConfigParameters swaggerUiConfigParameters,
+                                     final SwaggerWelcomeCommon swaggerWelcomeCommon,
+                                     final ObjectMapperProvider objectMapperProvider) {
     super(swaggerUiConfig, swaggerUiOAuthProperties, swaggerUiConfigParameters, swaggerWelcomeCommon, objectMapperProvider);
   }
 
@@ -34,7 +38,9 @@ public class SwaggerCodeBlockTransformer extends SwaggerIndexPageTransformer {
            BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
 
         String html = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-        String transformedHtml = html.replace("</head>", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/dark-swagger-ui.css\" /></head>");
+        String transformedHtml = html
+          .replace("</head>", "<link rel=\"stylesheet\" type=\"text/css\"" +
+            " href=\"/static/dark-swagger-ui.css\" /></head>");
         return new TransformedResource(resource, transformedHtml.getBytes());
       }
     }

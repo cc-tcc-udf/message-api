@@ -9,7 +9,6 @@ import lombok.NonNull;
 import org.campus.connect.message.auth.TokenService;
 import org.campus.connect.message.auth.users.Users;
 import org.campus.connect.message.auth.users.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,11 +23,14 @@ import java.util.stream.Collectors;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-  @Autowired
-  private TokenService tokenService;
 
-  @Autowired
-  private UsersRepository usersRepository;
+  private final TokenService tokenService;
+  private final UsersRepository usersRepository;
+
+  public SecurityFilter(final TokenService tokenService, final UsersRepository usersRepository) {
+    this.tokenService = tokenService;
+    this.usersRepository = usersRepository;
+  }
 
   @Override
   protected void doFilterInternal(
@@ -37,7 +39,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     final @NonNull FilterChain filterChain
   ) throws ServletException, IOException {
     var token = this.recoverToken(request);
-    var login = tokenService.validateToken(token);
+    var login = this.tokenService.validateToken(token);
 
     if (login != null) {
       Users user = usersRepository.findByEmail(login)
