@@ -1,9 +1,10 @@
-package org.campus.connect.message.course;
+package org.campus.connect.message.course.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.campus.connect.message.course.Course;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 
 @Data

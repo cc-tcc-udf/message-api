@@ -26,7 +26,15 @@ public class UsersDTO extends AbstractEntityDTO {
   private FileDTO profilePhoto;
   private FileDTO coverPhoto;
   private List<UserRoles> roles;
-
-
   private CourseDTO course;
+
+  public UsersDTO(Users usr) {
+    setId(usr.getId());
+    this.uid = usr.getUid();
+    this.name = usr.getName();
+    this.email = usr.getEmail();
+    this.phone = usr.getPhone();
+    this.id_curso = usr.getId_curso();
+    this.roles = usr.getRoles().stream().toList();
+  }
 }

@@ -84,7 +84,12 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     if (user.getId_curso() != null) {
       dto.setCourse(courseService.findById(user.getId_curso()));
     }
-    dto.setProfilePhoto(fileService.findByIdExt(user.getId()));
+    dto.setProfilePhoto(
+      user.getProfilePhoto() != null ?
+        fileMapper.toDto(user.getProfilePhoto()) :
+        fileService.findByIdExt(user.getId())
+    );
+
     return dto;
   }
 

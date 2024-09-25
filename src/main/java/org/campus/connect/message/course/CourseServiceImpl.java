@@ -1,8 +1,15 @@
 package org.campus.connect.message.course;
 
+import org.campus.connect.message.auth.users.UsersDTO;
+import org.campus.connect.message.auth.users.UsersRepository;
+import org.campus.connect.message.course.dto.CourseCompleteDTO;
+import org.campus.connect.message.course.dto.SubCourseDTO;
+import org.campus.connect.message.files.FileMapper;
+import org.campus.connect.message.files.FileService;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,33 +18,74 @@ import java.util.stream.Collectors;
 public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> implements CourseService {
   final CourseRepository repository;
   final CourseMapper mapper;
+  final UsersRepository usersRepository;
+  final FileService fileService;
+  final FileMapper fileMapper;
 
-  public CourseServiceImpl(final CourseRepository repository, final CourseMapper mapper, final CourseRepository repository1, final CourseMapper mapper1) {
+  public CourseServiceImpl(final CourseRepository repository,
+                           final CourseMapper mapper,
+                           final UsersRepository usersRepository,
+                           final FileService fileService, final FileMapper fileMapper
+  ) {
     super(repository, mapper);
-    this.repository = repository1;
-    this.mapper = mapper1;
+    this.repository = repository;
+    this.mapper = mapper;
+    this.usersRepository = usersRepository;
+    this.fileService = fileService;
+    this.fileMapper = fileMapper;
   }
 
   @Override
-  public List<CourseDTO> findAll(Boolean isGroup) {
-    if (isGroup) {
-      List<CourseDTO> list = repository.findCourses(true);
-      list.forEach(c -> {
-        List<SubCourseDTO> subs = repository.findSubsByIdGroup(c.getId());
-        subs.forEach(sub -> {
-          sub.setSiglaGroup(c.getAbbreviation());
-        });
-        c.setCourses(subs);
-      });
-      list.addAll(this.repository.findCoursesNoGrouped());
-      return list;
-    } else {
-      return this.repository.findCourses(false);
+  public List<CourseCompleteDTO> findAll(Boolean isGroup) {
+    List<CourseDTO> courseDTOs = isGroup ? getList() : repository.findCourses(false);
+
+    return courseDTOs.stream()
+      .map(c -> {
+        CourseCompleteDTO dto = new CourseCompleteDTO(c);
+        if (c.getResp() != null) {
+          this.setResp(dto, c);
+        }
+        return dto;
+      })
+      .sorted(Comparator.comparing(CourseCompleteDTO::getId))
+      .toList();
+  }
+
+  private void setResp(final CourseCompleteDTO dto, final CourseDTO c) {
+    UsersDTO usr = this.usersRepository.getRespById(c.getResp());
+    if (usr != null) {
+      usr.setProfilePhoto(fileService.findByIdExt(usr.getId()));
     }
+    dto.setResp(usr);
+  }
+
+  private List<CourseDTO> getList() {
+    List<CourseDTO> courseDTOs = repository.findCourses(true);
+
+    courseDTOs.forEach(courseDTO -> {
+      List<SubCourseDTO> subCourseDTOs = repository.findSubsByIdGroup(courseDTO.getId());
+      subCourseDTOs.forEach(subCourseDTO -> {
+        subCourseDTO.setSiglaGroup(courseDTO.getAbbreviation());
+        if (subCourseDTO.getResp() == null) {
+          subCourseDTO.setResp(courseDTO.getResp());
+          CourseDTO saveDto = new CourseDTO(subCourseDTO);
+          try {
+            this.save(saveDto);
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        }
+      });
+      courseDTO.setCourses(subCourseDTOs);
+    });
+
+    courseDTOs.addAll(repository.findCoursesNoGrouped());
+
+    return courseDTOs;
   }
 
   public CourseDTO findById(final Long idCurso) {
-    CourseDTO course = this.repository.findCourseByid(idCurso);
+    CourseDTO course = this.repository.findCourseById(idCurso);
     if (course.getIsGroup()) {
       course.setCourses(this.repository.findSubsByIdGroup(idCurso));
     }
@@ -49,7 +97,8 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
     List<Course> all = this.repository.findAllByIsGroupIsTrue();
     List<CourseDTO> dto = all.stream()
       .map(course -> {
-        CourseDTO courseDTO = new CourseDTO(course.getId(), course.getName(), course.getAbbreviation());
+        CourseDTO courseDTO = new CourseDTO(course.getId(), course.getName(),
+          course.getAbbreviation(), course.getResp());
         List<SubCourseDTO> subs = repository.findSubsByIdGroup(course.getId()).stream()
           .map(sub -> new SubCourseDTO(sub.getId(), sub.getName(), sub.getAbbreviation()))
           .collect(Collectors.toList());
@@ -93,6 +142,16 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
   @Override
   public CourseDTO update(final CourseDTO dto) {
     return null;
+  }
+
+  @Override
+  public CourseCompleteDTO findCourseById(Long id) {
+    CourseDTO course = findById(id);
+    CourseCompleteDTO completeDTO = new CourseCompleteDTO(course);
+    if (course.getResp() != null) {
+      this.setResp(completeDTO, course);
+    }
+    return completeDTO;
   }
 
   @Override

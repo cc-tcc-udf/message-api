@@ -2,11 +2,12 @@ package org.campus.connect.message.auth.users;
 
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+
 public interface UsersRepository extends JpaRepository<Users, Long> {
 
   List<Users> findAllByExcluded(Boolean excluded);
@@ -15,4 +16,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
   List<Users> findByRolesContains(UserRoles roles);
 
+  @Query("SELECT new org.campus.connect.message.auth.users.UsersDTO(u) FROM Users u WHERE u.id = :id")
+  UsersDTO getRespById(@Param("id") Long id);
 }

@@ -8,13 +8,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.campus.connect.message.course.dto.CourseCompleteDTO;
+import org.campus.connect.message.course.dto.SubCourseDTO;
 import org.campus.connect.message.responseReturn.ReturnObjDTO;
 import org.campus.connect.message.utils.GenericResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api")
@@ -57,18 +58,22 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
       )
     )
   })
-  public ResponseEntity<SubCourseDTO> getCourse(
+  public ResponseEntity<ReturnObjDTO> getCourse(
     @Parameter(description = "ID do curso a ser retornado", required = true)
     @PathVariable final Long id
   ) {
-    SubCourseDTO dto = new SubCourseDTO();
-
-    Optional<CourseDTO> optionalCourse = service.findOneById(id);
-    if (optionalCourse.isPresent()) {
-      dto = new SubCourseDTO(mapper.toEntity(optionalCourse.get()));
+    ReturnObjDTO returnObjDTO = new ReturnObjDTO();
+    try {
+      CourseCompleteDTO course = service.findCourseById(id);
+      returnObjDTO.setData(course);
+      returnObjDTO.setSuccess(true);
+      returnObjDTO.setMessage("Requisição realizada com sucesso!");
+    } catch (Exception e) {
+      returnObjDTO.setSuccess(false);
+      returnObjDTO.setMessage("Erro ao realizar requisição: " + e.getMessage());
     }
 
-    return ResponseEntity.ok(dto);
+    return ResponseEntity.ok(returnObjDTO);
   }
 
 
@@ -157,7 +162,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
   ) @RequestParam(value = "isGroup") Boolean isGroup) {
     ReturnObjDTO dto = new ReturnObjDTO();
     try {
-      List<CourseDTO> list = this.service.findAll(isGroup);
+      List<CourseCompleteDTO> list = this.service.findAll(isGroup);
       dto.setMessage("Requisição realizada com sucesso");
       dto.setSuccess(true);
       dto.setData(list);
