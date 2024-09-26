@@ -56,6 +56,9 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     user.setRoles(Collections.singleton(UserRoles.USER));
     user.setPhone(dto.getPhone());
     user.setPassword(passwordEncoder.encode(dto.getPassword()));
+    if (dto.getTokens() != null) {
+      user.setTokens(new HashSet<>(dto.getTokens()));
+    }
     this.save(mapper.toDto(user));
     return user;
   }

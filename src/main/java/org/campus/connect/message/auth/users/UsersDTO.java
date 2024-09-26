@@ -26,6 +26,7 @@ public class UsersDTO extends AbstractEntityDTO {
   private FileDTO profilePhoto;
   private FileDTO coverPhoto;
   private List<UserRoles> roles;
+  private List<String> tokens;
   private CourseDTO course;
 
   public UsersDTO(Users usr) {

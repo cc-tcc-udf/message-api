@@ -37,7 +37,8 @@ public class FileDriveService {
     @Value("${folder.img}") final String folderIMG,
     @Value("${folder.files}") final String folderFiles,
     @Value("${drive.url}") final String urlDrive,
-    @Value("classpath:secrets/g-drive.json") final Resource serviceAccountKeyResource, final FileMapper fileMapper) {
+    @Value("classpath:secrets/g-drive.json") final Resource serviceAccountKeyResource,
+    final FileMapper fileMapper) {
     this.folderIMG = folderIMG;
     this.folderFiles = folderFiles;
     this.urlDrive = urlDrive;
