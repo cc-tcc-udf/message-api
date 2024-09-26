@@ -61,7 +61,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   }
 
   @GetMapping(value = "/public/auth/adm/listResp")
-//  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   @Operation(summary = "Listar usuarios", description = "Lista todos os usuarios para o administrador")
   public ReturnObjDTO listResp() {
     ReturnObjDTO obj = new ReturnObjDTO();
@@ -78,7 +78,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   }
 
   @PostMapping("/public/auth/create")
-  // @PreAuthorize("hasRole('ROLE_ADMIN')")
+   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @Operation(summary = "Criar usuarios adm", description = "Para o administrador cadastrar usuarios")
   public ResponseEntity<UsersDTO> create(@RequestBody UsersDTO user) throws Exception {
     user.setUid(UUID.randomUUID());
