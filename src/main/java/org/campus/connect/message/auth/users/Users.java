@@ -37,8 +37,8 @@ public class Users extends AbstractEntity {
   @CollectionTable(schema = SchemaConstants.MESSAGES, name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"))
   private Set<UserRoles> roles = new HashSet<>();
 
-  @ElementCollection
-  @CollectionTable(name = "user_tokens", joinColumns = @JoinColumn(name = "user_id"))
-  private Set<String> tokens = new HashSet<>();
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(schema = SchemaConstants.MESSAGES, name = "user_tokens", joinColumns = @JoinColumn(name = "user_id"))
+  private Set<String> token = new HashSet<>();
 
 }

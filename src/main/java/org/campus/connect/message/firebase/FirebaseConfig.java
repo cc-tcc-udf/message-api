@@ -22,6 +22,10 @@ public class FirebaseConfig {
 
   @Bean
   public FirebaseApp firebaseApp() throws IOException {
+    if (FirebaseApp.getApps().stream().anyMatch(app -> app.getName().equals(FirebaseApp.DEFAULT_APP_NAME))) {
+      return FirebaseApp.getInstance();
+    }
+
     try (InputStream in = serviceAccountKeyResource.getInputStream()) {
       GoogleCredentials credentials = GoogleCredentials.fromStream(in);
       FirebaseOptions options = FirebaseOptions.builder()

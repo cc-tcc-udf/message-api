@@ -52,7 +52,7 @@ public class SecurityFilter extends OncePerRequestFilter {
       SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    filterChain.doFilter(request, response); // Verifique se este método não causa recursão
+    filterChain.doFilter(request, response);
   }
 
 

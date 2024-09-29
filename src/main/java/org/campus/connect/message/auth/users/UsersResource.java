@@ -17,7 +17,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api")
@@ -60,6 +63,20 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     return obj;
   }
 
+  @GetMapping("/public/refreshToken")
+  @Operation(summary = "Buscar dados usuario", description = "Atualizar o token")
+  public ResponseEntity<String> refreshToken(@RequestParam String email) {
+    Optional<Users> usr = this.repository.findByEmail(email);
+    UsersDTO user = new UsersDTO();
+    if (usr.isPresent()) {
+      user = service.getUser(usr.get());
+    }
+    String newToken = tokenService.generateToken(mapper.toEntity(user));
+
+    return ResponseEntity.ok(newToken);
+  }
+
+
   @GetMapping(value = "/public/auth/adm/listResp")
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   @Operation(summary = "Listar usuarios", description = "Lista todos os usuarios para o administrador")
@@ -77,8 +94,8 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     return obj;
   }
 
-  @PostMapping("/public/auth/create")
-   @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PostMapping("/private/auth/create")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @Operation(summary = "Criar usuarios adm", description = "Para o administrador cadastrar usuarios")
   public ResponseEntity<UsersDTO> create(@RequestBody UsersDTO user) throws Exception {
     user.setUid(UUID.randomUUID());

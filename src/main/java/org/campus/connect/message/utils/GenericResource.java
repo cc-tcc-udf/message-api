@@ -19,9 +19,9 @@ public class GenericResource<D extends AbstractEntityDTO, R> {
     this.url = url;
   }
 
-  public ResponseEntity<?> createObject(D dto) throws Exception {
+  public void createObject(D dto) throws Exception {
     D result = this.service.save(dto);
-    return ResponseEntity.created(new URI(url + dto.getId()))
+    ResponseEntity.created(new URI(url + dto.getId()))
       .body(result);
   }
 

@@ -43,7 +43,10 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   @Override
   public List<UsersDTO> findAll() {
     List<Users> listUsers = this.repository.findAllByExcluded(Boolean.FALSE);
-    listUsers.forEach(user -> user.setPassword(null));
+    listUsers.forEach(user -> {
+      user.setPassword(null);
+      user.setProfilePhoto(fileMapper.toEntity(fileService.findByIdExt(user.getId())));
+    });
     return this.mapper.toDto(listUsers);
   }
 
@@ -57,7 +60,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     user.setPhone(dto.getPhone());
     user.setPassword(passwordEncoder.encode(dto.getPassword()));
     if (dto.getTokens() != null) {
-      user.setTokens(new HashSet<>(dto.getTokens()));
+      user.setToken(new HashSet<>(dto.getTokens()));
     }
     this.save(mapper.toDto(user));
     return user;
