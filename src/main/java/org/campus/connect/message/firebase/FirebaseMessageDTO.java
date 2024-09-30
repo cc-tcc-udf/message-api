@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class FirebaseMessageDTO {
   private String userToken;
+  private String userToken2;
   private String title;
   private String body;
 }

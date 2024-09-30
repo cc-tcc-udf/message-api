@@ -3,10 +3,7 @@ package org.campus.connect.message.auth.users;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.campus.connect.message.auth.TokenService;
-import org.campus.connect.message.auth.users.records.LoginDTO;
-import org.campus.connect.message.auth.users.records.RegisterDTO;
-import org.campus.connect.message.auth.users.records.ResponseDTO;
-import org.campus.connect.message.auth.users.records.RolesDTO;
+import org.campus.connect.message.auth.users.records.*;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.constants.GenericMessages;
 import org.campus.connect.message.responseReturn.ReturnObjDTO;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("api")
@@ -65,15 +61,15 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
 
   @GetMapping("/public/refreshToken")
   @Operation(summary = "Buscar dados usuario", description = "Atualizar o token")
-  public ResponseEntity<String> refreshToken(@RequestParam String email) {
+  public ResponseEntity<TokenRefreshDTO> refreshToken(@RequestParam String email) {
     Optional<Users> usr = this.repository.findByEmail(email);
     UsersDTO user = new UsersDTO();
     if (usr.isPresent()) {
       user = service.getUser(usr.get());
     }
     String newToken = tokenService.generateToken(mapper.toEntity(user));
-
-    return ResponseEntity.ok(newToken);
+    TokenRefreshDTO dto = new TokenRefreshDTO(email, newToken);
+    return ResponseEntity.ok(dto);
   }
 
 
@@ -98,9 +94,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @Operation(summary = "Criar usuarios adm", description = "Para o administrador cadastrar usuarios")
   public ResponseEntity<UsersDTO> create(@RequestBody UsersDTO user) throws Exception {
-    user.setUid(UUID.randomUUID());
-    super.createObject(user);
-    return ResponseEntity.ok().body(user);
+    return ResponseEntity.ok().body(service.createUser(user));
   }
 
   @PutMapping("/private/auth/update")

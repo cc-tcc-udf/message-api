@@ -16,6 +16,8 @@ public interface UsersService extends GenericService<UsersDTO> {
 
   UsersDTO adminCreate() throws Exception;
 
+  UsersDTO createUser(UsersDTO usr) throws Exception;
+
   UsersDTO getUser(Users users);
 
   UsersDTO update(UsersDTO user) throws Exception;

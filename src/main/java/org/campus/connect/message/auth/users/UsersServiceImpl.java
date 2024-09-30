@@ -79,6 +79,13 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   }
 
   @Override
+  public UsersDTO createUser(UsersDTO usr) throws Exception {
+    usr.setUid(UUID.randomUUID());
+    usr.setPassword(passwordEncoder.encode(usr.getPassword()));
+    return this.save(usr);
+  }
+
+  @Override
   public UsersDTO getUser(Users user) {
     UsersDTO dto = new UsersDTO();
     dto.setEmail(user.getEmail());
