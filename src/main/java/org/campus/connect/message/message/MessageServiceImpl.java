@@ -1,5 +1,6 @@
 package org.campus.connect.message.message;
 
+import org.campus.connect.message.constants.Enums.Status;
 import org.campus.connect.message.files.FileService;
 import org.campus.connect.message.links.LinksService;
 import org.campus.connect.message.utils.GenericServiceImpl;
@@ -37,23 +38,28 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
 
   @Override
   public MessageDTO create(final MessageDTO message) throws Exception {
-    MessageDTO msg = this.save(message);
-    message.getLinks().forEach(link -> {
-      link.setId_msg(msg.getId());
-      try {
-        this.linksService.create(link);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    });
-    message.getAttachments().forEach(attachment -> {
-      attachment.setId_ext(msg.getId());
-      try {
-        this.fileService.save(attachment);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    });
+    this.save(message);
+    message.setStatus(Status.NAO_ENVIADO);
+    if (message.getLinks() != null) {
+      message.getLinks().forEach(link -> {
+        link.setId_msg(message.getId());
+        try {
+          this.linksService.create(link);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      });
+    }
+    if (message.getAttachments() != null) {
+      message.getAttachments().forEach(attachment -> {
+        attachment.setId_ext(message.getId());
+        try {
+          this.fileService.save(attachment);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      });
+    }
     return message;
   }
 }

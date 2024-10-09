@@ -24,7 +24,7 @@ public class MessageDTO extends AbstractEntityDTO {
   private LocalDateTime sendDate;
   private Status status;
   private String message;
-  private UUID response;
+  private UUID responsible;
   private List<FileDTO> attachments;
   private List<LinksDTO> links;
 }

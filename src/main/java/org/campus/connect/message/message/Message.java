@@ -27,6 +27,25 @@ public class Message extends AbstractEntity {
   private LocalDateTime sendDate;
   private Status status;
   private String message;
-  private UUID response;
+  @Column(name = "responsible_id")
+  private UUID responsible;
+
+//  @ManyToMany
+//  @JoinTable(
+//    name = "message_links",
+//    schema = SchemaConstants.MESSAGES,
+//    joinColumns = @JoinColumn(name = "message_id"),
+//    inverseJoinColumns = @JoinColumn(name = "link_id")
+//  )
+//  private List<Links> links;
+//
+//  @ManyToMany
+//  @JoinTable(
+//    name = "message_attachments",
+//    schema = SchemaConstants.MESSAGES,
+//    joinColumns = @JoinColumn(name = "message_id"),
+//    inverseJoinColumns = @JoinColumn(name = "file_id")
+//  )
+//  private List<File> attachments;
 }
 
