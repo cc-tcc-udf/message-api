@@ -111,6 +111,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     Optional<Users> userOptional = findByEmail(dto.getEmail());
     if (userOptional.isPresent()) {
       Users user = userOptional.get();
+      dto.setId(user.getId());
       dto.setPassword(user.getPassword());
       dto.setRoles(new ArrayList<>(user.getRoles()));
       dto.setUpdatedBy(String.valueOf(user.getUid()));
