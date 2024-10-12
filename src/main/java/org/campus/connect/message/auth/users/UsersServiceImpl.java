@@ -117,6 +117,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
       dto.setId_curso(dto.getId_curso() != null ? dto.getId_curso() : user.getId_curso());
       dto.setRoles(new ArrayList<>(user.getRoles()));
       dto.setUpdatedBy(dto.getUpdatedBy() != null ? dto.getUpdatedBy() : String.valueOf(user.getUid()));
+      dto.setUid(dto.getUid() != null ? dto.getUid() : user.getUid() != null ? user.getUid() : UUID.randomUUID());
       return this.save(dto);
     } else {
       throw new Exception("Usuário nao encontrado" + dto.getEmail());
