@@ -112,6 +112,8 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     if (userOptional.isPresent()) {
       Users user = userOptional.get();
       dto.setId(user.getId());
+      dto.setEmail(user.getEmail());
+      dto.setName(dto.getName() != null ? dto.getName() : user.getName());
       dto.setPassword(user.getPassword());
       dto.setPhone(dto.getPhone() != null && !dto.getPhone().isEmpty() ? dto.getPhone() : user.getPhone());
       dto.setId_curso(dto.getId_curso() != null ? dto.getId_curso() : user.getId_curso());
