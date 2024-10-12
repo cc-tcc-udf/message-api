@@ -1,9 +1,7 @@
 package org.campus.connect.message.responseReturn;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-
-import java.util.List;
+import org.campus.connect.message.constants.GenericMessages;
 
 @Data
 @ToString
@@ -14,4 +12,10 @@ public class ReturnObjDTO {
   private String message;
   private boolean success;
   private Object data;
+
+  public ReturnObjDTO(Object data, boolean success) {
+    this.data = data;
+    this.success = success;
+    this.message = success? GenericMessages.ResponseSuccess : GenericMessages.ResponseError;
+  }
 }

@@ -9,9 +9,6 @@ public enum Status {
   RECEBIDO("Recebido"),
   VISUALIZADO("Visualizado"),
   REMOVIDA("Removida");
-
-
-
   private final String description;
 
   Status(final String description) {

@@ -1,7 +1,10 @@
 package org.campus.connect.message.message;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.campus.connect.message.constants.GenericMessages;
+import org.campus.connect.message.responseReturn.ReturnObjDTO;
 import org.campus.connect.message.utils.GenericResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +24,37 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
     this.mapper = mapper;
   }
 
+  @GetMapping(value = "/public/msg/{id}")
+  @Operation(summary = "Buscar msg pelo id", description = "Lista todas as msg")
+  public ReturnObjDTO getById(@Parameter(description = "ID da message a ser retornada", required = true)
+                              @PathVariable final Long id) {
+    ReturnObjDTO obj = new ReturnObjDTO();
+    try {
+      MessageDTO dto = service.findMsgById(id);
+      obj.setData(dto);
+      obj.setSuccess(Boolean.TRUE);
+      obj.setMessage(GenericMessages.ResponseSuccess);
+    } catch (Exception e) {
+      obj.setSuccess(Boolean.FALSE);
+      obj.setMessage(GenericMessages.ResponseError);
+    }
+    return obj;
+  }
+
   @GetMapping(value = "/public/msg/list")
   @Operation(summary = "Listar msg", description = "Lista todas as msg")
-  public List<MessageDTO> list() {
-    return service.findAll();
+  public ReturnObjDTO list() {
+    ReturnObjDTO obj = new ReturnObjDTO();
+    try {
+      List<MessageDTO> dto = service.findAll();
+      obj.setData(dto);
+      obj.setSuccess(Boolean.TRUE);
+      obj.setMessage(GenericMessages.ResponseSuccess);
+    } catch (Exception e) {
+      obj.setSuccess(Boolean.FALSE);
+      obj.setMessage(GenericMessages.ResponseError);
+    }
+    return obj;
   }
 
   @PostMapping(value = "/public/msg/create")

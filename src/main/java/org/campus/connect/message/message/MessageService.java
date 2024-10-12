@@ -9,4 +9,6 @@ public interface MessageService extends GenericService<MessageDTO> {
   List<MessageDTO> findAll();
 
   MessageDTO create(MessageDTO message) throws Exception;
+
+  MessageDTO findMsgById(Long id);
 }

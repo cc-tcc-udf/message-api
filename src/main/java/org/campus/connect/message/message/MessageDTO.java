@@ -27,4 +27,17 @@ public class MessageDTO extends AbstractEntityDTO {
   private UUID responsible;
   private List<FileDTO> attachments;
   private List<LinksDTO> links;
+
+  public MessageDTO(final Message message) {
+    setId(message.getId());
+    setExcluded(message.getExcluded());
+    setCreated(message.getCreated());
+    setUpdated(message.getUpdated());
+    this.title = message.getTitle();
+    this.summary = message.getSummary();
+    this.sendDate = message.getSendDate();
+    this.status = message.getStatus();
+    this.message = message.getMessage();
+    this.responsible = message.getResponsible();
+  }
 }

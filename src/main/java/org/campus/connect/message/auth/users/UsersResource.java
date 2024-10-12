@@ -77,17 +77,11 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   @Operation(summary = "Listar usuarios", description = "Lista todos os usuarios para o administrador")
   public ReturnObjDTO listResp() {
-    ReturnObjDTO obj = new ReturnObjDTO();
     try {
-      List<UsersDTO> users = service.findResp();
-      obj.setData(users);
-      obj.setSuccess(Boolean.TRUE);
-      obj.setMessage(GenericMessages.ResponseSuccess);
+      return new ReturnObjDTO(service.findResp(), true);
     } catch (Exception e) {
-      obj.setSuccess(Boolean.FALSE);
-      obj.setMessage(GenericMessages.ResponseError);
+      return new ReturnObjDTO(e, false);
     }
-    return obj;
   }
 
   @PostMapping("/private/auth/create")
@@ -100,8 +94,12 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   @PutMapping("/private/auth/update")
   @PreAuthorize("hasRole('ROLE_USER')")
   @Operation(summary = "Atualizar perfil", description = "Para o usuario atualizar o dados do perfil")
-  public ResponseEntity<UsersDTO> update(@RequestBody UsersDTO user) throws Exception {
-    return ResponseEntity.ok(service.update(user));
+  public ReturnObjDTO update(@RequestBody UsersDTO user) throws Exception {
+    try {
+      return new ReturnObjDTO(service.update(user), true);
+    } catch (Exception e) {
+      return new ReturnObjDTO(e, false);
+    }
   }
 
   @PostMapping("/public/auth/login")

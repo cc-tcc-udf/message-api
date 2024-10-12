@@ -1,8 +1,6 @@
 package org.campus.connect.message.message;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,27 +23,10 @@ public class Message extends AbstractEntity {
   private String summary;
   @Column(name = "send_date")
   private LocalDateTime sendDate;
+  @Enumerated(EnumType.STRING)
   private Status status;
   private String message;
   @Column(name = "responsible_id")
   private UUID responsible;
-
-//  @ManyToMany
-//  @JoinTable(
-//    name = "message_links",
-//    schema = SchemaConstants.MESSAGES,
-//    joinColumns = @JoinColumn(name = "message_id"),
-//    inverseJoinColumns = @JoinColumn(name = "link_id")
-//  )
-//  private List<Links> links;
-//
-//  @ManyToMany
-//  @JoinTable(
-//    name = "message_attachments",
-//    schema = SchemaConstants.MESSAGES,
-//    joinColumns = @JoinColumn(name = "message_id"),
-//    inverseJoinColumns = @JoinColumn(name = "file_id")
-//  )
-//  private List<File> attachments;
 }
 
