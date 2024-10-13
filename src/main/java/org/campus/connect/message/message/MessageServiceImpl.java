@@ -1,7 +1,9 @@
 package org.campus.connect.message.message;
 
 import org.campus.connect.message.constants.Enums.Status;
+import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.files.FileService;
+import org.campus.connect.message.links.LinksDTO;
 import org.campus.connect.message.links.LinksService;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.springframework.stereotype.Service;
@@ -35,20 +37,13 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     if (message == null) {
       return null;
     }
-    MessageDTO msg = new MessageDTO(message);
-    msg.setLinks(this.linksService.findByIdMsg(msg.getId()));
-    msg.setAttachments(this.fileService.findAllByIdExt(msg.getId()));
-    return msg;
+    return mapper.toDto(message);
   }
 
   @Override
   public List<MessageDTO> findAll() {
-    List<MessageDTO> list = this.mapper.toDto(this.repository.findAll());
-    list.forEach(m -> {
-      m.setLinks(this.linksService.findByIdMsg(m.getId()));
-      m.setAttachments(this.fileService.findAllByIdExt(m.getId()));
-    });
-    return list;
+    List<Message> messages = repository.findMessages();
+    return this.mapper.toDto(messages);
   }
 
   @Override
@@ -57,27 +52,28 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
       msg.setSendDate(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.of("-03:00")));
     }
 
-    MessageDTO message = this.save(msg);
     if (msg.getLinks() != null && !msg.getLinks().isEmpty()) {
       msg.getLinks().forEach(link -> {
-        link.setId_msg(message.getId());
         try {
-          this.linksService.create(link);
+          LinksDTO savedLink = this.linksService.create(link);
+          link.setId(savedLink.getId());
         } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
     }
+
     if (msg.getAttachments() != null && !msg.getAttachments().isEmpty()) {
       msg.getAttachments().forEach(attachment -> {
-        attachment.setId_ext(message.getId());
         try {
-          this.fileService.save(attachment);
+          FileDTO savedAttachment = this.fileService.save(attachment);
+          attachment.setId(savedAttachment.getId());
         } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
     }
-    return message;
+
+    return this.save(msg);
   }
 }

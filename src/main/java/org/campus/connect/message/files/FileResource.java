@@ -24,10 +24,9 @@ public class FileResource extends GenericResource<FileDTO, FileResource> {
     super(service, "api/");
     this.service = service;
   }
-
-  @PostMapping(value = "/public/file/create/{id_ext}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<FileDTO> create(@PathVariable Long id_ext, @RequestParam("file") MultipartFile multipartFile) throws Exception {
-    FileDTO file = this.service.create(multipartFile, id_ext);
+  @PostMapping(value = "/public/file/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<FileDTO> create( @RequestParam("file") MultipartFile multipartFile) throws Exception {
+    FileDTO file = this.service.create(multipartFile);
     return ResponseEntity.ok().body(file);
   }
 

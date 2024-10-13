@@ -105,22 +105,18 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
 
   // Create arquivo
   @Override
-  public FileDTO create(final MultipartFile multipartFile, final Long id) throws Exception {
-    System.out.println("Profile AQUI: " + profile);
-
+  public FileDTO create(final MultipartFile multipartFile) throws Exception {
     if ("dev".equals(profile)) {
       FileDTO file = cloudinaryService.uploadToCloudinary(multipartFile);
-      file.setId_ext(id);
       file = this.save(file);
       return file;
     }
 
-    return this.createLocal(multipartFile, id);
+    return this.createLocal(multipartFile);
   }
 
-  private FileDTO createLocal(final MultipartFile multipartFile, final Long id) throws Exception {
+  private FileDTO createLocal(final MultipartFile multipartFile) throws Exception {
     File file = setArquivo(multipartFile, new File(multipartFile));
-    file.setId_ext(id);
     this.setStorage(file.getKey(), multipartFile);
     return this.save(mapper.toDto(file));
   }
