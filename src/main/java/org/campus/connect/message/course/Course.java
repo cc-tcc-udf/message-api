@@ -1,12 +1,11 @@
 package org.campus.connect.message.course;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.campus.connect.message.auth.users.Users;
 import org.campus.connect.message.constants.SchemaConstants;
 import org.campus.connect.message.utils.AbstractEntity;
 
@@ -19,10 +18,13 @@ import org.campus.connect.message.utils.AbstractEntity;
 public class Course extends AbstractEntity {
   private String name;
   private String description;
-  private String abbreviation;
-  private Long resp;
+  private String abbreviation;;
   @Column(name = "course_group_id")
   private Long courseGroupId;
   @Column(name = "is_group")
   private Boolean isGroup;
+  @ManyToOne
+
+  @JoinColumn(name = "resp", referencedColumnName = "id")
+  private Users resp;
 }

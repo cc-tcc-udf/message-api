@@ -37,5 +37,8 @@ public class UsersDTO extends AbstractEntityDTO {
     this.phone = usr.getPhone();
     this.id_curso = usr.getId_curso();
     this.roles = usr.getRoles().stream().toList();
+    if (usr.getProfilePhoto() != null) {
+      this.profilePhoto = new FileDTO(usr.getProfilePhoto());
+    }
   }
 }

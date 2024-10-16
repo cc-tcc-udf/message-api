@@ -163,14 +163,10 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     ReturnObjDTO dto = new ReturnObjDTO();
     try {
       List<CourseCompleteDTO> list = this.service.findAll(isGroup);
-      dto.setMessage("Requisição realizada com sucesso");
-      dto.setSuccess(true);
-      dto.setData(list);
+      return new ReturnObjDTO(list, true);
     } catch (Exception e) {
-      dto.setSuccess(false);
-      dto.setMessage("Erro ao realizar requisição: " + e.getMessage());
+      return new ReturnObjDTO(e, false);
     }
-    return dto;
   }
 
   @PostMapping(value = "/public/course/create")

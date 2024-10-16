@@ -3,6 +3,7 @@ package org.campus.connect.message.auth.users;
 import org.campus.connect.message.auth.users.records.RegisterDTO;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.course.CourseServiceImpl;
+import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.files.FileMapper;
 import org.campus.connect.message.files.FileService;
 import org.campus.connect.message.utils.GenericServiceImpl;
@@ -45,7 +46,6 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     List<Users> listUsers = this.repository.findAllByExcluded(Boolean.FALSE);
     listUsers.forEach(user -> {
       user.setPassword(null);
-      user.setProfilePhoto(fileMapper.toEntity(fileService.findByIdExt(user.getId())));
     });
     return this.mapper.toDto(listUsers);
   }
@@ -133,8 +133,11 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
       .map(usr -> {
         UsersDTO userDTO = new UsersDTO();
         userDTO.setId(usr.getId());
-        userDTO.setProfilePhoto(fileService.findByIdExt(usr.getId()));
         userDTO.setName(usr.getName());
+        userDTO.setId_curso(usr.getId_curso());
+        if(usr.getProfilePhoto()!=null) {
+        userDTO.setProfilePhoto(new FileDTO(usr.getProfilePhoto()));
+        }
         return userDTO;
       }).toList();
   }

@@ -1,6 +1,7 @@
 package org.campus.connect.message.course;
 
 import org.campus.connect.message.auth.users.UsersDTO;
+import org.campus.connect.message.auth.users.UsersMapper;
 import org.campus.connect.message.auth.users.UsersRepository;
 import org.campus.connect.message.course.dto.CourseCompleteDTO;
 import org.campus.connect.message.course.dto.SubCourseDTO;
@@ -18,18 +19,20 @@ import java.util.stream.Collectors;
 public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> implements CourseService {
   final CourseRepository repository;
   final CourseMapper mapper;
+  final UsersMapper usersMapper;
   final UsersRepository usersRepository;
   final FileService fileService;
   final FileMapper fileMapper;
 
   public CourseServiceImpl(final CourseRepository repository,
-                           final CourseMapper mapper,
+                           final CourseMapper mapper, final UsersMapper usersMapper,
                            final UsersRepository usersRepository,
                            final FileService fileService, final FileMapper fileMapper
   ) {
     super(repository, mapper);
     this.repository = repository;
     this.mapper = mapper;
+    this.usersMapper = usersMapper;
     this.usersRepository = usersRepository;
     this.fileService = fileService;
     this.fileMapper = fileMapper;
@@ -40,24 +43,18 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
     List<CourseDTO> courseDTOs = isGroup ? getList() : repository.findCourses(false);
 
     return courseDTOs.stream()
-      .map(c -> {
-        CourseCompleteDTO dto = new CourseCompleteDTO(c);
-        if (c.getResp() != null) {
-          this.setResp(dto, c);
-        }
-        return dto;
-      })
+      .map(CourseCompleteDTO::new)
       .sorted(Comparator.comparing(CourseCompleteDTO::getId))
       .toList();
   }
 
-  private void setResp(final CourseCompleteDTO dto, final CourseDTO c) {
-    UsersDTO usr = this.usersRepository.getRespById(c.getResp());
-    if (usr != null) {
-      usr.setProfilePhoto(fileService.findByIdExt(usr.getId()));
-    }
-    dto.setResp(usr);
-  }
+//  private void setResp(final CourseCompleteDTO dto, final CourseDTO c) {
+//    UsersDTO usr = this.usersRepository.getRespById(c.getResp());
+//    if (usr != null) {
+//      usr.setProfilePhoto(fileService.findByIdExt(usr.getId()));
+//    }
+//    dto.setResp(usr);
+//  }
 
   private List<CourseDTO> getList() {
     List<CourseDTO> courseDTOs = repository.findCourses(true);
@@ -98,7 +95,7 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
     List<CourseDTO> dto = all.stream()
       .map(course -> {
         CourseDTO courseDTO = new CourseDTO(course.getId(), course.getName(),
-          course.getAbbreviation(), course.getResp());
+          course.getAbbreviation(), new UsersDTO(course.getResp()));
         List<SubCourseDTO> subs = repository.findSubsByIdGroup(course.getId()).stream()
           .map(sub -> new SubCourseDTO(sub.getId(), sub.getName(), sub.getAbbreviation()))
           .collect(Collectors.toList());
@@ -136,7 +133,7 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
         }
       }
     }
-    return save(dto);
+    return this.save(dto);
   }
 
   @Override
@@ -147,11 +144,7 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
   @Override
   public CourseCompleteDTO findCourseById(Long id) {
     CourseDTO course = findById(id);
-    CourseCompleteDTO completeDTO = new CourseCompleteDTO(course);
-    if (course.getResp() != null) {
-      this.setResp(completeDTO, course);
-    }
-    return completeDTO;
+    return new CourseCompleteDTO(course);
   }
 
   @Override

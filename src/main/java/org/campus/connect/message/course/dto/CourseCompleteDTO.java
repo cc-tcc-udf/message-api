@@ -32,6 +32,7 @@ public class CourseCompleteDTO extends AbstractEntityDTO {
     this.description = courseDTO.getDescription();
     this.abbreviation = courseDTO.getAbbreviation();
     this.courseGroupId = courseDTO.getCourseGroupId();
+    this.resp = courseDTO.getResp();
     this.isGroup = courseDTO.getIsGroup();
     this.courses = courseDTO.getCourses();
   }

@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.campus.connect.message.constants.Enums.Status;
 import org.campus.connect.message.constants.SchemaConstants;
+import org.campus.connect.message.course.Course;
 import org.campus.connect.message.files.File;
 import org.campus.connect.message.links.Links;
 import org.campus.connect.message.utils.AbstractEntity;
@@ -31,9 +32,14 @@ public class Message extends AbstractEntity {
   private String message;
   @Column(name = "responsible_id")
   private UUID responsible;
+
+  @ManyToOne
+  @JoinColumn(name = "course_id")
+  private Course course;
+
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-    name = "message_links",
+    name = "message_links_tb",
     schema = SchemaConstants.MESSAGES,
     joinColumns = @JoinColumn(name = "message_id"),
     inverseJoinColumns = @JoinColumn(name = "link_id")
@@ -42,7 +48,7 @@ public class Message extends AbstractEntity {
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-    name = "message_attachments",
+    name = "message_attachments_tb",
     schema = SchemaConstants.MESSAGES,
     joinColumns = @JoinColumn(name = "message_id"),
     inverseJoinColumns = @JoinColumn(name = "file_id")
