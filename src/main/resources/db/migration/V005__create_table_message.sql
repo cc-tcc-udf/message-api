@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS messages.Message_tb
     send_date    TIMESTAMP,
     status       VARCHAR(50),
     message      TEXT,
-    response     UUID
+    responsible     UUID
 );
