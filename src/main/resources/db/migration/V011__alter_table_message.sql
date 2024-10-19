@@ -1,9 +1,3 @@
-alter table messages.Message_tb
-    rename column "responsible " to "responsible_id";
-
-alter table messages.Message_tb
-    ADD COLUMN course_id BIGINT;
-
 ALTER TABLE messages.Message_tb
     ADD CONSTRAINT fk_message_course
         FOREIGN KEY (course_id)

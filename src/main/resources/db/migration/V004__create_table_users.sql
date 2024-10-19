@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS messages.Users_tb
     phone          VARCHAR(255) NOT NULL,
     profile_photo_id BIGINT,
     cover_photo_id   BIGINT,
+    id_curso   BIGINT,
     excluded       BOOLEAN   DEFAULT FALSE,
     created_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by     VARCHAR(255),
