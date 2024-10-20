@@ -1,7 +1,7 @@
-package org.campus.connect.message.auth;
+package org.campus.connect.message.infra.auth;
 
-import org.campus.connect.message.auth.users.Users;
-import org.campus.connect.message.auth.users.UsersRepository;
+import org.campus.connect.message.users.Users;
+import org.campus.connect.message.users.UsersRepository;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

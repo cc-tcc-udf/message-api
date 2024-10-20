@@ -1,4 +1,4 @@
-package org.campus.connect.message.infra;
+package org.campus.connect.message.infra.swagger;
 
 import org.springdoc.core.properties.SwaggerUiConfigParameters;
 import org.springdoc.core.properties.SwaggerUiConfigProperties;

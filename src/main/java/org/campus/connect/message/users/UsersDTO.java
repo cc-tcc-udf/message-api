@@ -1,4 +1,4 @@
-package org.campus.connect.message.auth.users;
+package org.campus.connect.message.users;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

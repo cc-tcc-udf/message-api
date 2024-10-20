@@ -1,18 +1,19 @@
-package org.campus.connect.message.links;
+package org.campus.connect.message.mail;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.campus.connect.message.utils.AbstractEntityDTO;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class LinksDTO extends AbstractEntityDTO {
-  private String title;
+public class MailDTO {
+  private String to;
+  private String name;
+  private String email;
+  private String pass;
   private String link;
-  private Long id_msg;
-}
 
+}

@@ -3,9 +3,12 @@ package org.campus.connect.message.message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import org.campus.connect.message.constants.GenericMessages;
-import org.campus.connect.message.responseReturn.ReturnObjDTO;
+import org.campus.connect.message.mail.MailDTO;
+import org.campus.connect.message.mail.MailService;
 import org.campus.connect.message.utils.GenericResource;
+import org.campus.connect.message.utils.ReturnObjDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,11 +20,13 @@ import java.util.List;
 public class MessageResource extends GenericResource<MessageDTO, MessageResource> {
   private final MessageService service;
   private final MessageMapper mapper;
+  private final MailService mailService;
 
-  public MessageResource(MessageService service, MessageMapper mapper) {
+  public MessageResource(MessageService service, MessageMapper mapper, final MailService mailService) {
     super(service, "api/");
     this.service = service;
     this.mapper = mapper;
+    this.mailService = mailService;
   }
 
   @GetMapping(value = "/public/msg/{id}")
@@ -62,5 +67,16 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
   public ResponseEntity<MessageDTO> createMessage(@RequestBody MessageDTO message) throws Exception {
     return ResponseEntity.ok(service.create(message));
 
+  }
+
+  @PostMapping("email")
+  public String enviarEmail(@RequestBody MailDTO dto) throws MessagingException {
+    try {
+      this.mailService.sendWelcomeEmail(dto);
+    } catch (Exception e) {
+      return "Erro ao enviar e-mail" + e.getMessage();
+    }
+
+    return "Email enviado com sucesso!";
   }
 }

@@ -1,4 +1,4 @@
-package org.campus.connect.message.auth.users;
+package org.campus.connect.message.users;
 
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +16,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
   List<Users> findByRolesContains(UserRoles roles);
 
-  @Query("SELECT new org.campus.connect.message.auth.users.UsersDTO(u) FROM Users u WHERE u.id = :id")
+  @Query("SELECT new org.campus.connect.message.users.UsersDTO(u) FROM Users u WHERE u.id = :id")
   UsersDTO getRespById(@Param("id") Long id);
 }

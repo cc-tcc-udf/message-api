@@ -1,4 +1,4 @@
-package org.campus.connect.message.auth.users.records;
+package org.campus.connect.message.users.records;
 
 public record TokenRefreshDTO(String email, String refreshToken) {
 }

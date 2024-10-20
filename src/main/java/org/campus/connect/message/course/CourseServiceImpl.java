@@ -1,8 +1,8 @@
 package org.campus.connect.message.course;
 
-import org.campus.connect.message.auth.users.UsersDTO;
-import org.campus.connect.message.auth.users.UsersMapper;
-import org.campus.connect.message.auth.users.UsersRepository;
+import org.campus.connect.message.users.UsersDTO;
+import org.campus.connect.message.users.UsersMapper;
+import org.campus.connect.message.users.UsersRepository;
 import org.campus.connect.message.course.dto.CourseCompleteDTO;
 import org.campus.connect.message.course.dto.SubCourseDTO;
 import org.campus.connect.message.files.FileMapper;

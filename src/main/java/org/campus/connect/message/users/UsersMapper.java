@@ -1,4 +1,4 @@
-package org.campus.connect.message.auth.users;
+package org.campus.connect.message.users;
 
 import org.campus.connect.message.utils.EntityMapper;
 import org.mapstruct.Mapper;

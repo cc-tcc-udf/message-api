@@ -1,11 +1,11 @@
-package org.campus.connect.message.auth.users;
+package org.campus.connect.message.users;
 
-import org.campus.connect.message.auth.users.records.RegisterDTO;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.course.CourseServiceImpl;
 import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.files.FileMapper;
 import org.campus.connect.message.files.FileService;
+import org.campus.connect.message.users.records.RegisterDTO;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -135,11 +135,18 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
         userDTO.setId(usr.getId());
         userDTO.setName(usr.getName());
         userDTO.setId_curso(usr.getId_curso());
-        if(usr.getProfilePhoto()!=null) {
-        userDTO.setProfilePhoto(new FileDTO(usr.getProfilePhoto()));
+        if (usr.getProfilePhoto() != null) {
+          userDTO.setProfilePhoto(new FileDTO(usr.getProfilePhoto()));
         }
         return userDTO;
       }).toList();
+  }
+
+  public void atualizarToken(Users user, String novoToken) throws Exception {
+    if (!user.getToken().contains(novoToken)) {
+      user.getToken().add(novoToken);
+      this.save(new UsersDTO(user));
+    }
   }
 
 }

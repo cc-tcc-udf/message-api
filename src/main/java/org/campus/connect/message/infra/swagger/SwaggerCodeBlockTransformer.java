@@ -1,4 +1,4 @@
-package org.campus.connect.message.infra;
+package org.campus.connect.message.infra.swagger;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springdoc.core.properties.SwaggerUiConfigParameters;

@@ -1,4 +1,4 @@
-package org.campus.connect.message.responseReturn;
+package org.campus.connect.message.utils;
 
 import lombok.*;
 import org.campus.connect.message.constants.GenericMessages;

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.campus.connect.message.auth.users.UsersDTO;
+import org.campus.connect.message.users.UsersDTO;
 import org.campus.connect.message.course.CourseDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 

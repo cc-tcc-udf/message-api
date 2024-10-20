@@ -1,13 +1,13 @@
-package org.campus.connect.message.auth.users;
+package org.campus.connect.message.users;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.campus.connect.message.auth.TokenService;
-import org.campus.connect.message.auth.users.records.*;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.constants.GenericMessages;
-import org.campus.connect.message.responseReturn.ReturnObjDTO;
+import org.campus.connect.message.infra.auth.TokenService;
+import org.campus.connect.message.users.records.*;
 import org.campus.connect.message.utils.GenericResource;
+import org.campus.connect.message.utils.ReturnObjDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

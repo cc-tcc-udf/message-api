@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.campus.connect.message.auth.users.Users;
+import org.campus.connect.message.users.Users;
 import org.campus.connect.message.constants.SchemaConstants;
 import org.campus.connect.message.utils.AbstractEntity;
 
@@ -24,7 +24,6 @@ public class Course extends AbstractEntity {
   @Column(name = "is_group")
   private Boolean isGroup;
   @ManyToOne
-
   @JoinColumn(name = "resp", referencedColumnName = "id")
   private Users resp;
 }

@@ -1,5 +1,8 @@
 package org.campus.connect.message.message;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.campus.connect.message.constants.Enums.Status;
 import org.campus.connect.message.constants.SchemaConstants;
+import org.campus.connect.message.constants.UtilsConstants;
 import org.campus.connect.message.course.Course;
 import org.campus.connect.message.files.File;
 import org.campus.connect.message.links.Links;
@@ -26,6 +30,8 @@ public class Message extends AbstractEntity {
   private String title;
   private String summary;
   @Column(name = "send_date")
+  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+  @JsonFormat(pattern = UtilsConstants.DATE_TIME_PATTERN)
   private LocalDateTime sendDate;
   @Enumerated(EnumType.STRING)
   private Status status;

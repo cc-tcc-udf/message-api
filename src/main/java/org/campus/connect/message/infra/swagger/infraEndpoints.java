@@ -1,4 +1,4 @@
-package org.campus.connect.message.infra;
+package org.campus.connect.message.infra.swagger;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.core.io.ClassPathResource;

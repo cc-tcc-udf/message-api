@@ -1,4 +1,4 @@
-package org.campus.connect.message.auth.users.records;
+package org.campus.connect.message.users.records;
 
 
 import org.campus.connect.message.constants.Enums.UserRoles;

@@ -1,4 +1,4 @@
-package org.campus.connect.message.auth.users;
+package org.campus.connect.message.users;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +32,7 @@ public class Users extends AbstractEntity {
   @ManyToOne
   @JoinColumn(name = "profile_photo_id")
   private File profilePhoto;
+
   @ManyToOne
   @JoinColumn(name = "cover_photo_id")
   private File coverPhoto;

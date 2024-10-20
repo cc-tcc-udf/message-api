@@ -1,6 +1,6 @@
-package org.campus.connect.message.auth.users;
+package org.campus.connect.message.users;
 
-import org.campus.connect.message.auth.users.records.RegisterDTO;
+import org.campus.connect.message.users.records.RegisterDTO;
 import org.campus.connect.message.utils.GenericService;
 
 import java.util.List;

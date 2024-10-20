@@ -1,6 +1,5 @@
 package org.campus.connect.message.links;
 
-import org.campus.connect.message.message.MessageDTO;
 import org.campus.connect.message.utils.GenericService;
 
 import java.util.List;

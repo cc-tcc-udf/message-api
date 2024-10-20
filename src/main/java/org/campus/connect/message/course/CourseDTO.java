@@ -4,9 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.campus.connect.message.auth.users.Users;
-import org.campus.connect.message.auth.users.UsersDTO;
 import org.campus.connect.message.course.dto.SubCourseDTO;
+import org.campus.connect.message.users.UsersDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 
 import java.util.List;
