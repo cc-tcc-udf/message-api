@@ -28,6 +28,8 @@ public class Users extends AbstractEntity {
   private UUID uid;
   private String phone;
   private Long id_curso;
+  private boolean active;
+  private String temporary_password;
 
   @ManyToOne
   @JoinColumn(name = "profile_photo_id")

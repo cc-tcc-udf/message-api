@@ -92,7 +92,6 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   }
 
   @PutMapping("/private/auth/update")
-  @PreAuthorize("hasRole('ROLE_USER')")
   @Operation(summary = "Atualizar perfil", description = "Para o usuario atualizar o dados do perfil")
   public ReturnObjDTO update(@RequestBody UsersDTO user) throws Exception {
     try {
@@ -133,14 +132,22 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   }
 
   @PostMapping(value = "/public/auth/register")
-  @Operation(summary = "Cadastro", description = "Para o usuario realizar o registro")
-  public ResponseEntity<?> register(@RequestBody RegisterDTO body) throws Exception {
+  @Operation(summary = "Cadastro", description = "Para o usuário realizar o registro")
+  public ResponseEntity<?> register(
+    @RequestBody RegisterDTO body,
+    @RequestParam(required = false, defaultValue = "false") boolean isMobile
+  ) throws Exception {
     Optional<Users> usr = this.repository.findByEmail(body.getEmail());
     if (usr.isEmpty()) {
-      Users user = this.service.register(body);
+      body.setActive(isMobile);
+      Users user = this.service.register(body, isMobile);
       String token = this.tokenService.generateToken(user);
-      return ResponseEntity.ok(new ResponseDTO(user.getEmail(), token));
+      ReturnObjDTO objDTO = new ReturnObjDTO(isMobile ? new ResponseDTO(user.getEmail(), token) : null, true);
+      return ResponseEntity.ok(objDTO);
     }
+    ReturnObjDTO objDTO = new ReturnObjDTO();
+    objDTO.setSuccess(false);
+    objDTO.setMessage(GenericMessages.ResponseError + ", email ja cadastrado");
     return ResponseEntity.badRequest().build();
   }
 

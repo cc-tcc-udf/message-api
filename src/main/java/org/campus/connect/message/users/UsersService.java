@@ -10,7 +10,7 @@ public interface UsersService extends GenericService<UsersDTO> {
 
   List<UsersDTO> findAll();
 
-  Users register(RegisterDTO body) throws Exception;
+  Users register(RegisterDTO body, boolean isMobile) throws Exception;
 
   Optional<Users> findByEmail(String login);
 

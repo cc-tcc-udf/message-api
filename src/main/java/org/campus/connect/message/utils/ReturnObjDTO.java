@@ -16,6 +16,6 @@ public class ReturnObjDTO {
   public ReturnObjDTO(Object data, boolean success) {
     this.data = data;
     this.success = success;
-    this.message = success? GenericMessages.ResponseSuccess : GenericMessages.ResponseError;
+    this.message = success ? GenericMessages.ResponseSuccess : GenericMessages.ResponseError;
   }
 }

@@ -51,12 +51,15 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   }
 
   @Override
-  public Users register(RegisterDTO dto) throws Exception {
+  public Users register(RegisterDTO dto, boolean isMobile) throws Exception {
     Users user = new Users();
     user.setEmail(dto.getEmail());
     user.setName(dto.getName());
     user.setUid(UUID.randomUUID());
-    user.setRoles(Collections.singleton(UserRoles.USER));
+    user.setRoles(isMobile ?
+      Collections.singleton(UserRoles.USER) :
+      new HashSet<>(dto.getRoles())
+    );
     user.setPhone(dto.getPhone());
     user.setPassword(passwordEncoder.encode(dto.getPassword()));
     if (dto.getTokens() != null) {
@@ -73,6 +76,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     user.setName("Taui Silva Lima");
     user.setUid(UUID.randomUUID());
     user.setPhone("admin");
+    user.setActive(true);
     user.setRoles(Collections.singleton(UserRoles.ADMIN));
     user.setPassword(passwordEncoder.encode("sousen1902*"));
     return this.save(mapper.toDto(user));
@@ -94,6 +98,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     dto.setRoles(new ArrayList<>(user.getRoles()));
     dto.setUid(user.getUid());
     dto.setPhone(user.getPhone());
+    dto.setActive(user.isActive());
     if (user.getId_curso() != null) {
       dto.setCourse(courseService.findById(user.getId_curso()));
     }
@@ -115,6 +120,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
       dto.setEmail(user.getEmail());
       dto.setName(dto.getName() != null ? dto.getName() : user.getName());
       dto.setPassword(user.getPassword());
+      dto.setActive(user.isActive());
       dto.setPhone(dto.getPhone() != null && !dto.getPhone().isEmpty() ? dto.getPhone() : user.getPhone());
       dto.setId_curso(dto.getId_curso() != null ? dto.getId_curso() : user.getId_curso());
       dto.setRoles(new ArrayList<>(user.getRoles()));
