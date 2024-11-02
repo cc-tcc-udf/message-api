@@ -14,7 +14,7 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
   Optional<Users> findByEmail(String email);
 
-  List<Users> findByRolesContains(UserRoles roles);
+  List<Users> findByRolesContainsAndActive(UserRoles roles, Boolean active);
 
   @Query("SELECT new org.campus.connect.message.users.UsersDTO(u) FROM Users u WHERE u.id = :id")
   UsersDTO getRespById(@Param("id") Long id);

@@ -5,8 +5,11 @@ import org.campus.connect.message.course.CourseServiceImpl;
 import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.files.FileMapper;
 import org.campus.connect.message.files.FileService;
+import org.campus.connect.message.mail.MailDTO;
+import org.campus.connect.message.mail.MailService;
 import org.campus.connect.message.users.records.RegisterDTO;
 import org.campus.connect.message.utils.GenericServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +24,15 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   private final FileService fileService;
   private final FileMapper fileMapper;
   private final CourseServiceImpl courseService;
+  private final MailService mailService;
+  private final String frontUrl;
 
   public UsersServiceImpl(
     final UsersRepository repository,
     final UsersMapper mapper, final PasswordEncoder passwordEncoder,
     final FileService fileService, final FileMapper fileMapper,
-    final CourseServiceImpl courseService) {
+    final CourseServiceImpl courseService,
+    @Value("${front.url}") String frontUrl, final MailService mailService) {
     super(repository, mapper);
     this.repository = repository;
     this.mapper = mapper;
@@ -34,6 +40,8 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     this.fileService = fileService;
     this.fileMapper = fileMapper;
     this.courseService = courseService;
+    this.mailService = mailService;
+    this.frontUrl = frontUrl;
   }
 
   @Override
@@ -86,6 +94,14 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   public UsersDTO createUser(UsersDTO usr) throws Exception {
     usr.setUid(UUID.randomUUID());
     usr.setPassword(passwordEncoder.encode(usr.getPassword()));
+    if (usr.isActive()) {
+      MailDTO mailDTO = new MailDTO();
+      mailDTO.setLink(frontUrl);
+      mailDTO.setName(usr.getName());
+      mailDTO.setEmail(usr.getEmail());
+      mailDTO.setTo(usr.getEmail());
+      mailService.sendWelcomeEmail(mailDTO);
+    }
     return this.save(usr);
   }
 
@@ -134,7 +150,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
 
   @Override
   public List<UsersDTO> findResp() {
-    List<Users> users = this.repository.findByRolesContains(UserRoles.PROF);
+    List<Users> users = this.repository.findByRolesContainsAndActive(UserRoles.PROF, true);
     return users.stream()
       .map(usr -> {
         UsersDTO userDTO = new UsersDTO();

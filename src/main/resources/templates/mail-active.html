@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Connect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    rel="stylesheet">
+</head>
+
+<body
+  style="font-family: Inter, sans-serif; margin: 0; padding: 0; width: 100%; background-color: #f4f4f4;">
+  <div style="display: flex; justify-content: center;">
+    <table cellspacing="0" cellpadding="10" border="0"
+      style="width: 600px; background: #0f0f11; border-radius: 10px; padding: 32px;">
+
+      <thead>
+        <tr>
+          <td>
+            <img border="0" height="55px" align="right" alt="Campus Connect Logo"
+              src="https://res.cloudinary.com/dgz08cahv/image/upload/v1729386405/campus_connect_white_mcqvyw.png" />
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color: #000000; background-color: #efefef; border-radius: 10px 10px 0 0;">
+            <p style="font-size: 1.5rem; font-weight: 700;">
+              Seja bem-vindo ao Campus Connect!
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="color: #333; padding:0 1rem; background-color: #efefef;">
+            <table role="presentation" width="100%"
+              style="background: #fafafa; border-radius: 10px; padding: 1.5rem 1rem;">
+              <tr>
+                <td>
+                  <section>
+                    <p>Olá, <b th:text="${nome}"></b>! Seja bem-vindo ao campus connect.
+                    </p>
+                  </section>
+                  <p>Sua conta foi<b> ativada</b>. Para acessar basta utilizar os dados utilizados no momento do cadastro.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="color: #333; background-color: #efefef; border-radius: 0 0 10px 10px;">
+            <table role="presentation" width="100%">
+              <tr>
+                <td align="right">
+                  <a th:href="${link_de_acesso}"
+                    style="cursor: pointer; border-radius: 10px; padding: 16px 32px; background: #dad6d3; font-weight: 700; text-align: center; font-size: 1.25rem; text-decoration: none; color: #000; display: inline-block;">
+                    Acessar
+                  </a>
+                </td>
+              </tr>
+            </table>
+            <hr>
+            <div>
+              <p style="padding-top: 8px;">Obrigado,</p>
+              <p>Campus Connect.</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+
+</html>

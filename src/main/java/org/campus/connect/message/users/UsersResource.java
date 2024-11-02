@@ -112,9 +112,11 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     Users user = optionalUser.get();
     if (!passwordEncoder.matches(body.password(), user.getPassword())) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\": \"Senha incorreta!\"}");
-
     }
-
+    if (!user.isActive()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body("{\"message\": \"Sua conta ainda não foi ativada. Aguarde o e-mail de ativação enviado pelo administrador.\"}");
+    }
     String token = this.tokenService.generateToken(user);
     return ResponseEntity.ok(new ResponseDTO(user.getEmail(), token));
   }
@@ -147,14 +149,15 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     }
     ReturnObjDTO objDTO = new ReturnObjDTO();
     objDTO.setSuccess(false);
-    objDTO.setMessage(GenericMessages.ResponseError + ", email ja cadastrado");
-    return ResponseEntity.badRequest().build();
+    objDTO.setMessage("Cadastro não realizado. O e-mail informado já está em uso.");
+    return ResponseEntity.ok(objDTO);
   }
 
 
   @GetMapping(value = "/public/admin/create")
   @Tag(name = "ADMIN")
-  @Operation(summary = "Admin", description = "Registrar o usuario admin")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @Operation(summary = "Admin", description = "Registrar o usuário admin")
   public ResponseEntity<UsersDTO> getAdmin() throws Exception {
     return ResponseEntity.ok(this.service.adminCreate());
   }

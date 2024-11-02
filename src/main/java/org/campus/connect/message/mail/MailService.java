@@ -45,4 +45,24 @@ public class MailService {
     // Enviar o e-mail
     mailSender.send(message);
   }
+
+  public void sendActiveEmail(final MailDTO mail) throws MessagingException {
+    MimeMessage message = mailSender.createMimeMessage();
+    MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+      StandardCharsets.UTF_8.name());
+
+    Context context = new Context();
+    context.setVariable("nome", mail.getName());
+    context.setVariable("link_de_acesso", mail.getLink());
+
+    String htmlContent = templateEngine.process("mail-create", context);
+
+    // Enviar o e-mail
+    helper.setTo(mail.getTo());
+    helper.setSubject("Bem-vindo ao Campus Connect!");
+    helper.setText(htmlContent, true);
+
+    // Enviar o e-mail
+    mailSender.send(message);
+  }
 }
