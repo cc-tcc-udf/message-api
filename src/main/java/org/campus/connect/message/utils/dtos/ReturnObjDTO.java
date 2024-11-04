@@ -1,4 +1,4 @@
-package org.campus.connect.message.utils;
+package org.campus.connect.message.utils.dtos;
 
 import lombok.*;
 import org.campus.connect.message.constants.GenericMessages;

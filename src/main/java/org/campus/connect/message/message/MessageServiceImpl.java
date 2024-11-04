@@ -1,7 +1,6 @@
 package org.campus.connect.message.message;
 
 import org.campus.connect.message.constants.Enums.Status;
-import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.files.FileService;
 import org.campus.connect.message.links.LinksDTO;
 import org.campus.connect.message.links.LinksService;
@@ -57,17 +56,6 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
         try {
           LinksDTO savedLink = this.linksService.create(link);
           link.setId(savedLink.getId());
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      });
-    }
-
-    if (msg.getAttachments() != null && !msg.getAttachments().isEmpty()) {
-      msg.getAttachments().forEach(attachment -> {
-        try {
-          FileDTO savedAttachment = this.fileService.save(attachment);
-          attachment.setId(savedAttachment.getId());
         } catch (Exception e) {
           throw new RuntimeException(e);
         }

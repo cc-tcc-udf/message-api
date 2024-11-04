@@ -1,4 +1,4 @@
-CREATE TABLE messages.user_tokens
+CREATE TABLE IF NOT EXISTS messages.user_tokens
 (
     user_id BIGINT       NOT NULL,
     token   VARCHAR(255) NOT NULL,

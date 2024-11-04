@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.campus.connect.message.course.dto.CourseCompleteDTO;
 import org.campus.connect.message.course.dto.SubCourseDTO;
-import org.campus.connect.message.utils.ReturnObjDTO;
+import org.campus.connect.message.utils.dtos.ReturnObjDTO;
 import org.campus.connect.message.utils.GenericResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

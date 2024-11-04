@@ -1,6 +1,11 @@
 package org.campus.connect.message.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.campus.connect.message.users.Users;
+import org.campus.connect.message.utils.dtos.UserDetailDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,96 +16,101 @@ import java.util.stream.Collectors;
 public abstract class GenericServiceImpl<E extends AbstractEntity, D extends AbstractEntityDTO> implements GenericService<D> {
 
   private final JpaRepository<E, Long> repository;
-
   private final EntityMapper<D, E> mapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
   public GenericServiceImpl(
-    JpaRepository<E, Long> repository, EntityMapper<D, E> mapper) {
+    JpaRepository<E, Long> repository,
+    EntityMapper<D, E> mapper
+  ) {
     this.repository = repository;
     this.mapper = mapper;
   }
 
   @Override
-  public D save(D d) throws Exception {
-    return this.executeSave(d);
+  public D save(D dto) throws Exception {
+    return executeSave(dto);
   }
 
   @Override
   public Optional<D> findOneById(Long id) {
-    if (id == null) {
-      return Optional.empty();
-    }
-    Optional<E> optional = this.repository.findById(id);
-    if (optional.isPresent()) {
-      E e = optional.get();
-      return Boolean.FALSE.equals(e.getExcluded()) ? optional.map(this.mapper::toDto) : Optional.empty();
-    }
-    return Optional.empty();
+    return id == null ? Optional.empty() : repository.findById(id)
+      .filter(entity -> !Boolean.TRUE.equals(entity.getExcluded()))
+      .map(mapper::toDto);
   }
 
   @Override
   public void delete(Long id) throws Exception {
-    Optional<D> optional = this.findOneById(id);
-    this.executeDelete(optional);
-  }
-
-  D executeSave(D d) throws Exception {
-    E e = this.mapper.toEntity(d);
-    if (d.getId() == null) {
-      e.setCreatedBy(d.getCreatedBy() != null ? d.getCreatedBy() : "admin");
-      e.setCreated(LocalDateTime.now());
-      e.setUpdatedBy(d.getUpdatedBy() != null ? d.getUpdatedBy() : "admin");
-      e.setUpdated(LocalDateTime.now());
-    } else {
-      Optional<D> beforeOptional = this.findOneById(d.getId());
-      if (beforeOptional.isEmpty()) {
-        throw new Exception("The entity does not exist");
-      }
-      D before = beforeOptional.get();
-      e.setCreated(before.getCreated() != null ? before.getCreated() : LocalDateTime.now());
-      e.setCreatedBy(before.getCreatedBy() != null ? before.getCreatedBy() : "admin");
-      e.setUpdated(LocalDateTime.now());
-      e.setUpdatedBy(before.getUpdatedBy() != null ? before.getUpdatedBy() : "admin");
-    }
-    this.repository.save(e);
-    return this.mapper.toDto(e);
-  }
-
-  void executeDelete(Optional<D> optional) throws Exception {
+    Optional<D> optional = findOneById(id);
     if (optional.isPresent()) {
-      D d = optional.get();
-      d.setExcluded(true);
-      this.executeSave(d);
+      D dto = optional.get();
+      dto.setExcluded(true);
+      executeSave(dto);
     }
   }
 
+  private String getCurrentUser() {
+    var auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth != null && auth.getPrincipal() instanceof final Users user) {
+      try {
+        UserDetailDTO usr = new UserDetailDTO(user);
+        return objectMapper.writeValueAsString(usr);
+      } catch (Exception e) {
+        return "{\"user\":\"system\"}";
+      }
+    }
+    return "{\"user\":\"system\"}";
+  }
 
-  abstract public List<D> findAll();
+  protected D executeSave(D dto) throws Exception {
+    E entity = mapper.toEntity(dto);
+
+    if (dto.getId() == null) {
+      setAuditFieldsOnCreate(entity);
+    } else {
+      Optional<D> existingDto = findOneById(dto.getId());
+      if (existingDto.isEmpty()) {
+        throw new Exception("Entity does not exist");
+      }
+      setAuditFieldsOnUpdate(entity, existingDto.get());
+    }
+
+    repository.saveAndFlush(entity);
+    return mapper.toDto(entity);
+  }
+
+  private void setAuditFieldsOnCreate(E entity) {
+    String currentUserJson = getCurrentUser();
+    entity.setCreatedBy(currentUserJson);
+    entity.setCreated(LocalDateTime.now());
+    entity.setUpdatedBy(currentUserJson);
+    entity.setUpdated(LocalDateTime.now());
+  }
+
+  private void setAuditFieldsOnUpdate(E entity, D existingDto) {
+    String currentUserJson = getCurrentUser();
+    entity.setCreated(existingDto.getCreated());
+    entity.setCreatedBy(existingDto.getCreatedBy());
+    entity.setUpdated(LocalDateTime.now());
+    entity.setUpdatedBy(currentUserJson);
+  }
 
   @Override
-  public List<D> diffBetweenBasedOnId(List<D> aList, List<D> bList) {
-    if (bList == null) {
-      return new ArrayList<>();
-    }
-    if (aList != null && aList.isEmpty()) {
-      return bList;
-    }
-    if (aList == null) {
-      return bList;
-    }
-    return aList.stream().filter(f -> isPresent(f, bList)).collect(Collectors.toList());
+  public List<D> diffBetweenBasedOnId(List<D> listA, List<D> listB) {
+    if (listA == null || listA.isEmpty()) return listB != null ? listB : new ArrayList<>();
+    if (listB == null) return new ArrayList<>();
+
+    return listA.stream()
+      .filter(candidate -> isPresentInList(candidate, listB))
+      .collect(Collectors.toList());
   }
 
-  public Boolean isPresent(D candidate, List<D> comparationList) {
-    if (candidate == null || comparationList == null || comparationList.isEmpty() || candidate.getId() == null) {
-      return Boolean.FALSE;
-    }
-    for (D compared : comparationList) {
-      if (candidate.getId().equals(compared.getId())) {
-        return Boolean.TRUE;
-      }
-    }
-    return Boolean.FALSE;
+  private boolean isPresentInList(D candidate, List<D> comparisonList) {
+    return candidate != null && candidate.getId() != null && comparisonList.stream()
+      .anyMatch(compared -> candidate.getId().equals(compared.getId()));
   }
+
+  // Abstract method that subclasses must implement
+  public abstract List<D> findAll();
 }
-

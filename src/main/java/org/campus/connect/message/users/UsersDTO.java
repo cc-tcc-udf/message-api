@@ -41,5 +41,6 @@ public class UsersDTO extends AbstractEntityDTO {
     if (usr.getProfilePhoto() != null) {
       this.profilePhoto = new FileDTO(usr.getProfilePhoto());
     }
+    this.active = usr.isActive();
   }
 }

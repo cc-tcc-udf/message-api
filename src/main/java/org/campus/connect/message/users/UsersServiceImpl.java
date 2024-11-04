@@ -92,17 +92,25 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
 
   @Override
   public UsersDTO createUser(UsersDTO usr) throws Exception {
-    usr.setUid(UUID.randomUUID());
-    usr.setPassword(passwordEncoder.encode(usr.getPassword()));
+    if (usr.getId() != null) {
+      return this.updateUser(usr);
+    }
     if (usr.isActive()) {
       MailDTO mailDTO = new MailDTO();
       mailDTO.setLink(frontUrl);
       mailDTO.setName(usr.getName());
       mailDTO.setEmail(usr.getEmail());
       mailDTO.setTo(usr.getEmail());
+      mailDTO.setPass(usr.getPassword());
       mailService.sendWelcomeEmail(mailDTO);
     }
+    usr.setUid(UUID.randomUUID());
+    usr.setPassword(passwordEncoder.encode(usr.getPassword()));
     return this.save(usr);
+  }
+
+  private UsersDTO updateUser(final UsersDTO usr) {
+    return new UsersDTO();
   }
 
   @Override

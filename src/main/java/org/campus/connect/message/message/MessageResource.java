@@ -8,7 +8,7 @@ import org.campus.connect.message.constants.GenericMessages;
 import org.campus.connect.message.mail.MailDTO;
 import org.campus.connect.message.mail.MailService;
 import org.campus.connect.message.utils.GenericResource;
-import org.campus.connect.message.utils.ReturnObjDTO;
+import org.campus.connect.message.utils.dtos.ReturnObjDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

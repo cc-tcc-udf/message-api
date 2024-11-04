@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-
   private final TokenService tokenService;
   private final UsersRepository usersRepository;
 
@@ -38,7 +37,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     final @NonNull HttpServletResponse response,
     final @NonNull FilterChain filterChain
   ) throws ServletException, IOException {
-    var token = this.recoverToken(request);
+    var token = recoverToken(request);
     var login = this.tokenService.validateToken(token);
 
     if (login != null) {
@@ -55,10 +54,8 @@ public class SecurityFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
-
   private String recoverToken(final HttpServletRequest request) {
     var authHeader = request.getHeader("Authorization");
-    if (authHeader == null) return null;
-    return authHeader.replace("Bearer ", "");
+    return (authHeader != null) ? authHeader.replace("Bearer ", "") : null;
   }
 }

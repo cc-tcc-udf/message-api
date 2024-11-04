@@ -47,5 +47,4 @@ public class Users extends AbstractEntity {
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(schema = SchemaConstants.MESSAGES, name = "user_tokens", joinColumns = @JoinColumn(name = "user_id"))
   private Set<String> token = new HashSet<>();
-
 }

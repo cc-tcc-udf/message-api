@@ -7,7 +7,7 @@ import org.campus.connect.message.constants.GenericMessages;
 import org.campus.connect.message.infra.auth.TokenService;
 import org.campus.connect.message.users.records.*;
 import org.campus.connect.message.utils.GenericResource;
-import org.campus.connect.message.utils.ReturnObjDTO;
+import org.campus.connect.message.utils.dtos.ReturnObjDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -84,10 +84,17 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     }
   }
 
-  @PostMapping("/private/auth/create")
+  @PostMapping("/private/auth/adm/create")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @Operation(summary = "Criar usuarios adm", description = "Para o administrador cadastrar usuarios")
-  public ResponseEntity<UsersDTO> create(@RequestBody UsersDTO user) throws Exception {
+  public ResponseEntity<UsersDTO> createAdmin(@RequestBody UsersDTO user) throws Exception {
+    return ResponseEntity.ok().body(service.createUser(user));
+  }
+
+  @PostMapping("/private/auth/adm/update")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @Operation(summary = "Atualizar usuarios adm", description = "Para o administrador atualizar usuarios")
+  public ResponseEntity<UsersDTO> updateAdim(@RequestBody UsersDTO user) throws Exception {
     return ResponseEntity.ok().body(service.createUser(user));
   }
 
@@ -152,7 +159,6 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     objDTO.setMessage("Cadastro não realizado. O e-mail informado já está em uso.");
     return ResponseEntity.ok(objDTO);
   }
-
 
   @GetMapping(value = "/public/admin/create")
   @Tag(name = "ADMIN")
