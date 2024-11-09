@@ -144,11 +144,10 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   @Operation(summary = "Cadastro", description = "Para o usuário realizar o registro")
   public ResponseEntity<?> register(
     @RequestBody RegisterDTO body,
-    @RequestParam(required = false, defaultValue = "false") boolean isMobile
+    @RequestParam(required = false) boolean isMobile
   ) throws Exception {
     Optional<Users> usr = this.repository.findByEmail(body.getEmail());
     if (usr.isEmpty()) {
-      body.setActive(isMobile);
       Users user = this.service.register(body, isMobile);
       String token = this.tokenService.generateToken(user);
       ReturnObjDTO objDTO = new ReturnObjDTO(isMobile ? new ResponseDTO(user.getEmail(), token) : null, true);

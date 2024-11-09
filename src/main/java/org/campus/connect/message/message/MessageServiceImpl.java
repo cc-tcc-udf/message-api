@@ -61,7 +61,6 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
         }
       });
     }
-
     return this.save(msg);
   }
 }
