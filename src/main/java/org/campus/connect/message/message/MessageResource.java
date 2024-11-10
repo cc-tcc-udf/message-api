@@ -12,8 +12,6 @@ import org.campus.connect.message.utils.dtos.ReturnObjDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("api")
 @Tag(name = "Message", description = "Gerenciamento de Mensagens")
@@ -49,17 +47,11 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
   @GetMapping(value = "/public/msg/list")
   @Operation(summary = "Listar msg", description = "Lista todas as msg")
   public ReturnObjDTO list() {
-    ReturnObjDTO obj = new ReturnObjDTO();
     try {
-      List<MessageDTO> dto = service.findAll();
-      obj.setData(dto);
-      obj.setSuccess(Boolean.TRUE);
-      obj.setMessage(GenericMessages.ResponseSuccess);
+      return new ReturnObjDTO(service.findAll(), true);
     } catch (Exception e) {
-      obj.setSuccess(Boolean.FALSE);
-      obj.setMessage(GenericMessages.ResponseError);
+      return new ReturnObjDTO(e, false);
     }
-    return obj;
   }
 
   @PostMapping(value = "/public/msg/create")

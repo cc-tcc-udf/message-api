@@ -9,6 +9,7 @@ import org.campus.connect.message.files.UrlConstant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.annotation.PostConstruct;
 
@@ -28,6 +29,7 @@ import javax.annotation.PostConstruct;
   bearerFormat = "JWT",
   in = SecuritySchemeIn.HEADER
 )
+@EnableJpaAuditing
 public class MessageApplication {
 
   @Value("${api.url}")

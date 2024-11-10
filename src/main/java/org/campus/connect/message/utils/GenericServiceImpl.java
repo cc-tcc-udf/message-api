@@ -1,11 +1,8 @@
 package org.campus.connect.message.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.campus.connect.message.users.Users;
-import org.campus.connect.message.utils.dtos.UserDetailDTO;
+import org.campus.connect.message.infra.auth.AuthUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,7 +15,7 @@ public abstract class GenericServiceImpl<E extends AbstractEntity, D extends Abs
   private final JpaRepository<E, Long> repository;
   private final EntityMapper<D, E> mapper;
   @Autowired
-  private ObjectMapper objectMapper;
+  private AuthUserService authUserService;
 
   public GenericServiceImpl(
     JpaRepository<E, Long> repository,
@@ -50,19 +47,6 @@ public abstract class GenericServiceImpl<E extends AbstractEntity, D extends Abs
     }
   }
 
-  private String getCurrentUser() {
-    var auth = SecurityContextHolder.getContext().getAuthentication();
-    if (auth != null && auth.getPrincipal() instanceof final Users user) {
-      try {
-        UserDetailDTO usr = new UserDetailDTO(user);
-        return objectMapper.writeValueAsString(usr);
-      } catch (Exception e) {
-        return "{\"user\":\"system\"}";
-      }
-    }
-    return "{\"user\":\"system\"}";
-  }
-
   protected D executeSave(D dto) throws Exception {
     E entity = mapper.toEntity(dto);
 
@@ -81,7 +65,7 @@ public abstract class GenericServiceImpl<E extends AbstractEntity, D extends Abs
   }
 
   private void setAuditFieldsOnCreate(E entity) {
-    String currentUserJson = getCurrentUser();
+    String currentUserJson = this.authUserService.getCurrentUser();
     entity.setCreatedBy(currentUserJson);
     entity.setCreated(LocalDateTime.now());
     entity.setUpdatedBy(currentUserJson);
@@ -89,7 +73,7 @@ public abstract class GenericServiceImpl<E extends AbstractEntity, D extends Abs
   }
 
   private void setAuditFieldsOnUpdate(E entity, D existingDto) {
-    String currentUserJson = getCurrentUser();
+    String currentUserJson = this.authUserService.getCurrentUser();
     entity.setCreated(existingDto.getCreated());
     entity.setCreatedBy(existingDto.getCreatedBy());
     entity.setUpdated(LocalDateTime.now());

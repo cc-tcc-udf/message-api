@@ -17,4 +17,6 @@ public interface CourseService extends GenericService<CourseDTO> {
   CourseDTO update(CourseDTO dto);
 
   CourseCompleteDTO findCourseById(Long id);
+
+  List<CourseDTO> getCoursesByResp(Long id);
 }

@@ -23,4 +23,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
   @Query("SELECT new org.campus.connect.message.course.CourseDTO(c) FROM Course c WHERE c.id = :id")
   CourseDTO findCourseById(@Param("id") Long id);
 
+  @Query("SELECT new org.campus.connect.message.course.CourseDTO(c) FROM Course c WHERE c.resp.id = :id")
+  List<CourseDTO> findCoursesResp(@Param("id") Long id);
 }

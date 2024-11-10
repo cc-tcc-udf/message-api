@@ -11,6 +11,7 @@ import org.campus.connect.message.constants.UtilsConstants;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @ToString
@@ -18,9 +19,9 @@ import java.time.LocalDateTime;
 public class AbstractEntity implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @SequenceGenerator(name = "IDS_ENTITY_SEQ", sequenceName = "IDS_ENTITY_SEQ", allocationSize = 1)
-  private Long id;
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(columnDefinition = "UUID")
+  private UUID id;
 
   @NotNull
   @Column(name = "CREATED_BY", nullable = false)

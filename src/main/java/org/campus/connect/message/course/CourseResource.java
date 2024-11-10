@@ -10,9 +10,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.campus.connect.message.course.dto.CourseCompleteDTO;
 import org.campus.connect.message.course.dto.SubCourseDTO;
-import org.campus.connect.message.utils.dtos.ReturnObjDTO;
 import org.campus.connect.message.utils.GenericResource;
+import org.campus.connect.message.utils.dtos.ReturnObjDTO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -273,4 +274,10 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     return ResponseEntity.ok(dtoReturn);
   }
 
+  @GetMapping(value = "/private/course/listByResp/{id}")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROF')")
+  public ReturnObjDTO getList(@Parameter(description = "ID do curso a ser retornado", required = true)
+                              @PathVariable final Long id) {
+    return new ReturnObjDTO(service.getCoursesByResp(id), true);
+  }
 }

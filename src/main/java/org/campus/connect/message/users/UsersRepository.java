@@ -7,12 +7,15 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
 
   List<Users> findAllByExcluded(Boolean excluded);
 
   Optional<Users> findByEmail(String email);
+
+  Optional<Users> findByUid(final UUID uid);
 
   List<Users> findByRolesContainsAndActive(UserRoles roles, Boolean active);
 

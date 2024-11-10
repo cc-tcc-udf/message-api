@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.campus.connect.message.audit.AuditListener;
 import org.campus.connect.message.constants.Enums.Status;
 import org.campus.connect.message.constants.SchemaConstants;
 import org.campus.connect.message.constants.UtilsConstants;
@@ -25,6 +26,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EntityListeners(AuditListener.class)
 @Table(name = "Message_tb", schema = SchemaConstants.MESSAGES)
 public class Message extends AbstractEntity {
   private String title;

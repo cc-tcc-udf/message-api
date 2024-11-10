@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.campus.connect.message.constants.Enums.Status;
+import org.campus.connect.message.course.CourseDTO;
 import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.links.LinksDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
@@ -26,6 +27,7 @@ public class MessageDTO extends AbstractEntityDTO {
   private UUID responsible;
   private List<FileDTO> attachments;
   private List<LinksDTO> links;
+  private CourseDTO course;
 
   public MessageDTO(final Message message) {
     setId(message.getId());

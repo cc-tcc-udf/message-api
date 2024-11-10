@@ -1,12 +1,12 @@
 package org.campus.connect.message.course;
 
-import org.campus.connect.message.users.UsersDTO;
-import org.campus.connect.message.users.UsersMapper;
-import org.campus.connect.message.users.UsersRepository;
 import org.campus.connect.message.course.dto.CourseCompleteDTO;
 import org.campus.connect.message.course.dto.SubCourseDTO;
 import org.campus.connect.message.files.FileMapper;
 import org.campus.connect.message.files.FileService;
+import org.campus.connect.message.users.UsersDTO;
+import org.campus.connect.message.users.UsersMapper;
+import org.campus.connect.message.users.UsersRepository;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -48,13 +48,10 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
       .toList();
   }
 
-//  private void setResp(final CourseCompleteDTO dto, final CourseDTO c) {
-//    UsersDTO usr = this.usersRepository.getRespById(c.getResp());
-//    if (usr != null) {
-//      usr.setProfilePhoto(fileService.findByIdExt(usr.getId()));
-//    }
-//    dto.setResp(usr);
-//  }
+  @Override
+  public List<CourseDTO> getCoursesByResp(Long id) {
+    return repository.findCoursesResp(id);
+  }
 
   private List<CourseDTO> getList() {
     List<CourseDTO> courseDTOs = repository.findCourses(true);

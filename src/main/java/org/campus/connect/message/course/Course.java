@@ -18,7 +18,7 @@ import org.campus.connect.message.utils.AbstractEntity;
 public class Course extends AbstractEntity {
   private String name;
   private String description;
-  private String abbreviation;;
+  private String abbreviation;
   @Column(name = "course_group_id")
   private Long courseGroupId;
   @Column(name = "is_group")

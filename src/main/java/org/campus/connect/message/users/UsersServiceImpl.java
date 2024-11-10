@@ -172,11 +172,11 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
       }).toList();
   }
 
-  public void atualizarToken(Users user, String novoToken) throws Exception {
-    if (!user.getToken().contains(novoToken)) {
-      user.getToken().add(novoToken);
-      this.save(new UsersDTO(user));
-    }
-  }
-
+//  public void atualizarToken(UUID uuid, List<String> novoToken) throws Exception {
+//    Users usr = findByU
+//    if (!user.getToken().contains(novoToken)) {
+//      user.getToken().add(novoToken);
+//      this.save(new UsersDTO(user));
+//    }
+//  }
 }
