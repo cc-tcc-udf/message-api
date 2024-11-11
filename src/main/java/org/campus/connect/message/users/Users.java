@@ -25,10 +25,10 @@ public class Users extends AbstractEntity {
   private String email;
   private String name;
   private String password;
-  private UUID uid;
   private String phone;
-  private Long id_curso;
-  private boolean active;
+  private UUID id_curso;
+  @JoinColumn(name = "is_temp_pass")
+  private boolean active;  private boolean isTempPass;
   private String temporary_password;
 
   @ManyToOne

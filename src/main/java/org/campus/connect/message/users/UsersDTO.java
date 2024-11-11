@@ -17,12 +17,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class UsersDTO extends AbstractEntityDTO {
-  private UUID uid;
   private String name;
   private String email;
   private String password;
   private String phone;
-  private Long id_curso;
+  private UUID id_curso;
   private FileDTO profilePhoto;
   private FileDTO coverPhoto;
   private List<UserRoles> roles;
@@ -32,7 +31,6 @@ public class UsersDTO extends AbstractEntityDTO {
 
   public UsersDTO(Users usr) {
     setId(usr.getId());
-    this.uid = usr.getUid();
     this.name = usr.getName();
     this.email = usr.getEmail();
     this.phone = usr.getPhone();

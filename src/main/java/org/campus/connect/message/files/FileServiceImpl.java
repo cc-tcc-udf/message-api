@@ -22,6 +22,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implements FileService {
@@ -70,17 +71,17 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
   }
 
   @Override
-  public List<FileDTO> findAllByIdExt(final Long id) {
+  public List<FileDTO> findAllByIdExt(final UUID id) {
     return this.mapper.toDto(this.repository.findAllById_ext(id));
   }
 
   @Override
-  public FileDTO findByIdExt(final Long id) {
+  public FileDTO findByIdExt(final UUID id) {
     return this.mapper.toDto(this.repository.findById_ext(id));
   }
 
   @Override
-  public Resource getFile(Long id) throws Exception {
+  public Resource getFile(UUID id) throws Exception {
     Optional<FileDTO> arquivo = findOneById(id);
     if (arquivo.isPresent()) {
       File file = mapper.toEntity(arquivo.get());
@@ -124,7 +125,7 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
 
   //Update arquivo
   @Override
-  public FileDTO update(final Long id, final MultipartFile multipartFile) throws Exception {
+  public FileDTO update(final UUID id, final MultipartFile multipartFile) throws Exception {
     Optional<FileDTO> file = findOneById(id);
     if (file.isPresent()) {
       File newFile = setArquivo(multipartFile, new File(multipartFile));
@@ -135,7 +136,7 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
   }
 
   public File setArquivo(final MultipartFile multipartFile, final File file) {
-    file.setKey(file.getUid() +
+    file.setKey(file.getId() +
       Objects.requireNonNull(multipartFile.getOriginalFilename()).substring(
         multipartFile.getOriginalFilename().lastIndexOf(".")
       ));

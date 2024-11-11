@@ -7,8 +7,8 @@ ALTER TABLE messages.Message_tb
 -- Create the message_links join table
 CREATE TABLE IF NOT EXISTS messages.message_links_tb
 (
-    message_id BIGINT NOT NULL,
-    link_id    BIGINT NOT NULL,
+    message_id UUID NOT NULL,
+    link_id    UUID NOT NULL,
     PRIMARY KEY (message_id, link_id),
     CONSTRAINT fk_message FOREIGN KEY (message_id) REFERENCES messages.message_tb (id) ON DELETE CASCADE,
     CONSTRAINT fk_link FOREIGN KEY (link_id) REFERENCES messages.links_tb (id) ON DELETE CASCADE
@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS messages.message_links_tb
 -- Create the message_attachments join table
 CREATE TABLE IF NOT EXISTS messages.message_attachments_tb
 (
-    message_id BIGINT NOT NULL,
-    file_id    BIGINT NOT NULL,
+    message_id UUID NOT NULL,
+    file_id    UUID NOT NULL,
     PRIMARY KEY (message_id, file_id),
     CONSTRAINT fk_message_attachment FOREIGN KEY (message_id) REFERENCES messages.message_tb (id) ON DELETE CASCADE,
     CONSTRAINT fk_file FOREIGN KEY (file_id) REFERENCES messages.file_tb (id) ON DELETE CASCADE

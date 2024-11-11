@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +50,7 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
   }
 
   @Override
-  public List<CourseDTO> getCoursesByResp(Long id) {
+  public List<CourseDTO> getCoursesByResp(UUID id) {
     return repository.findCoursesResp(id);
   }
 
@@ -78,7 +79,7 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
     return courseDTOs;
   }
 
-  public CourseDTO findById(final Long idCurso) {
+  public CourseDTO findById(final UUID idCurso) {
     CourseDTO course = this.repository.findCourseById(idCurso);
     if (course.getIsGroup()) {
       course.setCourses(this.repository.findSubsByIdGroup(idCurso));
@@ -139,7 +140,7 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
   }
 
   @Override
-  public CourseCompleteDTO findCourseById(Long id) {
+  public CourseCompleteDTO findCourseById(UUID id) {
     CourseDTO course = findById(id);
     return new CourseCompleteDTO(course);
   }

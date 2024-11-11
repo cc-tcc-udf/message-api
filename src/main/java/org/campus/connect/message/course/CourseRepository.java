@@ -6,11 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface CourseRepository extends JpaRepository<Course, Long> {
+public interface CourseRepository extends JpaRepository<Course, UUID> {
 
   @Query("SELECT new org.campus.connect.message.course.dto.SubCourseDTO(s) FROM Course s WHERE s.courseGroupId = :courseGroupId")
-  List<SubCourseDTO> findSubsByIdGroup(@Param("courseGroupId") Long courseGroupId);
+  List<SubCourseDTO> findSubsByIdGroup(@Param("courseGroupId") UUID courseGroupId);
 
   @Query("SELECT new org.campus.connect.message.course.CourseDTO(c) FROM Course c WHERE c.isGroup = :isGroup")
   List<CourseDTO> findCourses(@Param("isGroup") Boolean isGroup);
@@ -21,8 +22,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
   List<Course> findAllByIsGroupIsTrue();
 
   @Query("SELECT new org.campus.connect.message.course.CourseDTO(c) FROM Course c WHERE c.id = :id")
-  CourseDTO findCourseById(@Param("id") Long id);
+  CourseDTO findCourseById(@Param("id") UUID id);
 
   @Query("SELECT new org.campus.connect.message.course.CourseDTO(c) FROM Course c WHERE c.resp.id = :id")
-  List<CourseDTO> findCoursesResp(@Param("id") Long id);
+  List<CourseDTO> findCoursesResp(@Param("id") UUID id);
 }

@@ -1,16 +1,16 @@
 CREATE TABLE IF NOT EXISTS messages.Message_tb
 (
-    id             SERIAL PRIMARY KEY,
+    id             UUID PRIMARY KEY,
     excluded       BOOLEAN   DEFAULT FALSE,
     created_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by     VARCHAR(255),
+    created_by     TEXT,
     updated_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_by     VARCHAR(255),
+    updated_by     TEXT,
     title          VARCHAR(255),
     summary        VARCHAR(255),
     send_date      TIMESTAMP,
     status         VARCHAR(50),
     message        TEXT,
-    course_id      BIGINT,
+    course_id      UUID,
     responsible_id UUID
 );

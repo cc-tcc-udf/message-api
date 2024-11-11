@@ -12,6 +12,7 @@ import org.campus.connect.message.constants.SchemaConstants;
 import org.campus.connect.message.constants.UtilsConstants;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -20,16 +21,18 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Audit_tb", schema = SchemaConstants.MESSAGES)
 public class Audit {
+
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "IDS_ENTITY_SEQ")
-  @SequenceGenerator(name = "IDS_ENTITY_SEQ", sequenceName = "IDS_ENTITY_SEQ", allocationSize = 1)
-  private Long id;
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(columnDefinition = "UUID")
+  private UUID id;
 
   @Column(name = "UPDATED_DATE", nullable = false)
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonFormat(pattern = UtilsConstants.DATE_TIME_PATTERN)
   private LocalDateTime updated;
 
+  @Column(name = "user_infos")
   private String user;
 
   @Column(name = "entity_name")
@@ -40,4 +43,7 @@ public class Audit {
 
   @Column(name = "operation")
   private String operation;
+
+  @Column(name = "entity_id")
+  private UUID entityId;
 }

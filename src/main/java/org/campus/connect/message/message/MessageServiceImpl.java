@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> implements MessageService {
@@ -31,7 +32,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
   }
 
   @Override
-  public MessageDTO findMsgById(final Long id) {
+  public MessageDTO findMsgById(final UUID id) {
     Message message = repository.findById(id).orElse(null);
     if (message == null) {
       return null;

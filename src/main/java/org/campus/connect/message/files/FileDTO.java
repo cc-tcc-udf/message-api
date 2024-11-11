@@ -19,8 +19,7 @@ public class FileDTO extends AbstractEntityDTO {
   private String url;
   private Long size;
   private String key;
-  private UUID uid;
-  private Long id_ext;
+  private UUID id_ext;
 
   public FileDTO(File file) {
     this.name = file.getName();
@@ -28,7 +27,6 @@ public class FileDTO extends AbstractEntityDTO {
     this.url = file.getUrl();
     this.size = file.getSize();
     this.key = file.getKey();
-    this.uid = file.getUid();
     this.id_ext = file.getId_ext();
 
   }
@@ -36,7 +34,6 @@ public class FileDTO extends AbstractEntityDTO {
   public FileDTO(MultipartFile file) {
     setName(getNameNoExtension(Objects.requireNonNull(file.getOriginalFilename())));
     setSize(file.getSize());
-    setUid(getUid() != null ? getUid() : UUID.randomUUID());
     setType(file.getContentType());
   }
 

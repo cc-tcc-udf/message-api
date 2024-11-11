@@ -25,13 +25,11 @@ public class File extends AbstractEntity {
   private String url;
   private Long size;
   private String key;
-  private UUID uid;
-  private Long id_ext;
+  private UUID id_ext;
 
   public File(MultipartFile file) {
     setName(getNameNoExtension(Objects.requireNonNull(file.getOriginalFilename())));
     setSize(file.getSize());
-    setUid(getUid() != null ? getUid() : UUID.randomUUID());
     setType(file.getContentType());
   }
 

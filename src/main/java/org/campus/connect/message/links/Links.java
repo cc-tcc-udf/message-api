@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.campus.connect.message.constants.SchemaConstants;
 import org.campus.connect.message.utils.AbstractEntity;
 
+import java.util.UUID;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
@@ -18,5 +20,5 @@ import org.campus.connect.message.utils.AbstractEntity;
 public class Links extends AbstractEntity {
   private String title;
   private String link;
-  private Long id_msg;
+  private UUID id_msg;
 }

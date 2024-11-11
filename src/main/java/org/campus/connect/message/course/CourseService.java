@@ -4,6 +4,7 @@ import org.campus.connect.message.course.dto.CourseCompleteDTO;
 import org.campus.connect.message.utils.GenericService;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CourseService extends GenericService<CourseDTO> {
   List<CourseCompleteDTO> findAll(Boolean isGroup);
@@ -16,7 +17,7 @@ public interface CourseService extends GenericService<CourseDTO> {
 
   CourseDTO update(CourseDTO dto);
 
-  CourseCompleteDTO findCourseById(Long id);
+  CourseCompleteDTO findCourseById(UUID id);
 
-  List<CourseDTO> getCoursesByResp(Long id);
+  List<CourseDTO> getCoursesByResp(UUID id);
 }

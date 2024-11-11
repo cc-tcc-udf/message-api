@@ -9,6 +9,8 @@ import org.campus.connect.message.users.Users;
 import org.campus.connect.message.constants.SchemaConstants;
 import org.campus.connect.message.utils.AbstractEntity;
 
+import java.util.UUID;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
@@ -20,7 +22,7 @@ public class Course extends AbstractEntity {
   private String description;
   private String abbreviation;
   @Column(name = "course_group_id")
-  private Long courseGroupId;
+  private UUID courseGroupId;
   @Column(name = "is_group")
   private Boolean isGroup;
   @ManyToOne

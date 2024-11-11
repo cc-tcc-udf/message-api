@@ -11,6 +11,7 @@ import org.campus.connect.message.constants.UtilsConstants;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @ToString
@@ -21,7 +22,7 @@ public abstract class AbstractEntityDTO implements Serializable {
     this.excluded = false;
   }
 
-  private Long id;
+  private UUID id;
   private String createdBy;
   private String updatedBy;
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)

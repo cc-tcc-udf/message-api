@@ -63,7 +63,6 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     Users user = new Users();
     user.setEmail(dto.getEmail());
     user.setName(dto.getName());
-    user.setUid(UUID.randomUUID());
     user.setRoles(isMobile ?
       Collections.singleton(UserRoles.USER) :
       new HashSet<>(dto.getRoles())
@@ -82,7 +81,6 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     Users user = new Users();
     user.setEmail("admin@admin.com");
     user.setName("Taui Silva Lima");
-    user.setUid(UUID.randomUUID());
     user.setPhone("admin");
     user.setActive(true);
     user.setRoles(Collections.singleton(UserRoles.ADMIN));
@@ -104,7 +102,6 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
       mailDTO.setPass(usr.getPassword());
       mailService.sendWelcomeEmail(mailDTO);
     }
-    usr.setUid(UUID.randomUUID());
     usr.setPassword(passwordEncoder.encode(usr.getPassword()));
     return this.save(usr);
   }
@@ -120,7 +117,6 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
     dto.setId(user.getId());
     dto.setName(user.getName());
     dto.setRoles(new ArrayList<>(user.getRoles()));
-    dto.setUid(user.getUid());
     dto.setPhone(user.getPhone());
     dto.setActive(user.isActive());
     if (user.getId_curso() != null) {
@@ -148,9 +144,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
       dto.setPhone(dto.getPhone() != null && !dto.getPhone().isEmpty() ? dto.getPhone() : user.getPhone());
       dto.setId_curso(dto.getId_curso() != null ? dto.getId_curso() : user.getId_curso());
       dto.setRoles(new ArrayList<>(user.getRoles()));
-      dto.setUpdatedBy(dto.getUpdatedBy() != null ? dto.getUpdatedBy() : String.valueOf(user.getUid()));
-      dto.setUid(dto.getUid() != null ? dto.getUid() : user.getUid() != null ? user.getUid() : UUID.randomUUID());
-      return this.save(dto);
+      return save(dto);
     } else {
       throw new Exception("Usuário nao encontrado" + dto.getEmail());
     }

@@ -9,16 +9,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UsersRepository extends JpaRepository<Users, Long> {
+public interface UsersRepository extends JpaRepository<Users, UUID> {
 
   List<Users> findAllByExcluded(Boolean excluded);
 
   Optional<Users> findByEmail(String email);
 
-  Optional<Users> findByUid(final UUID uid);
-
   List<Users> findByRolesContainsAndActive(UserRoles roles, Boolean active);
 
   @Query("SELECT new org.campus.connect.message.users.UsersDTO(u) FROM Users u WHERE u.id = :id")
-  UsersDTO getRespById(@Param("id") Long id);
+  UsersDTO getRespById(@Param("id") UUID id);
 }

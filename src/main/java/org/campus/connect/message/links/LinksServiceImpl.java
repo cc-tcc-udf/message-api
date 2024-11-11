@@ -4,6 +4,7 @@ import org.campus.connect.message.utils.GenericServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class LinksServiceImpl extends GenericServiceImpl<Links, LinksDTO> implements LinksService {
@@ -31,7 +32,7 @@ public class LinksServiceImpl extends GenericServiceImpl<Links, LinksDTO> implem
   }
 
   @Override
-  public List<LinksDTO> findByIdMsg(final Long id) {
+  public List<LinksDTO> findByIdMsg(final UUID id) {
     return this.mapper.toDto(this.repository.findAllById_msg(id));
   }
 

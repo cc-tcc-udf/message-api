@@ -12,6 +12,8 @@ import org.campus.connect.message.utils.dtos.ReturnObjDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("api")
 @Tag(name = "Message", description = "Gerenciamento de Mensagens")
@@ -30,7 +32,7 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
   @GetMapping(value = "/public/msg/{id}")
   @Operation(summary = "Buscar msg pelo id", description = "Lista todas as msg")
   public ReturnObjDTO getById(@Parameter(description = "ID da message a ser retornada", required = true)
-                              @PathVariable final Long id) {
+                              @PathVariable final UUID id) {
     ReturnObjDTO obj = new ReturnObjDTO();
     try {
       MessageDTO dto = service.findMsgById(id);

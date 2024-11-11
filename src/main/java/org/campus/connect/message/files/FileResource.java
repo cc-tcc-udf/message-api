@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("api")
 @Tag(name = "Files", description = "Gerenciamento de Arquivos")
@@ -30,7 +32,7 @@ public class FileResource extends GenericResource<FileDTO, FileResource> {
   }
 
   @PostMapping(value = "/private/file/{id}/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<?> update(@PathVariable Long id, @RequestParam("file") MultipartFile multipartFile) throws Exception {
+  public ResponseEntity<?> update(@PathVariable UUID id, @RequestParam("file") MultipartFile multipartFile) throws Exception {
     FileDTO file = this.service.update(id, multipartFile);
     if (file != null) {
       return ResponseEntity.ok().body(file);
@@ -39,7 +41,7 @@ public class FileResource extends GenericResource<FileDTO, FileResource> {
   }
 
   @GetMapping(value = "/public/file/get/{id}")
-  public ResponseEntity<Resource> download(@PathVariable Long id, HttpServletRequest request) throws Exception {
+  public ResponseEntity<Resource> download(@PathVariable UUID id, HttpServletRequest request) throws Exception {
     Resource resource = this.service.getFile(id);
     String contentType = request.getServletContext()
       .getMimeType(resource.getFile().getAbsolutePath());

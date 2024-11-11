@@ -9,6 +9,7 @@ import lombok.NonNull;
 import org.campus.connect.message.infra.auth.TokenService;
 import org.campus.connect.message.users.Users;
 import org.campus.connect.message.users.UsersRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +27,7 @@ public class SecurityFilter extends OncePerRequestFilter {
   private final TokenService tokenService;
   private final UsersRepository usersRepository;
 
-  public SecurityFilter(final TokenService tokenService, final UsersRepository usersRepository) {
+  public SecurityFilter(final TokenService tokenService, @Lazy final UsersRepository usersRepository) {
     this.tokenService = tokenService;
     this.usersRepository = usersRepository;
   }

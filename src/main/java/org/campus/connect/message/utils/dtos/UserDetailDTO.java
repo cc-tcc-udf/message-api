@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 public class UserDetailDTO {
-  private Long id;
+  private UUID id;
   private UUID uid;
   private String name;
   private String email;
@@ -16,7 +16,6 @@ public class UserDetailDTO {
 
   public UserDetailDTO(Users usr) {
     this.id = usr.getId();
-    this.uid = usr.getUid();
     this.name = usr.getName();
     this.email = usr.getEmail();
     this.phone = usr.getPhone();

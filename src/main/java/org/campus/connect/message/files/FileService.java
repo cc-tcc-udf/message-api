@@ -6,6 +6,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface FileService extends GenericService<FileDTO> {
 
@@ -13,12 +14,12 @@ public interface FileService extends GenericService<FileDTO> {
 
   FileDTO create(MultipartFile file) throws Exception;
 
-  List<FileDTO> findAllByIdExt(Long id);
+  List<FileDTO> findAllByIdExt(UUID id);
 
-  FileDTO findByIdExt(Long id);
+  FileDTO findByIdExt(UUID id);
 
-  Resource getFile(Long id) throws Exception;
+  Resource getFile(UUID id) throws Exception;
 
-  FileDTO update(Long id, MultipartFile file) throws Exception;
+  FileDTO update(UUID id, MultipartFile file) throws Exception;
 
 }

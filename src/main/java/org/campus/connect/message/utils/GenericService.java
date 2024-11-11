@@ -2,14 +2,15 @@ package org.campus.connect.message.utils;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface GenericService<D extends AbstractEntityDTO> {
 
   D save(D d) throws Exception;
 
-  Optional<D> findOneById(Long id);
+  Optional<D> findOneById(UUID id);
 
-  void delete(Long id) throws Exception;
+  void delete(UUID id) throws Exception;
 
   List<D> findAll();
 

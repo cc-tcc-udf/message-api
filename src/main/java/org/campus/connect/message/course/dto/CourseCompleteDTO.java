@@ -9,6 +9,7 @@ import org.campus.connect.message.course.CourseDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class CourseCompleteDTO extends AbstractEntityDTO {
   private String description;
   private String abbreviation;
   private UsersDTO resp;
-  private Long courseGroupId;
+  private UUID courseGroupId;
   private Boolean isGroup;
   private List<SubCourseDTO> courses;
 

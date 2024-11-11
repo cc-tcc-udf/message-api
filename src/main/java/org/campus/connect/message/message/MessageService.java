@@ -3,6 +3,7 @@ package org.campus.connect.message.message;
 import org.campus.connect.message.utils.GenericService;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface MessageService extends GenericService<MessageDTO> {
 
@@ -10,5 +11,5 @@ public interface MessageService extends GenericService<MessageDTO> {
 
   MessageDTO create(MessageDTO message) throws Exception;
 
-  MessageDTO findMsgById(Long id);
+  MessageDTO findMsgById(UUID id);
 }

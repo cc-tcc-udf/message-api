@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,6 +15,6 @@ import org.campus.connect.message.utils.AbstractEntityDTO;
 public class LinksDTO extends AbstractEntityDTO {
   private String title;
   private String link;
-  private Long id_msg;
+  private UUID id_msg;
 }
 

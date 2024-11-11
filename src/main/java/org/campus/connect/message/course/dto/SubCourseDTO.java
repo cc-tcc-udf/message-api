@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.campus.connect.message.users.UsersDTO;
 import org.campus.connect.message.course.Course;
+import org.campus.connect.message.users.UsersDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
+
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class SubCourseDTO extends AbstractEntityDTO {
   private String description;
   private String abbreviation;
   private UsersDTO resp;
-  private Long courseGroupId;
+  private UUID courseGroupId;
   private String siglaGroup;
   private Boolean isGroup;
 
@@ -34,7 +36,7 @@ public class SubCourseDTO extends AbstractEntityDTO {
     this.isGroup = obj.getIsGroup();
   }
 
-  public SubCourseDTO(final Long id, final String name, final String abbreviation) {
+  public SubCourseDTO(final UUID id, final String name, final String abbreviation) {
     this.setId(id);
     this.setName(name + "(" + abbreviation + ")");
   }

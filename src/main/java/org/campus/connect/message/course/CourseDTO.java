@@ -9,6 +9,7 @@ import org.campus.connect.message.users.UsersDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class CourseDTO extends AbstractEntityDTO {
   private String description;
   private String abbreviation;
   private UsersDTO resp;
-  private Long courseGroupId;
+  private UUID courseGroupId;
   private Boolean isGroup;
   private List<SubCourseDTO> courses;
 
@@ -38,7 +39,7 @@ public class CourseDTO extends AbstractEntityDTO {
     this.isGroup = c.getIsGroup();
   }
 
-  public CourseDTO(final Long id, final String name, final String abbreviation, final UsersDTO resp) {
+  public CourseDTO(final UUID id, final String name, final String abbreviation, final UsersDTO resp) {
     this.setId(id);
     this.setName(name + "(" + abbreviation + ")");
     this.setResp(resp);

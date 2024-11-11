@@ -8,17 +8,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public abstract class GenericServiceImpl<E extends AbstractEntity, D extends AbstractEntityDTO> implements GenericService<D> {
 
-  private final JpaRepository<E, Long> repository;
+  private final JpaRepository<E, UUID> repository;
   private final EntityMapper<D, E> mapper;
   @Autowired
   private AuthUserService authUserService;
 
   public GenericServiceImpl(
-    JpaRepository<E, Long> repository,
+    JpaRepository<E, UUID> repository,
     EntityMapper<D, E> mapper
   ) {
     this.repository = repository;
@@ -31,14 +32,14 @@ public abstract class GenericServiceImpl<E extends AbstractEntity, D extends Abs
   }
 
   @Override
-  public Optional<D> findOneById(Long id) {
+  public Optional<D> findOneById(UUID id) {
     return id == null ? Optional.empty() : repository.findById(id)
       .filter(entity -> !Boolean.TRUE.equals(entity.getExcluded()))
       .map(mapper::toDto);
   }
 
   @Override
-  public void delete(Long id) throws Exception {
+  public void delete(UUID id) throws Exception {
     Optional<D> optional = findOneById(id);
     if (optional.isPresent()) {
       D dto = optional.get();

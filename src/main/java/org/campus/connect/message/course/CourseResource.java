@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api")
@@ -61,7 +62,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
   })
   public ResponseEntity<ReturnObjDTO> getCourse(
     @Parameter(description = "ID do curso a ser retornado", required = true)
-    @PathVariable final Long id
+    @PathVariable final UUID id
   ) {
     ReturnObjDTO returnObjDTO = new ReturnObjDTO();
     try {
@@ -277,7 +278,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
   @GetMapping(value = "/private/course/listByResp/{id}")
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROF')")
   public ReturnObjDTO getList(@Parameter(description = "ID do curso a ser retornado", required = true)
-                              @PathVariable final Long id) {
+                              @PathVariable final UUID id) {
     return new ReturnObjDTO(service.getCoursesByResp(id), true);
   }
 }
