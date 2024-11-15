@@ -74,6 +74,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   public Users register_mobile(RegisterDTO dto) throws Exception {
     Users user = new Users(dto);
     user.setRoles(Collections.singleton(UserRoles.USER));
+    user.setActive(true);
     user.setPassword(passwordEncoder.encode(dto.getPassword()));
     this.save(mapper.toDto(user));
     return user;
