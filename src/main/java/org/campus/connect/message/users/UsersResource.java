@@ -140,6 +140,25 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
 
   }
 
+  @PostMapping(value = "/public/auth/mobile/register")
+  @Operation(summary = "Cadastro", description = "Para o usuário realizar o registro")
+  public ResponseEntity<?> register_mobile(
+    @RequestBody RegisterDTO body
+  ) throws Exception {
+    Optional<Users> usr = this.repository.findByEmail(body.getEmail());
+    if (usr.isEmpty()) {
+      Users user = this.service.register_mobile(body);
+      String token = this.tokenService.generateToken(user);
+      ReturnObjDTO objDTO = new ReturnObjDTO(new ResponseDTO(user.getEmail(), token), true);
+      return ResponseEntity.ok(objDTO);
+    }
+    ReturnObjDTO objDTO = new ReturnObjDTO();
+    objDTO.setSuccess(false);
+    objDTO.setMessage("Cadastro não realizado. O e-mail informado já está em uso.");
+    return ResponseEntity.ok(objDTO);
+  }
+
+
   @PostMapping(value = "/public/auth/register")
   @Operation(summary = "Cadastro", description = "Para o usuário realizar o registro")
   public ResponseEntity<?> register(

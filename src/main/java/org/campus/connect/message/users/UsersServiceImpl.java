@@ -60,18 +60,19 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
 
   @Override
   public Users register(RegisterDTO dto, boolean isMobile) throws Exception {
-    Users user = new Users();
-    user.setEmail(dto.getEmail());
-    user.setName(dto.getName());
-    user.setRoles(isMobile ?
-      Collections.singleton(UserRoles.USER) :
-      new HashSet<>(dto.getRoles())
-    );
-    user.setPhone(dto.getPhone());
+    Users user = new Users(dto);
+    user.setRoles(new HashSet<>(dto.getRoles()));
     user.setPassword(passwordEncoder.encode(dto.getPassword()));
-    if (dto.getTokens() != null) {
-      user.setToken(new HashSet<>(dto.getTokens()));
-    }
+    this.save(mapper.toDto(user));
+    return user;
+  }
+
+  @Override
+  public Users register_mobile(RegisterDTO dto) throws Exception {
+    Users user = new Users(dto);
+    user.setRoles(Collections.singleton(UserRoles.USER));
+    user.setActive(true);
+    user.setPassword(passwordEncoder.encode(dto.getPassword()));
     this.save(mapper.toDto(user));
     return user;
   }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.constants.SchemaConstants;
 import org.campus.connect.message.files.File;
+import org.campus.connect.message.users.records.RegisterDTO;
 import org.campus.connect.message.utils.AbstractEntity;
 
 import java.util.HashSet;
@@ -47,4 +48,14 @@ public class Users extends AbstractEntity {
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(schema = SchemaConstants.MESSAGES, name = "user_tokens", joinColumns = @JoinColumn(name = "user_id"))
   private Set<String> token = new HashSet<>();
+
+  public Users(RegisterDTO dto){
+    setEmail(dto.getEmail());
+    setName(dto.getName());
+    setUid(UUID.randomUUID());
+    setPhone(dto.getPhone());
+    if (dto.getTokens() != null) {
+      setToken(new HashSet<>(dto.getTokens()));
+    }
+  }
 }

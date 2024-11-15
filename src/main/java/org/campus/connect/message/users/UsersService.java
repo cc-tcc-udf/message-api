@@ -12,6 +12,8 @@ public interface UsersService extends GenericService<UsersDTO> {
 
   Users register(RegisterDTO body, boolean isMobile) throws Exception;
 
+  Users register_mobile(RegisterDTO body) throws Exception;
+
   Optional<Users> findByEmail(String login);
 
   UsersDTO adminCreate() throws Exception;
