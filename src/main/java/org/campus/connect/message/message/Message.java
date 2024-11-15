@@ -8,13 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.campus.connect.message.audit.AuditListener;
 import org.campus.connect.message.constants.Enums.Status;
 import org.campus.connect.message.constants.SchemaConstants;
 import org.campus.connect.message.constants.UtilsConstants;
 import org.campus.connect.message.course.Course;
 import org.campus.connect.message.files.File;
 import org.campus.connect.message.links.Links;
+import org.campus.connect.message.message.view.View;
 import org.campus.connect.message.utils.AbstractEntity;
 
 import java.time.LocalDateTime;
@@ -26,7 +26,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@EntityListeners(AuditListener.class)
 @Table(name = "Message_tb", schema = SchemaConstants.MESSAGES)
 public class Message extends AbstractEntity {
   private String title;
@@ -63,5 +62,7 @@ public class Message extends AbstractEntity {
   )
   private List<File> attachments;
 
+  @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<View> views;
 }
 
