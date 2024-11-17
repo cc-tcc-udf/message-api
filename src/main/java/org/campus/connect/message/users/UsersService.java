@@ -22,6 +22,8 @@ public interface UsersService extends GenericService<UsersDTO> {
 
   UsersDTO getUser(Users users);
 
+  UsersDTO getUserMobile(Users users);
+
   UsersDTO update(UsersDTO user) throws Exception;
 
   List<UsersDTO> findResp();

@@ -52,8 +52,8 @@ public class Users extends AbstractEntity {
   public Users(RegisterDTO dto){
     setEmail(dto.getEmail());
     setName(dto.getName());
-    setUid(UUID.randomUUID());
     setPhone(dto.getPhone());
+    setActive(dto.isActive());
     if (dto.getTokens() != null) {
       setToken(new HashSet<>(dto.getTokens()));
     }

@@ -13,6 +13,11 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
   @Query("SELECT new org.campus.connect.message.course.dto.SubCourseDTO(s) FROM Course s WHERE s.courseGroupId = :courseGroupId")
   List<SubCourseDTO> findSubsByIdGroup(@Param("courseGroupId") UUID courseGroupId);
 
+  @Query("SELECT new org.campus.connect.message.course.dto.SubCourseDTO(s) " +
+    "FROM Course s " +
+    "WHERE s.courseGroupId IS NOT NULL AND s.isGroup = false")
+  List<SubCourseDTO> findAllSubs();
+
   @Query("SELECT new org.campus.connect.message.course.CourseDTO(c) FROM Course c WHERE c.isGroup = :isGroup")
   List<CourseDTO> findCourses(@Param("isGroup") Boolean isGroup);
 

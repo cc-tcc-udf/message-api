@@ -12,4 +12,6 @@ public interface MessageService extends GenericService<MessageDTO> {
   MessageDTO create(MessageDTO message) throws Exception;
 
   MessageDTO findMsgById(UUID id);
+
+  MessageDTO send(final MessageDTO msg) throws Exception;
 }

@@ -5,7 +5,6 @@ import lombok.*;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -32,7 +31,7 @@ public class FileDTO extends AbstractEntityDTO {
   }
 
   public FileDTO(MultipartFile file) {
-    setName(getNameNoExtension(Objects.requireNonNull(file.getOriginalFilename())));
+    setName(file.getOriginalFilename());
     setSize(file.getSize());
     setType(file.getContentType());
   }

@@ -3,6 +3,9 @@ package org.campus.connect.message.firebase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @RequestMapping("api")
 @Tag(name = "Firebase", description = "Enviar notificações")
@@ -16,5 +19,10 @@ public class FirebaseResource {
   @PostMapping("/public/send")
   public String send(@RequestBody final FirebaseMessageDTO message) {
     return service.sendNotification(message);
+  }
+
+  @GetMapping("/public/tokns")
+  public List<FirebaseMessageDTO> getTokens() throws ExecutionException, InterruptedException {
+    return service.fechTokens();
   }
 }

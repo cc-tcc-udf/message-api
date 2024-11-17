@@ -27,6 +27,7 @@ public class UsersDTO extends AbstractEntityDTO {
   private List<UserRoles> roles;
   private List<String> tokens;
   private CourseDTO course;
+  private String group;
   private boolean active;
 
   public UsersDTO(Users usr) {

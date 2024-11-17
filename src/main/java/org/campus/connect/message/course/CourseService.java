@@ -13,6 +13,8 @@ public interface CourseService extends GenericService<CourseDTO> {
 
   List<CourseDTO> findGroups();
 
+  List<CourseDTO> findGroupsMobile();
+
   CourseDTO create(CourseDTO dto) throws Exception;
 
   CourseDTO update(CourseDTO dto);
@@ -20,4 +22,6 @@ public interface CourseService extends GenericService<CourseDTO> {
   CourseCompleteDTO findCourseById(UUID id);
 
   List<CourseDTO> getCoursesByResp(UUID id);
+
+  CourseDTO findById(final UUID idCurso);
 }

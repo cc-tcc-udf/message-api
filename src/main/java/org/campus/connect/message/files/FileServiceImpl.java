@@ -108,13 +108,26 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
   @Override
   public FileDTO create(final MultipartFile multipartFile) throws Exception {
     if ("dev".equals(profile)) {
-      FileDTO file = cloudinaryService.uploadToCloudinary(multipartFile);
-      file = this.save(file);
-      return file;
+      String filename = multipartFile.getOriginalFilename();
+      if (filename == null) {
+        return null;
+      }
+      FileDTO fileDTO;
+      if (filename.endsWith(".pdf")) {
+        // Upload para o Google Drive
+        fileDTO = driveService.createDrive(multipartFile);
+      } else {
+        // Upload para o Cloudinary
+        fileDTO = cloudinaryService.uploadToCloudinary(multipartFile);
+      }
+
+      return this.save(fileDTO);
     }
 
+    // Para outros ambientes, cria o arquivo localmente
     return this.createLocal(multipartFile);
   }
+
 
   private FileDTO createLocal(final MultipartFile multipartFile) throws Exception {
     File file = setArquivo(multipartFile, new File(multipartFile));
@@ -160,7 +173,6 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
       } else {
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
       }
-
     } catch (IOException ex) {
       throw new RuntimeException("Não foi possível salvar a foto " + key + ".", ex);
     }

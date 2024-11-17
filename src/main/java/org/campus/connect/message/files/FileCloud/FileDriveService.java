@@ -34,8 +34,8 @@ public class FileDriveService {
   private final Resource serviceAccountKeyResource;
 
   public FileDriveService(
-    @Value("${folder.img}") final String folderIMG,
-    @Value("${folder.files}") final String folderFiles,
+    @Value("${drive.folder.img}") final String folderIMG,
+    @Value("${drive.folder.files}") final String folderFiles,
     @Value("${drive.url}") final String urlDrive,
     @Value("classpath:secrets/g-drive.json") final Resource serviceAccountKeyResource,
     final FileMapper fileMapper) {

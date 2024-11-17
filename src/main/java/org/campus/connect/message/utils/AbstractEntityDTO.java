@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import lombok.Data;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import org.campus.connect.message.constants.UtilsConstants;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @Data
 @ToString
+@SuperBuilder
 @JsonIgnoreProperties({"createdBy", "updatedBy", "created", "updated", "excluded"})
 public abstract class AbstractEntityDTO implements Serializable {
 

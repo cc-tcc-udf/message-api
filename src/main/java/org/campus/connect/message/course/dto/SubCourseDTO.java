@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.campus.connect.message.course.Course;
 import org.campus.connect.message.users.UsersDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @EqualsAndHashCode(callSuper = false)
 public class SubCourseDTO extends AbstractEntityDTO {
   private String name;

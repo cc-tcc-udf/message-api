@@ -3,6 +3,8 @@ package org.campus.connect.message.files.FileCloud;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.campus.connect.message.files.FileDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,16 @@ import java.util.UUID;
 @Service
 public class CloudinaryService {
 
+  private static final Logger logger = LoggerFactory.getLogger(CloudinaryService.class);
+
+  private static final String RESOURCE_TYPE = "resource_type";
+  private static final String RAW = "raw";
+  private static final String AUTO = "auto";
+  private static final String USE_FILENAME = "use_filename";
+  private static final String UNIQUE_FILENAME = "unique_filename";
+  private static final String OVERWRITE = "overwrite";
+  private static final String FOLDER = "folder";
+
   private final Cloudinary cloudinary;
   private final String folderIMG;
   private final String folderFiles;
@@ -24,49 +36,82 @@ public class CloudinaryService {
   public CloudinaryService(
     @Value("${folder.img}") final String folderIMG,
     @Value("${folder.files}") final String folderFiles,
-    @Value("${cloudinary.url}") final String urlCloudinary) {
+    @Value("${cloudinary.url}") final String urlCloudinary
+  ) {
     this.cloudinary = new Cloudinary(urlCloudinary);
     this.folderIMG = folderIMG;
     this.folderFiles = folderFiles;
     this.cloudinary.config.secure = true; // Força URLs seguras
   }
 
-  public FileDTO uploadToCloudinary(final MultipartFile multipartFile) throws Exception {
-    // Inicializa o DTO com os dados do arquivo recebido
+  /**
+   * Faz o upload de um arquivo para o Cloudinary.
+   *
+   * @param multipartFile arquivo a ser enviado.
+   * @return informações do arquivo após o upload.
+   * @throws IOException em caso de erro ao processar o arquivo.
+   */
+  public FileDTO uploadToCloudinary(final MultipartFile multipartFile) throws IOException {
+    validateFile(multipartFile);
+
     FileDTO fileDTO = new FileDTO(multipartFile);
-    String folderPath;
+    String folderPath = getFolderPath(multipartFile);
+    String resourceType = getResourceType(multipartFile);
 
-    // Define o caminho da pasta com base no tipo de arquivo
-    if (multipartFile.getContentType() != null && multipartFile.getContentType().startsWith("image/")) {
-      folderPath = this.folderIMG;
-    } else {
-      folderPath = this.folderFiles;
+    File tempFile = createTemporaryFile(multipartFile);
+
+    try {
+      logger.info("Iniciando upload para a pasta: {}", folderPath);
+
+      Map<String, Object> uploadParams = ObjectUtils.asMap(
+        RESOURCE_TYPE, resourceType,
+        USE_FILENAME, true,
+        UNIQUE_FILENAME, false,
+        OVERWRITE, true,
+        FOLDER, folderPath
+      );
+
+      CloudinaryUploadDTO uploadResult = new CloudinaryUploadDTO(cloudinary.uploader().upload(tempFile, uploadParams));
+      fileDTO.setUrl(uploadResult.getSecureUrl());
+
+      logger.info("Upload concluído com sucesso: {}", uploadResult.getSecureUrl());
+      return fileDTO;
+
+    } finally {
+      if (tempFile.delete()) {
+        logger.debug("Arquivo temporário deletado: {}", tempFile.getPath());
+      } else {
+        logger.warn("Não foi possível deletar o arquivo temporário: {}", tempFile.getPath());
+      }
     }
-
-    // Cria um arquivo temporário a partir do MultipartFile
-    File tempFile = getFile(multipartFile);
-
-    // Parâmetros de upload para a Cloudinary
-    Map<String, Object> uploadParams = ObjectUtils.asMap(
-      "use_filename", true,
-      "unique_filename", false,
-      "overwrite", true,
-      "folder", folderPath
-    );
-
-    // Faz o upload para a Cloudinary e obtém o resultado
-    CloudinaryUploadDTO uploadResult = new CloudinaryUploadDTO(cloudinary.uploader().upload(tempFile, uploadParams));
-
-    // Apaga o arquivo temporário
-    tempFile.delete();
-
-    // Atualiza o fileDTO com os dados do Cloudinary, se necessário
-    fileDTO.setUrl(uploadResult.getSecureUrl());
-
-    return fileDTO;
   }
 
-  private File getFile(final MultipartFile multipartFile) throws IOException {
+  private void validateFile(final MultipartFile multipartFile) {
+    if (multipartFile == null || multipartFile.isEmpty()) {
+      throw new IllegalArgumentException("O arquivo fornecido está vazio ou é inválido.");
+    }
+  }
+
+  private String getFolderPath(final MultipartFile multipartFile) {
+    if (multipartFile.getContentType() != null && multipartFile.getContentType().startsWith("image/")) {
+      return folderIMG;
+    }
+    return folderFiles;
+  }
+
+  private String getResourceType(final MultipartFile multipartFile) {
+    String contentType = multipartFile.getContentType();
+    if (contentType != null) {
+      if (contentType.startsWith("image/") || contentType.equals("application/pdf")) {
+        return AUTO;
+      } else {
+        return RAW;
+      }
+    }
+    return RAW;
+  }
+
+  private File createTemporaryFile(final MultipartFile multipartFile) throws IOException {
     String originalFilename = multipartFile.getOriginalFilename();
     String extension = "";
 
@@ -74,7 +119,6 @@ public class CloudinaryService {
       extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
     }
 
-    // Criação de um arquivo temporário
     File tempFile = File.createTempFile(UUID.randomUUID().toString(), extension);
 
     try (var inputStream = multipartFile.getInputStream()) {
@@ -83,6 +127,4 @@ public class CloudinaryService {
 
     return tempFile;
   }
-
 }
-

@@ -1,9 +1,7 @@
 package org.campus.connect.message.course;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.campus.connect.message.course.dto.SubCourseDTO;
 import org.campus.connect.message.users.UsersDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
@@ -14,6 +12,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @EqualsAndHashCode(callSuper = false)
 public class CourseDTO extends AbstractEntityDTO {
   private String name;

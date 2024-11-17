@@ -4,16 +4,14 @@ import org.campus.connect.message.course.dto.CourseCompleteDTO;
 import org.campus.connect.message.course.dto.SubCourseDTO;
 import org.campus.connect.message.files.FileMapper;
 import org.campus.connect.message.files.FileService;
+import org.campus.connect.message.firebase.FirebaseService;
 import org.campus.connect.message.users.UsersDTO;
 import org.campus.connect.message.users.UsersMapper;
 import org.campus.connect.message.users.UsersRepository;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,11 +22,14 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
   final UsersRepository usersRepository;
   final FileService fileService;
   final FileMapper fileMapper;
+  private final FirebaseService firebaseService;
 
-  public CourseServiceImpl(final CourseRepository repository,
-                           final CourseMapper mapper, final UsersMapper usersMapper,
-                           final UsersRepository usersRepository,
-                           final FileService fileService, final FileMapper fileMapper
+  public CourseServiceImpl(
+    final CourseRepository repository,
+    final CourseMapper mapper, final UsersMapper usersMapper,
+    final UsersRepository usersRepository,
+    final FileService fileService, final FileMapper fileMapper,
+    final FirebaseService firebaseService
   ) {
     super(repository, mapper);
     this.repository = repository;
@@ -37,6 +38,7 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
     this.usersRepository = usersRepository;
     this.fileService = fileService;
     this.fileMapper = fileMapper;
+    this.firebaseService = firebaseService;
   }
 
   @Override
@@ -78,7 +80,7 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
 
     return courseDTOs;
   }
-
+  @Override
   public CourseDTO findById(final UUID idCurso) {
     CourseDTO course = this.repository.findCourseById(idCurso);
     if (course.getIsGroup()) {
@@ -103,12 +105,52 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
       })
       .collect(Collectors.toList());
     List<CourseDTO> subs = this.repository.findCoursesNoGrouped();
-    CourseDTO courseDTO = new CourseDTO();
-    courseDTO.setName("Outros");
-    List<SubCourseDTO> noGroupedCourses = subs.stream()
-      .map(c -> new SubCourseDTO(c.getId(), c.getName(), c.getAbbreviation())).toList();
-    courseDTO.setCourses(noGroupedCourses);
-    dto.add(courseDTO);
+    if (!subs.isEmpty()) {
+      CourseDTO courseDTO = new CourseDTO();
+      courseDTO.setName("Outros");
+      List<SubCourseDTO> noGroupedCourses = subs.stream()
+        .map(c -> new SubCourseDTO(c.getId(), c.getName(), c.getAbbreviation())).toList();
+      courseDTO.setCourses(noGroupedCourses);
+      dto.add(courseDTO);
+    }
+    return dto;
+  }
+
+  @Override
+  public List<CourseDTO> findGroupsMobile() {
+    List<Course> all = this.repository.findAllByIsGroupIsTrue();
+    Map<UUID, List<SubCourseDTO>> groupedSubCourses = this.repository
+      .findAllSubs().stream().collect(
+        Collectors.groupingBy(
+          SubCourseDTO::getCourseGroupId,
+          Collectors.toList()
+        )
+      );
+    List<CourseDTO> dto = all.stream()
+      .map(course -> CourseDTO.builder()
+        .id(course.getId())
+        .name(course.getName())
+        .abbreviation(course.getAbbreviation())
+        .resp(new UsersDTO(course.getResp()))
+        .courses(groupedSubCourses.get(course.getId()))
+        .build()
+      ).collect(Collectors.toList());
+
+
+    List<CourseDTO> noGrouped = this.repository.findCoursesNoGrouped();
+    if (!noGrouped.isEmpty()) {
+      List<SubCourseDTO> noGroupedSubCourses = noGrouped.stream()
+        .map(course -> SubCourseDTO.builder()
+          .id(course.getId())
+          .name(course.getName())
+          .abbreviation(course.getAbbreviation())
+          .build()
+        ).collect(Collectors.toList());
+      dto.add(CourseDTO.builder()
+        .name("Outros")
+        .courses(noGroupedSubCourses)
+        .build());
+    }
     return dto;
   }
 
@@ -131,7 +173,12 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
         }
       }
     }
-    return this.save(dto);
+    CourseDTO newDto = this.save(dto);
+    if (!newDto.getIsGroup()) {
+      CourseDTO c = findById(newDto.getCourseGroupId());
+      firebaseService.createCollection(newDto, c.getName());
+    }
+    return newDto;
   }
 
   @Override

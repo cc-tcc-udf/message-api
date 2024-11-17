@@ -124,6 +124,52 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
 
     return ResponseEntity.ok(returnObjDTO);
   }
+  @GetMapping(value = "/private/course/mobile/groups")
+  @Tag(name = "Mobile")
+  @Operation(
+    summary = "Listar grupos de cursos",
+    description = "Este endpoint retorna uma lista de grupos de cursos disponíveis.",
+    tags = {"Course"}
+  )
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Lista de grupos recuperada com sucesso",
+      content = @Content(
+        schema = @Schema(implementation = ReturnObjDTO.class),
+        examples = @ExampleObject(
+          value = "{ " +
+            "\"success\": true, " +
+            "\"message\": \"Requisição realizada com sucesso!\", " +
+            "\"data\": [" +
+            "  { " +
+            "    \"id\": 1,    \"name\": \"Grupo 1(G1)\",     \"courses\": [" +
+            "{ \"id\": 3, \"name\": \"Curso 1 do Grupo 1(C1G1)\" }, { \"id\": 5, \"name\": \"Curso 2 do Grupo 1(C2G1)\" }" +
+            "]}]}"
+        )
+      )
+    ),
+    @ApiResponse(responseCode = "400", description = "Erro na requisição",
+      content = @Content(
+        schema = @Schema(implementation = ReturnObjDTO.class),
+        examples = @ExampleObject(
+          value = "{ \"success\": false, \"message\": \"Erro ao realizar requisição: <detalhes do erro>\" }"
+        )
+      )
+    )
+  })
+  public ResponseEntity<ReturnObjDTO> groupsMobile() {
+    ReturnObjDTO returnObjDTO = new ReturnObjDTO();
+    try {
+      List<CourseDTO> list = service.findGroupsMobile();
+      returnObjDTO.setData(list);
+      returnObjDTO.setSuccess(true);
+      returnObjDTO.setMessage("Requisição realizada com sucesso!");
+    } catch (Exception e) {
+      returnObjDTO.setSuccess(false);
+      returnObjDTO.setMessage("Erro ao realizar requisição: " + e.getMessage());
+    }
+
+    return ResponseEntity.ok(returnObjDTO);
+  }
 
 
   @GetMapping(value = "/public/course/list")

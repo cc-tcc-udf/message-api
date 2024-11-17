@@ -1,6 +1,7 @@
 package org.campus.connect.message.users;
 
 import org.campus.connect.message.constants.Enums.UserRoles;
+import org.campus.connect.message.course.CourseDTO;
 import org.campus.connect.message.course.CourseServiceImpl;
 import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.files.FileMapper;
@@ -113,13 +114,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
 
   @Override
   public UsersDTO getUser(Users user) {
-    UsersDTO dto = new UsersDTO();
-    dto.setEmail(user.getEmail());
-    dto.setId(user.getId());
-    dto.setName(user.getName());
-    dto.setRoles(new ArrayList<>(user.getRoles()));
-    dto.setPhone(user.getPhone());
-    dto.setActive(user.isActive());
+    UsersDTO dto = new UsersDTO(user);
     if (user.getId_curso() != null) {
       dto.setCourse(courseService.findById(user.getId_curso()));
     }
@@ -128,7 +123,23 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
         fileMapper.toDto(user.getProfilePhoto()) :
         fileService.findByIdExt(user.getId())
     );
+    return dto;
+  }
 
+  @Override
+  public UsersDTO getUserMobile(Users user) {
+    UsersDTO dto = new UsersDTO(user);
+    if (user.getId_curso() != null) {
+      CourseDTO course = courseService.findById(user.getId_curso());
+      CourseDTO group = courseService.findById(course.getCourseGroupId());
+      dto.setGroup(group.getName());
+      dto.setCourse(course);
+    }
+    dto.setProfilePhoto(
+      user.getProfilePhoto() != null ?
+        fileMapper.toDto(user.getProfilePhoto()) :
+        fileService.findByIdExt(user.getId())
+    );
     return dto;
   }
 

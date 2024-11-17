@@ -1,17 +1,16 @@
 package org.campus.connect.message.firebase;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @EqualsAndHashCode(callSuper = false)
 public class FirebaseMessageDTO {
-  private String userToken;
-  private String userToken2;
   private String title;
   private String body;
+  private String email;
+  private String name;
+  private String notificationToken;
 }

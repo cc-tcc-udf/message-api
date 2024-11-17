@@ -137,10 +137,22 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
       user = service.getUser(usr.get());
     }
     return ResponseEntity.ok(user);
+  }
 
+  @GetMapping("/private/auth/mobile/getUser")
+  @Operation(summary = "Buscar dados usuario", description = "Apos login, buscar dados do usuario com o token")
+  @Tag(name = "Mobile")
+  public ResponseEntity<UsersDTO> getUserMobile(@RequestParam String email) {
+    Optional<Users> usr = this.repository.findByEmail(email);
+    UsersDTO user = new UsersDTO();
+    if (usr.isPresent()) {
+      user = service.getUserMobile(usr.get());
+    }
+    return ResponseEntity.ok(user);
   }
 
   @PostMapping(value = "/public/auth/mobile/register")
+  @Tag(name = "Mobile")
   @Operation(summary = "Cadastro", description = "Para o usuário realizar o registro")
   public ResponseEntity<?> register_mobile(
     @RequestBody RegisterDTO body

@@ -9,7 +9,6 @@ import org.campus.connect.message.mail.MailDTO;
 import org.campus.connect.message.mail.MailService;
 import org.campus.connect.message.utils.GenericResource;
 import org.campus.connect.message.utils.dtos.ReturnObjDTO;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -58,9 +57,24 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
 
   @PostMapping(value = "/public/msg/create")
   @Operation(summary = "Criar mensagem", description = "criação de mensagem")
-  public ResponseEntity<MessageDTO> createMessage(@RequestBody MessageDTO message) throws Exception {
-    return ResponseEntity.ok(service.create(message));
+  public ReturnObjDTO createMessage(@RequestBody MessageDTO message) {
+    try {
+      MessageDTO msg = service.create(message);
+      return new ReturnObjDTO(msg, true);
+    } catch (Exception e) {
+      return new ReturnObjDTO(e, false);
+    }
+  }
 
+  @PostMapping(value = "/public/msg/send")
+  @Operation(summary = "Criar mensagem", description = "criação de mensagem")
+  public ReturnObjDTO sendMessage(@RequestBody MessageDTO message) {
+    try {
+      MessageDTO msg = service.send(message);
+      return new ReturnObjDTO(msg, true);
+    } catch (Exception e) {
+      return new ReturnObjDTO(e, false);
+    }
   }
 
   @PostMapping("email")
