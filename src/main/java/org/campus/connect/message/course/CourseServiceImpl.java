@@ -58,12 +58,11 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
 
   private List<CourseDTO> getList() {
     List<CourseDTO> courseDTOs = repository.findCourses(true);
-
     courseDTOs.forEach(courseDTO -> {
       List<SubCourseDTO> subCourseDTOs = repository.findSubsByIdGroup(courseDTO.getId());
       subCourseDTOs.forEach(subCourseDTO -> {
         subCourseDTO.setSiglaGroup(courseDTO.getAbbreviation());
-        if (subCourseDTO.getResp() == null) {
+        if (subCourseDTO.getResp() != courseDTO.getResp()) {
           subCourseDTO.setResp(courseDTO.getResp());
           CourseDTO saveDto = new CourseDTO(subCourseDTO);
           try {
@@ -75,11 +74,10 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
       });
       courseDTO.setCourses(subCourseDTOs);
     });
-
     courseDTOs.addAll(repository.findCoursesNoGrouped());
-
     return courseDTOs;
   }
+
   @Override
   public CourseDTO findById(final UUID idCurso) {
     CourseDTO course = this.repository.findCourseById(idCurso);

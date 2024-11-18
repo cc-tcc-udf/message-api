@@ -7,6 +7,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.Permission;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import org.campus.connect.message.files.FileDTO;
@@ -63,13 +64,24 @@ public class FileDriveService {
 
     java.io.File ioFile = this.getFile(multipartFile);
     FileContent mediaContent = new FileContent(multipartFile.getContentType(), ioFile);
-    File file = drive.files().create(fileMetadata, mediaContent).execute();
-    fileDTO.setUrl(urlDrive + file.getId());
-    fileDTO.setKey(null);
-    ioFile.delete(); // Exclui o arquivo temporário
 
+    // Upload do arquivo
+    File file = drive.files()
+      .create(fileMetadata, mediaContent)
+      .setFields("id, webContentLink, webViewLink") // Solicita os campos necessários
+      .execute();
+
+    // Define permissão pública para o arquivo
+    Permission permission = new Permission()
+      .setType("anyone") // Qualquer pessoa
+      .setRole("reader"); // Apenas leitura
+    drive.permissions().create(file.getId(), permission).execute();
+    fileDTO.setUrl(urlDrive + file.getId() + "/preview");
+    fileDTO.setKey(null);
+    ioFile.delete();
     return fileDTO;
   }
+
 
   private java.io.File getFile(final MultipartFile multipartFile) throws IOException {
     String originalFilename = multipartFile.getOriginalFilename();

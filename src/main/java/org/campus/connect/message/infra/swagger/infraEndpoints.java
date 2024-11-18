@@ -34,6 +34,7 @@ public class infraEndpoints {
   }
 
   @GetMapping("")
+  @Hidden
   public RedirectView redirectToSwagger() {
     return new RedirectView("/swagger-ui/index.html");
   }

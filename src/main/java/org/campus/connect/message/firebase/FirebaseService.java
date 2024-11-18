@@ -49,6 +49,41 @@ public class FirebaseService {
     }
   }
 
+  public void sendMultiNotification(FirebaseMessageDTO dto, List<String> tokens) throws FirebaseMessagingException {
+    if (tokens == null || tokens.isEmpty()) {
+      logger.warn("Nenhum token de notificação encontrado para o curso: {}", dto);
+      return;
+    }
+
+    // Constrói a mensagem em lote
+    MulticastMessage multicastMessage = MulticastMessage.builder()
+      .addAllTokens(tokens)
+      .setNotification(Notification.builder()
+        .setTitle(dto.getTitle())
+        .setBody(dto.getBody())
+        .build())
+      .setAndroidConfig(AndroidConfig.builder()
+        .setPriority(AndroidConfig.Priority.HIGH)
+        .setNotification(AndroidNotification.builder()
+          .setSound("default")
+          .build())
+        .build())
+      .build();
+
+    // Envia o lote
+    BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(multicastMessage);
+
+    // Registra o resultado
+    int successCount = response.getSuccessCount();
+    int failureCount = response.getFailureCount();
+    logger.info("Notificações enviadas com sucesso: {}, falhas: {}", successCount, failureCount);
+
+    // Opcional: Log detalhado de falhas
+    response.getResponses().stream()
+      .filter(sendResponse -> !sendResponse.isSuccessful())
+      .forEach(sendResponse -> logger.error("Erro ao enviar notificação: {}", sendResponse.getException().getMessage()));
+  }
+
   public List<FirebaseMessageDTO> fechTokens() throws ExecutionException, InterruptedException {
     List<FirebaseMessageDTO> tokens = new ArrayList<>();
     Firestore db = FirestoreClient.getFirestore();

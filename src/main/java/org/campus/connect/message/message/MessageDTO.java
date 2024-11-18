@@ -27,7 +27,7 @@ public class MessageDTO extends AbstractEntityDTO {
   private UUID responsible;
   private List<FileDTO> attachments;
   private List<LinksDTO> links;
-  private CourseDTO course;
+  private List<CourseDTO> courses;
 
   public MessageDTO(final Message message) {
     setId(message.getId());

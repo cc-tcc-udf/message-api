@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implements UsersService {
@@ -165,24 +166,27 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   @Override
   public List<UsersDTO> findResp() {
     List<Users> users = this.repository.findByRolesContainsAndActive(UserRoles.PROF, true);
+    List<CourseDTO> obj = courseService.findAll();
     return users.stream()
       .map(usr -> {
-        UsersDTO userDTO = new UsersDTO();
-        userDTO.setId(usr.getId());
-        userDTO.setName(usr.getName());
-        userDTO.setId_curso(usr.getId_curso());
-        if (usr.getProfilePhoto() != null) {
-          userDTO.setProfilePhoto(new FileDTO(usr.getProfilePhoto()));
+        boolean isResp = obj.stream()
+          .anyMatch(course -> course.getResp() != null && course.getResp().getId().equals(usr.getId()));
+
+        if (!isResp) {
+          UsersDTO userDTO = new UsersDTO();
+          userDTO.setId(usr.getId());
+          userDTO.setName(usr.getName());
+          userDTO.setId_curso(usr.getId_curso());
+          if (usr.getProfilePhoto() != null) {
+            userDTO.setProfilePhoto(new FileDTO(usr.getProfilePhoto()));
+          }
+          return userDTO;
+        } else {
+          return null;
         }
-        return userDTO;
-      }).toList();
+      })
+      .filter(Objects::nonNull)
+      .collect(Collectors.toList());
   }
 
-//  public void atualizarToken(UUID uuid, List<String> novoToken) throws Exception {
-//    Users usr = findByU
-//    if (!user.getToken().contains(novoToken)) {
-//      user.getToken().add(novoToken);
-//      this.save(new UsersDTO(user));
-//    }
-//  }
 }

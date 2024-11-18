@@ -40,9 +40,14 @@ public class Message extends AbstractEntity {
   @Column(name = "responsible_id")
   private UUID responsible;
 
-  @ManyToOne
-  @JoinColumn(name = "course_id")
-  private Course course;
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+    name = "message_courses_tb",
+    schema = SchemaConstants.MESSAGES,
+    joinColumns = @JoinColumn(name = "message_id"),
+    inverseJoinColumns = @JoinColumn(name = "course_id")
+  )
+  private List<Course> courses;
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
