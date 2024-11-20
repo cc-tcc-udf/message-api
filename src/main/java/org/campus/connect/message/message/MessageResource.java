@@ -4,11 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
-import org.campus.connect.message.constants.GenericMessages;
 import org.campus.connect.message.mail.MailDTO;
 import org.campus.connect.message.mail.MailService;
 import org.campus.connect.message.utils.GenericResource;
 import org.campus.connect.message.utils.dtos.ReturnObjDTO;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -28,25 +28,20 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
     this.mailService = mailService;
   }
 
-  @GetMapping(value = "/public/msg/{id}")
+  @GetMapping(value = "/private/msg/{id}")
   @Operation(summary = "Buscar msg pelo id", description = "Lista todas as msg")
   public ReturnObjDTO getById(@Parameter(description = "ID da message a ser retornada", required = true)
                               @PathVariable final UUID id) {
-    ReturnObjDTO obj = new ReturnObjDTO();
     try {
-      MessageDTO dto = service.findMsgById(id);
-      obj.setData(dto);
-      obj.setSuccess(Boolean.TRUE);
-      obj.setMessage(GenericMessages.ResponseSuccess);
+      return new ReturnObjDTO(service.findMsgById(id), true);
     } catch (Exception e) {
-      obj.setSuccess(Boolean.FALSE);
-      obj.setMessage(GenericMessages.ResponseError);
+      return new ReturnObjDTO(e, false);
     }
-    return obj;
   }
 
-  @GetMapping(value = "/public/msg/list")
+  @GetMapping(value = "/private/msg/listAll")
   @Operation(summary = "Listar msg", description = "Lista todas as msg")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public ReturnObjDTO list() {
     try {
       return new ReturnObjDTO(service.findAll(), true);
@@ -55,7 +50,31 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
     }
   }
 
-  @PostMapping(value = "/public/msg/create")
+  @GetMapping(value = "/private/msg/listByResp/{id}")
+  @Operation(summary = "Listar msg", description = "Lista todas as msg")
+  @PreAuthorize("hasAnyRole('ROLE_PROF')")
+  public ReturnObjDTO listByResp(@Parameter(description = "ID do aluno", required = true)
+                                 @PathVariable final UUID id) {
+    try {
+      return new ReturnObjDTO(service.findAllResp(id), true);
+    } catch (Exception e) {
+      return new ReturnObjDTO(e, false);
+    }
+  }
+
+  @GetMapping(value = "/private/msg/mobile/list/{id}")
+  @Operation(summary = "Listar msg", description = "Lista todas as msg")
+  @Tag(name = "Mobile")
+  public ReturnObjDTO listMobile(@Parameter(description = "ID do do curso", required = true)
+                                 @PathVariable final UUID id) {
+    try {
+      return new ReturnObjDTO(service.findByIdCourse(id), true);
+    } catch (Exception e) {
+      return new ReturnObjDTO(e, false);
+    }
+  }
+
+  @PostMapping(value = "/private/msg/create")
   @Operation(summary = "Criar mensagem", description = "criação de mensagem")
   public ReturnObjDTO createMessage(@RequestBody MessageDTO message) {
     try {
@@ -66,12 +85,14 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
     }
   }
 
-  @PostMapping(value = "/public/msg/send")
+  @PostMapping(value = "/private/msg/send")
   @Operation(summary = "Criar mensagem", description = "criação de mensagem")
   public ReturnObjDTO sendMessage(@RequestBody MessageDTO message) {
     try {
       MessageDTO msg = service.send(message);
-      return new ReturnObjDTO(msg, true);
+      if (msg != null)
+        return new ReturnObjDTO(msg, true);
+      else return new ReturnObjDTO(null, false);
     } catch (Exception e) {
       return new ReturnObjDTO(e, false);
     }
