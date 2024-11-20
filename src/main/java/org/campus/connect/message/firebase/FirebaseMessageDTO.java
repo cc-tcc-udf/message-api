@@ -9,6 +9,7 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = false)
 public class FirebaseMessageDTO {
   private String title;
+  private String id;
   private String body;
   private String email;
   private String name;

@@ -81,8 +81,9 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     }
     msg.setSendDate(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.of("-03:00")));
     msg.setStatus(Status.ENVIADO);
-    this.firebaseSend(msg);
-    return this.save(msg);
+    MessageDTO obj = this.create(msg);
+    this.firebaseSend(obj);
+    return obj;
   }
 
   private List<List<String>> partitionList(List<String> tokens) {
@@ -107,6 +108,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
       for (List<String> batch : tokenBatches) {
         try {
           this.firebaseService.sendMultiNotification(FirebaseMessageDTO.builder()
+            .id(msg.getId().toString())
             .title(msg.getTitle())
             .body(msg.getSummary())
             .build(), batch);
@@ -115,7 +117,5 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
         }
       }
     }
-
-
   }
 }

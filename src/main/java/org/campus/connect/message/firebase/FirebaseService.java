@@ -68,6 +68,7 @@ public class FirebaseService {
           .setSound("default")
           .build())
         .build())
+      .putData("id_msg", String.valueOf(dto.getId()))
       .build();
 
     // Envia o lote
