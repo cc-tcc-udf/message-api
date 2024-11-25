@@ -127,7 +127,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
 
   @Override
   public List<MessageDTO> findByIdCourse(UUID id) {
-    List<Message> messages = repository.findAllByCourseId(id);
+    List<Message> messages = repository.findAllByCourseIdAndStatusEnviado(id);
     return this.mapper.toDto(messages);
   }
 

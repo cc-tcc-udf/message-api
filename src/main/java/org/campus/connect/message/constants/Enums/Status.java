@@ -10,7 +10,6 @@ public enum Status {
   VISUALIZADO("Visualizado"),
   REMOVIDA("Removida");
   private final String description;
-
   Status(final String description) {
     this.description = description;
   }
