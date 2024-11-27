@@ -2,6 +2,8 @@ package org.campus.connect.message.message;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import org.campus.connect.message.constants.Enums.Status;
+import org.campus.connect.message.constants.Enums.UserRoles;
+import org.campus.connect.message.course.Course;
 import org.campus.connect.message.course.CourseDTO;
 import org.campus.connect.message.course.CourseService;
 import org.campus.connect.message.firebase.FirebaseMessageDTO;
@@ -11,6 +13,9 @@ import org.campus.connect.message.links.LinksService;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +25,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> implements MessageService {
@@ -31,6 +38,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
   private final LinksService linksService;
   private final FirebaseService firebaseService;
   private final CourseService courseService;
+
 
   public MessageServiceImpl(
     final MessageRepository repository,
@@ -47,17 +55,36 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
 
   @Override
   public MessageDTO findMsgById(final UUID id) {
-    Message message = repository.findById(id).orElse(null);
-    if (message == null) {
-      return null;
-    }
-    return mapper.toDto(message);
+    return this.repository.findById(id)
+      .map(msg -> {
+        MessageDTO dto = mapper.toDto(msg);
+        dto.setVlrViews(getViewsQtd(id, msg.getCourses()));
+        return dto;
+      })
+      .orElse(null);
   }
+
+  private String getViewsQtd(UUID id, List<Course> courses) {
+    Number views = this.repository.getLength(id);
+    final AtomicInteger vlr = new AtomicInteger();
+    courses.forEach(course -> {
+      vlr.addAndGet(this.repository.getAlunos(course.getId(), UserRoles.USER).intValue());
+    });
+
+    return views + "/" + vlr.get();
+  }
+
 
   @Override
   public List<MessageDTO> findAll() {
     List<Message> messages = repository.findMessages();
-    return this.mapper.toDto(messages);
+    return messages.stream()
+      .map(message -> {
+        MessageDTO dto = mapper.toDto(message);
+        dto.setVlrViews(getViewsQtd(message.getId(), message.getCourses()));
+        return dto;
+      })
+      .collect(Collectors.toList());
   }
 
   @Override
@@ -126,9 +153,22 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
   }
 
   @Override
-  public List<MessageDTO> findByIdCourse(UUID id) {
+  public List<MessageDTO> findByIdCourseMobile(UUID id) {
     List<Message> messages = repository.findAllByCourseIdAndStatusEnviado(id);
     return this.mapper.toDto(messages);
   }
 
+  @Override
+  public List<MessageDTO> findByIdCourse(UUID id) {
+    Pageable top5 = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "sendDate"));
+    List<Message> messages = repository.findByCourseIdAndStatusEnviado(id, top5).getContent();
+    return this.mapper.toDto(messages);
+  }
+
+  @Override
+  public List<MessageDTO> findByListIdResp(UUID id) {
+    Pageable top5 = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "sendDate"));
+    List<Message> messages = repository.findByResponsibleAndStatusEnviado(id, top5).getContent();
+    return this.mapper.toDto(messages);
+  }
 }

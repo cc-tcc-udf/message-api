@@ -1,6 +1,5 @@
 package org.campus.connect.message.message.view;
 
-import org.campus.connect.message.links.LinksDTO;
 import org.campus.connect.message.utils.GenericService;
 
 import java.util.List;
@@ -13,4 +12,8 @@ public interface ViewService extends GenericService<ViewDTO> {
   ViewDTO create(ViewDTO linksDTO) throws Exception;
 
   List<ViewDTO> findByIdUser(UUID id);
+
+  ViewDTO setView(UUID idUser, UUID idMessage) throws Exception;
+
+  List<ViewDTO> getByIdMsg(UUID id);
 }

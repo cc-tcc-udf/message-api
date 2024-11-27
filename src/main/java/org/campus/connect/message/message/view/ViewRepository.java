@@ -12,4 +12,8 @@ public interface ViewRepository extends JpaRepository<View, UUID> {
 
   @Query("SELECT v FROM View v WHERE v.user.id = :id")
   List<View> findAllByUser(@Param("id") UUID id);
+
+  @Query("SELECT v FROM View v WHERE v.message.id = :id")
+  List<View> findAllByMessage(@Param("id") UUID id);
+
 }

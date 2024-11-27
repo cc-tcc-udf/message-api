@@ -67,7 +67,5 @@ public class Message extends AbstractEntity {
   )
   private List<File> attachments;
 
-  @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private List<View> views;
 }
 

@@ -22,5 +22,6 @@ public class ViewDTO extends AbstractEntityDTO {
   private LocalDateTime viewDate;
   private boolean viewed;
   private boolean received;
+  private boolean favorite;
 }
 

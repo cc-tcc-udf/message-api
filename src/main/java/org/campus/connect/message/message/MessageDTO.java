@@ -8,6 +8,7 @@ import org.campus.connect.message.constants.Enums.Status;
 import org.campus.connect.message.course.CourseDTO;
 import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.links.LinksDTO;
+import org.campus.connect.message.message.view.ViewDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class MessageDTO extends AbstractEntityDTO {
   private List<FileDTO> attachments;
   private List<LinksDTO> links;
   private List<CourseDTO> courses;
+  private String vlrViews;
 
   public MessageDTO(final Message message) {
     setId(message.getId());

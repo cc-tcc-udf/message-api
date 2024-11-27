@@ -17,5 +17,9 @@ public interface MessageService extends GenericService<MessageDTO> {
 
   List<MessageDTO> findAllResp(UUID id);
 
+  List<MessageDTO> findByIdCourseMobile(UUID id);
+
   List<MessageDTO> findByIdCourse(UUID id);
+
+  List<MessageDTO> findByListIdResp(UUID id);
 }

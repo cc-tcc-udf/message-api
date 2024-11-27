@@ -5,8 +5,11 @@ import org.campus.connect.message.utils.GenericService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UsersService extends GenericService<UsersDTO> {
+
+  UsersDTO getUserById(UUID id);
 
   List<UsersDTO> findAll();
 

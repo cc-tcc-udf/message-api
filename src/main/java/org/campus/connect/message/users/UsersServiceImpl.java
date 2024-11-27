@@ -52,6 +52,12 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   }
 
   @Override
+  public UsersDTO getUserById(UUID id) {
+    Optional<Users> user = this.repository.findById(id);
+    return user.map(mapper::toDto).orElse(null);
+  }
+
+  @Override
   public List<UsersDTO> findAll() {
     List<Users> listUsers = this.repository.findAllByExcluded(Boolean.FALSE);
     listUsers.forEach(user -> {

@@ -46,4 +46,7 @@ public class View extends AbstractEntity {
 
   @Column(name = "received")
   private boolean received;
+
+  @Column(name = "favorite")
+  private boolean favorite;
 }
