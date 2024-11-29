@@ -149,8 +149,13 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
   @Override
   public List<MessageDTO> findAllResp(UUID id) {
     List<Message> messages = repository.findAllByResponsible(id);
-    return this.mapper.toDto(messages);
+    return messages.stream().map(msg -> {
+      MessageDTO dto = this.mapper.toDto(msg);
+      dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
+      return dto;
+    }).collect(Collectors.toList());
   }
+
 
   @Override
   public List<MessageDTO> findByIdCourseMobile(UUID id) {
@@ -162,13 +167,23 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
   public List<MessageDTO> findByIdCourse(UUID id) {
     Pageable top5 = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "sendDate"));
     List<Message> messages = repository.findByCourseIdAndStatusEnviado(id, top5).getContent();
-    return this.mapper.toDto(messages);
+    return messages.stream().map(msg -> {
+      MessageDTO dto = this.mapper.toDto(msg);
+      dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
+      return dto;
+    }).collect(Collectors.toList());
   }
+
 
   @Override
   public List<MessageDTO> findByListIdResp(UUID id) {
     Pageable top5 = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "sendDate"));
     List<Message> messages = repository.findByResponsibleAndStatusEnviado(id, top5).getContent();
-    return this.mapper.toDto(messages);
+    return messages.stream().map(msg -> {
+      MessageDTO dto = this.mapper.toDto(msg);
+      dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
+      return dto;
+    }).collect(Collectors.toList());
   }
+
 }
