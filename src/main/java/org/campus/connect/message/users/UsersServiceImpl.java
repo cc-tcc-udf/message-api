@@ -88,7 +88,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   @Override
   public UsersDTO adminCreate() throws Exception {
     Users user = new Users();
-    user.setEmail("admin@admin.com");
+    user.setEmail("tauisilva@gmail.com");
     user.setName("Taui Silva Lima");
     user.setPhone("admin");
     user.setActive(true);

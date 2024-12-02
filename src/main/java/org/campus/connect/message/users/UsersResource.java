@@ -192,7 +192,6 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
 
   @GetMapping(value = "/public/admin/create")
   @Tag(name = "ADMIN")
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @Operation(summary = "Admin", description = "Registrar o usuário admin")
   public ResponseEntity<UsersDTO> getAdmin() throws Exception {
     return ResponseEntity.ok(this.service.adminCreate());
