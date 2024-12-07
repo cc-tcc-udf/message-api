@@ -3,11 +3,13 @@ package org.campus.connect.message.message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.campus.connect.message.message.mobile.InfosDTO;
 import org.campus.connect.message.utils.GenericResource;
 import org.campus.connect.message.utils.dtos.ReturnObjDTO;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -58,17 +60,23 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
     }
   }
 
-  @GetMapping(value = "/private/msg/mobile/list/{id}")
-  @Operation(summary = "Listar msg", description = "Lista todas as msg")
+  @GetMapping(value = "/private/msg/mobile/list/{alunoId}")
+  @Operation(summary = "Listar mensagens", description = "Lista mensagens baseadas no flag e no aluno")
   @Tag(name = "Mobile")
-  public ReturnObjDTO listMobile(@Parameter(description = "ID do curso", required = true)
-                                 @PathVariable final UUID id) {
+  public ReturnObjDTO listMobile(
+    @Parameter(description = "ID do aluno", required = true) @PathVariable final UUID alunoId,
+    @Parameter(description = "Flag de filtro ('all', 'reads', 'not_read', 'favorites')", required = true)
+    @RequestParam final String flag) {
     try {
-      return new ReturnObjDTO(service.findByIdCourseMobile(id), true);
+      List<MessageDTO> messages = service.findMessagesByFlagAndStudent(alunoId, flag);
+      return new ReturnObjDTO(messages, true);
+    } catch (IllegalArgumentException e) {
+      return new ReturnObjDTO(e.getMessage(), false);
     } catch (Exception e) {
       return new ReturnObjDTO(e, false);
     }
   }
+
 
   @GetMapping(value = "/private/msg/list/course/{id}")
   @Operation(summary = "Listar msg", description = "Lista todas as msg")
@@ -87,6 +95,19 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
                                    @PathVariable final UUID id) {
     try {
       return new ReturnObjDTO(service.findByListIdResp(id), true);
+    } catch (Exception e) {
+      return new ReturnObjDTO(e, false);
+    }
+  }
+
+  @GetMapping(value = "/private/msg/mobile/qtds/{id}")
+  @Operation(summary = "Informação contendo a qtd de items", description = "Informação contendo a qtd de items de cada categoria")
+  @Tag(name = "Mobile")
+  public ReturnObjDTO getQtds(@Parameter(description = "ID do aluno", required = true)
+                              @PathVariable final UUID id) {
+    try {
+      InfosDTO infos = service.findInfosAluno(id);
+      return new ReturnObjDTO(infos, infos != null);
     } catch (Exception e) {
       return new ReturnObjDTO(e, false);
     }
@@ -115,5 +136,20 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
       return new ReturnObjDTO(e, false);
     }
   }
+
+  @GetMapping(value = "/private/msg/mobile/get/{idMsg}")
+  @Operation(summary = "Buscar mensagem por ID", description = "Recupera detalhes da mensagem e seu status de visualização e favorito para um usuário")
+  @Tag(name = "Mobile")
+  public ReturnObjDTO getById(@Parameter(description = "ID da message a ser retornada", required = true)
+                              @PathVariable final UUID idMsg,
+                              @Parameter(description = "ID do aluno", required = true)
+                              @RequestParam UUID alunoId) {
+    try {
+      return new ReturnObjDTO(service.findMsgByIdMobile(idMsg, alunoId), true);
+    } catch (Exception e) {
+      return new ReturnObjDTO(e, false);
+    }
+  }
+
 
 }

@@ -2,6 +2,7 @@ package org.campus.connect.message.message.view;
 
 import org.campus.connect.message.message.MessageDTO;
 import org.campus.connect.message.message.MessageService;
+import org.campus.connect.message.message.mobile.MsgViewDTO;
 import org.campus.connect.message.users.UsersDTO;
 import org.campus.connect.message.users.UsersService;
 import org.campus.connect.message.utils.GenericServiceImpl;
@@ -43,25 +44,42 @@ public class ViewServiceImpl extends GenericServiceImpl<View, ViewDTO> implement
   @Override
   public List<ViewDTO> findByIdUser(final UUID id) {
     return this.mapper.toDto(this.repository.findAllByUser(id));
-  }  @Override
+  }
+
+  @Override
   public List<ViewDTO> getByIdMsg(final UUID id) {
     return this.mapper.toDto(this.repository.findAllByMessage(id));
   }
 
   @Override
-  public ViewDTO setView(UUID idUser, UUID idMessage) throws Exception {
-    UsersDTO user = this.usersService.getUserById(idUser);
-    MessageDTO msg = this.messageService.findMsgById(idMessage);
-    if (user == null || msg == null) {
-      return null;
-    }
+  public ViewDTO setView(MsgViewDTO vw) {
+    return repository.findByIdUserAndIdMessage(vw.getUser(), vw.getMessage())
+      .map(obj -> {
+        obj.setViewed(vw.getView());
+        obj.setFavorite(vw.getFavorite());
+        obj.setReceived(true);
+        try {
+          return this.save(mapper.toDto(obj));
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      })
+      .orElseGet(() -> {
+        UsersDTO user = usersService.getUserById(vw.getUser());
+        MessageDTO msg = messageService.findMsgById(vw.getMessage());
 
-    ViewDTO dto = new ViewDTO();
-    dto.setViewed(true);
-    dto.setReceived(true);
-    dto.setViewDate(LocalDateTime.now());
-    dto.setUser(user);
-    dto.setMessage(msg);
-    return this.save(dto);
+        ViewDTO view = new ViewDTO();
+        view.setUser(user);
+        view.setMessage(msg);
+        view.setViewed(vw.getView());
+        view.setFavorite(vw.getFavorite());
+        view.setViewDate(LocalDateTime.now());
+        view.setReceived(true);
+        try {
+          return this.save(view);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      });
   }
 }

@@ -2,11 +2,9 @@ package org.campus.connect.message.message.view;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
+import org.campus.connect.message.message.mobile.MsgViewDTO;
 import org.campus.connect.message.utils.GenericResource;
 import org.campus.connect.message.utils.dtos.ReturnObjDTO;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,20 +29,18 @@ public class ViewResource extends GenericResource<ViewDTO, ViewResource> {
     return service.findAll();
   }
 
-  @GetMapping(value = "/private/view/mobile/setView")
+  @PostMapping(value = "/private/view/mobile/view_favorite")
   @Tag(name = "Mobile")
   @Operation(summary = "Listar msg", description = "Lista todas as msg")
-  public ReturnObjDTO setViews(@RequestParam UUID idUser,
-                               @RequestParam UUID idMessage) {
+  public ReturnObjDTO genView(@RequestBody MsgViewDTO dto) {
     try {
-      return new ReturnObjDTO(service.setView(idUser, idMessage), true);
+      return new ReturnObjDTO(service.setView(dto), true);
     } catch (Exception e) {
       return new ReturnObjDTO(e, false);
     }
   }
 
   @GetMapping(value = "/private/view/list/{id}")
-  @Tag(name = "Mobile")
   @Operation(summary = "Listar msg", description = "Lista todas as msg")
   public ReturnObjDTO getByIdMsg(@PathVariable UUID id) {
     try {

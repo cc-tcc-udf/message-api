@@ -1,5 +1,6 @@
 package org.campus.connect.message.message;
 
+import org.campus.connect.message.message.mobile.InfosDTO;
 import org.campus.connect.message.utils.GenericService;
 
 import java.util.List;
@@ -22,4 +23,10 @@ public interface MessageService extends GenericService<MessageDTO> {
   List<MessageDTO> findByIdCourse(UUID id);
 
   List<MessageDTO> findByListIdResp(UUID id);
+
+  InfosDTO findInfosAluno(UUID alunoId);
+
+  List<MessageDTO> findMessagesByFlagAndStudent(UUID alunoId, String flag);
+
+  MessageDTO findMsgByIdMobile(UUID idMsg, UUID alunoId);
 }

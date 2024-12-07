@@ -10,6 +10,10 @@ import org.campus.connect.message.firebase.FirebaseMessageDTO;
 import org.campus.connect.message.firebase.FirebaseService;
 import org.campus.connect.message.links.LinksDTO;
 import org.campus.connect.message.links.LinksService;
+import org.campus.connect.message.message.mobile.InfosDTO;
+import org.campus.connect.message.message.view.View;
+import org.campus.connect.message.message.view.ViewRepository;
+import org.campus.connect.message.users.UsersRepository;
 import org.campus.connect.message.utils.GenericServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,25 +36,28 @@ import java.util.stream.Collectors;
 public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> implements MessageService {
   private static final Logger logger = LoggerFactory.getLogger(MessageServiceImpl.class);
 
-
   private final MessageRepository repository;
   private final MessageMapper mapper;
   private final LinksService linksService;
   private final FirebaseService firebaseService;
   private final CourseService courseService;
-
+  private final UsersRepository usersRepository;
+  private final ViewRepository viewRepository;
 
   public MessageServiceImpl(
     final MessageRepository repository,
     final MessageMapper mapper,
     final LinksService linksService, final FirebaseService firebaseService,
-    final CourseService courseService) {
+    final CourseService courseService, final UsersRepository usersRepository,
+    final ViewRepository viewRepository) {
     super(repository, mapper);
     this.repository = repository;
     this.mapper = mapper;
     this.linksService = linksService;
     this.firebaseService = firebaseService;
     this.courseService = courseService;
+    this.usersRepository = usersRepository;
+    this.viewRepository = viewRepository;
   }
 
   @Override
@@ -186,4 +193,77 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     }).collect(Collectors.toList());
   }
 
+  @Override
+  public InfosDTO findInfosAluno(UUID alunoId) {
+    return usersRepository.findById(alunoId)
+      .map(user -> {
+        InfosDTO dto = new InfosDTO();
+        dto.setId(user.getId());
+        dto.setEmail(user.getEmail());
+        List<MessageDTO> allMessages = this.findByIdCourseMobile(user.getId_curso());
+        dto.setTotal(allMessages.size());
+        List<View> userViews = viewRepository.findAllByUser(alunoId);
+        dto.setFavorites(allMessages.stream()
+          .filter(message -> userViews.stream()
+            .anyMatch(view -> view.getMessage().getId().equals(message.getId()) && view.isFavorite()))
+          .count());
+        dto.setReads(allMessages.stream()
+          .filter(message -> userViews.stream()
+            .anyMatch(view -> view.getMessage().getId().equals(message.getId()) && view.isViewed()))
+          .count());
+        dto.setNotReads(allMessages.size() - dto.getReads().intValue());
+        return dto;
+      })
+      .orElse(null);
+  }
+
+  @Override
+  public List<MessageDTO> findMessagesByFlagAndStudent(UUID alunoId, String flag) {
+    return usersRepository.findById(alunoId)
+      .map(user -> {
+        List<MessageDTO> allMessages = this.findByIdCourseMobile(user.getId_curso());
+        List<View> userViews = viewRepository.findAllByUser(alunoId);
+        allMessages.forEach(message -> {
+          View view = userViews.stream()
+            .filter(v -> v.getMessage().getId().equals(message.getId()))
+            .findFirst()
+            .orElse(null);
+          message.setDate_view(view != null ? view.getViewDate() : null);
+          message.setFavorite(view != null && view.isFavorite());
+          message.setRead(view != null && view.isViewed());
+        });
+        return switch (flag.toLowerCase()) {
+          case "all" -> allMessages;
+          case "reads" -> allMessages.stream()
+            .filter(MessageDTO::getRead)
+            .collect(Collectors.toList());
+          case "not_read" -> allMessages.stream()
+            .filter(message -> !message.getRead())
+            .collect(Collectors.toList());
+          case "favorites" -> allMessages.stream()
+            .filter(MessageDTO::getFavorite)
+            .collect(Collectors.toList());
+          default -> throw new IllegalArgumentException("Flag inválida: " + flag);
+        };
+      })
+      .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado com ID: " + alunoId));
+  }
+
+  @Override
+  public MessageDTO findMsgByIdMobile(final UUID idMsg, final UUID alunoId) {
+    return repository.findById(idMsg)
+      .map(msg -> {
+        MessageDTO dto = mapper.toDto(msg);
+        viewRepository.findByIdUserAndIdMessage(alunoId, idMsg)
+          .ifPresent(view -> {
+            dto.setRead(view.isViewed());
+            dto.setFavorite(view.isFavorite());
+            dto.setDate_view(view.getViewDate());
+          });
+        return dto;
+      })
+      .orElse(null);
+  }
+
 }
+

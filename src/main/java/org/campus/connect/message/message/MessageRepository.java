@@ -25,7 +25,9 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
   List<Message> findAllByCourseId(@Param("courseId") UUID courseId);
 
   @Query(
-    "SELECT m FROM Message m JOIN m.courses c WHERE c.id = :courseId AND m.status = 'ENVIADO'"
+    "SELECT m FROM Message m JOIN m.courses c" +
+      " WHERE c.id = :courseId AND m.status = 'ENVIADO'" +
+      "ORDER BY m.sendDate DESC"
   )
   List<Message> findAllByCourseIdAndStatusEnviado(@Param("courseId") UUID courseId);
 
