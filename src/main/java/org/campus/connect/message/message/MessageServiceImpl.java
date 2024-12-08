@@ -99,11 +99,13 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
   public MessageDTO create(final MessageDTO msg) throws Exception {
     if (msg.getLinks() != null && !msg.getLinks().isEmpty()) {
       msg.getLinks().forEach(link -> {
-        try {
-          LinksDTO savedLink = this.linksService.create(link);
-          link.setId(savedLink.getId());
-        } catch (Exception e) {
-          throw new RuntimeException(e);
+        if (link.getId() == null) {
+          try {
+            LinksDTO savedLink = this.linksService.create(link);
+            link.setId(savedLink.getId());
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
         }
       });
     }
