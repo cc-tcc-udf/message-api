@@ -67,7 +67,6 @@ public class ViewServiceImpl extends GenericServiceImpl<View, ViewDTO> implement
       .orElseGet(() -> {
         UsersDTO user = usersService.getUserById(vw.getUser());
         MessageDTO msg = messageService.findMsgById(vw.getMessage());
-
         ViewDTO view = new ViewDTO();
         view.setUser(user);
         view.setMessage(msg);

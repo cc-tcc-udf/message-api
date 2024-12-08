@@ -61,13 +61,13 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
 
   @GetMapping("/public/refreshToken")
   @Operation(summary = "Buscar dados usuario", description = "Atualizar o token")
-  public ResponseEntity<TokenRefreshDTO> refreshToken(@RequestParam String email) {
+  public ResponseEntity<TokenRefreshDTO> refreshToken(@RequestParam String email, @RequestParam Boolean isMobile) {
     Optional<Users> usr = this.repository.findByEmail(email);
     UsersDTO user = new UsersDTO();
     if (usr.isPresent()) {
       user = service.getUser(usr.get());
     }
-    String newToken = tokenService.generateToken(mapper.toEntity(user));
+    String newToken = tokenService.generateToken(mapper.toEntity(user), isMobile);
     TokenRefreshDTO dto = new TokenRefreshDTO(email, newToken);
     return ResponseEntity.ok(dto);
   }
@@ -124,7 +124,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .body("{\"message\": \"Sua conta ainda não foi ativada. Aguarde o e-mail de ativação enviado pelo administrador.\"}");
     }
-    String token = this.tokenService.generateToken(user);
+    String token = this.tokenService.generateToken(user, body.isMobile());
     return ResponseEntity.ok(new ResponseDTO(user.getEmail(), token));
   }
 
@@ -160,7 +160,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     Optional<Users> usr = this.repository.findByEmail(body.getEmail());
     if (usr.isEmpty()) {
       Users user = this.service.register_mobile(body);
-      String token = this.tokenService.generateToken(user);
+      String token = this.tokenService.generateToken(user, true);
       ReturnObjDTO objDTO = new ReturnObjDTO(new ResponseDTO(user.getEmail(), token), true);
       return ResponseEntity.ok(objDTO);
     }
@@ -180,7 +180,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     Optional<Users> usr = this.repository.findByEmail(body.getEmail());
     if (usr.isEmpty()) {
       Users user = this.service.register(body, isMobile);
-      String token = this.tokenService.generateToken(user);
+      String token = this.tokenService.generateToken(user, isMobile);
       ReturnObjDTO objDTO = new ReturnObjDTO(isMobile ? new ResponseDTO(user.getEmail(), token) : null, true);
       return ResponseEntity.ok(objDTO);
     }

@@ -22,14 +22,14 @@ public class TokenService {
   @Value("${api.security.issuer}")
   private String issuer;
 
-  public String generateToken(Users user) {
+  public String generateToken(Users user, boolean isMobile) {
     try {
       Algorithm algorithm = Algorithm.HMAC256(secret);
 
       return JWT.create()
         .withIssuer(issuer)
         .withSubject(user.getEmail())
-        .withExpiresAt(generateExpirationDate())
+        .withExpiresAt(generateExpirationDate(isMobile))
         .sign(algorithm);
 
     } catch (JWTCreationException e) {
@@ -53,6 +53,13 @@ public class TokenService {
 
   private Instant generateExpirationDate() {
     return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+  }
+
+  private Instant generateExpirationDate(boolean isMobile) {
+    if (isMobile) {
+      return LocalDateTime.now().plusMonths(1).toInstant(ZoneOffset.of("-03:00"));
+    }
+    return LocalDateTime.now().plusHours(3).toInstant(ZoneOffset.of("-03:00"));
   }
 
 }

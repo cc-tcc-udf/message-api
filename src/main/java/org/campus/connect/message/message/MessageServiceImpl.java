@@ -1,6 +1,7 @@
 package org.campus.connect.message.message;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import jakarta.persistence.criteria.Predicate;
 import org.campus.connect.message.constants.Enums.Status;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.course.Course;
@@ -15,11 +16,11 @@ import org.campus.connect.message.message.view.View;
 import org.campus.connect.message.message.view.ViewRepository;
 import org.campus.connect.message.users.UsersRepository;
 import org.campus.connect.message.utils.GenericServiceImpl;
+import org.campus.connect.message.utils.dtos.PageableDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -154,17 +155,6 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
   }
 
   @Override
-  public List<MessageDTO> findAllResp(UUID id) {
-    List<Message> messages = repository.findAllByResponsible(id);
-    return messages.stream().map(msg -> {
-      MessageDTO dto = this.mapper.toDto(msg);
-      dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
-      return dto;
-    }).collect(Collectors.toList());
-  }
-
-
-  @Override
   public List<MessageDTO> findByIdCourseMobile(UUID id) {
     List<Message> messages = repository.findAllByCourseIdAndStatusEnviado(id);
     return this.mapper.toDto(messages);
@@ -265,5 +255,98 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
       .orElse(null);
   }
 
+
+  //  @Override
+//  public Page<MessageDTO> searchMessages(PageableDTO pageableDTO) {
+//    Pageable springPageable = createSpringPageable(pageableDTO);
+//    Specification<Message> specification = createSpecification(pageableDTO);
+//
+//    Page<Message> messages = repository.findAll(specification, springPageable);
+//    return messages.map(msg -> {
+//      MessageDTO dto = mapper.toDto(msg);
+//      dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
+//      return dto;
+//    });
+//  }
+
+  @Override
+  public List<MessageDTO> findAllResp(UUID id) {
+    List<Message> messages = repository.findAllByResponsible(id);
+    return messages.stream().map(msg -> {
+      MessageDTO dto = this.mapper.toDto(msg);
+      dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
+      return dto;
+    }).collect(Collectors.toList());
+  }
+
+
+  @Override
+  public Page<MessageDTO> searchMessages(PageableDTO pageableDTO) {
+    Pageable springPageable;
+    Specification<Message> specification = createSpecification(pageableDTO);
+
+    if ("vlrViews".equals(pageableDTO.getSortField())) {
+      springPageable = PageRequest.of(pageableDTO.getFirst() / pageableDTO.getRows(), pageableDTO.getRows());
+      List<Message> messages = repository.findAll(specification);
+
+      List<MessageDTO> messageDTOs = messages.stream().map(msg -> {
+        MessageDTO dto = mapper.toDto(msg);
+        dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
+        return dto;
+      }).sorted((m1, m2) -> {
+        int comparison = m1.getVlrViews().compareTo(m2.getVlrViews());
+        return pageableDTO.getSortOrder() == 1 ? comparison : -comparison;
+      }).collect(Collectors.toList());
+      int start = Math.min((int) springPageable.getOffset(), messageDTOs.size());
+      int end = Math.min((start + springPageable.getPageSize()), messageDTOs.size());
+      List<MessageDTO> paginatedList = messageDTOs.subList(start, end);
+      return new PageImpl<>(paginatedList, springPageable, messageDTOs.size());
+    } else {
+      springPageable = createSpringPageable(pageableDTO);
+      Page<Message> messages = repository.findAll(specification, springPageable);
+
+      return messages.map(msg -> {
+        MessageDTO dto = mapper.toDto(msg);
+        dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
+        return dto;
+      });
+    }
+  }
+
+  private Pageable createSpringPageable(PageableDTO pageableDTO) {
+    if (pageableDTO.getSortField() != null) {
+      Sort sort = Sort.by(pageableDTO.getSortField());
+      sort = pageableDTO.getSortOrder() == 1 ? sort.ascending() : sort.descending();
+      return PageRequest.of(pageableDTO.getFirst() / pageableDTO.getRows(), pageableDTO.getRows(), sort);
+    }
+    return PageRequest.of(pageableDTO.getFirst() / pageableDTO.getRows(), pageableDTO.getRows());
+  }
+
+  private Specification<Message> createSpecification(PageableDTO pageableDTO) {
+    return (root, query, cb) -> {
+      Predicate predicate = cb.conjunction();
+
+//      // Aplica o filtro global em múltiplos campos
+//      if (pageableDTO.getGlobalFilter() != null && !pageableDTO.getGlobalFilter().isEmpty()) {
+//        String filterValue = "%" + pageableDTO.getGlobalFilter() + "%"; // Usar % para LIKE
+//
+//        // Buscando no título, resumo, e mensagem
+//        predicate = cb.and(predicate,
+//          cb.or(
+//            cb.like(root.get("title"), filterValue),
+//            cb.like(root.get("summary"), filterValue),
+//            cb.like(root.get("message"), filterValue)
+//          )
+//        );
+//      }
+      if (pageableDTO.getFlag() != null && !pageableDTO.getFlag().isEmpty() && !pageableDTO.getFlag().equals("all")) {
+        predicate = cb.and(predicate, cb.like(root.get("status"), "%" + pageableDTO.getFlag() + "%"));
+      }
+      if (pageableDTO.getObjectId() != null) {
+        predicate = cb.and(predicate, cb.equal(root.get("responsible"), pageableDTO.getObjectId()));
+      }
+      return predicate;
+    };
+  }
 }
 

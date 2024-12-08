@@ -12,6 +12,7 @@ public class ReturnObjDTO {
   private String message;
   private boolean success;
   private Object data;
+  private PageableDTO pageable;
 
   public ReturnObjDTO(Object data, boolean success) {
     this.data = data;

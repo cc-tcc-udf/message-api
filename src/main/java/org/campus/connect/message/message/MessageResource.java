@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.campus.connect.message.message.mobile.InfosDTO;
 import org.campus.connect.message.utils.GenericResource;
+import org.campus.connect.message.utils.dtos.PageableDTO;
 import org.campus.connect.message.utils.dtos.ReturnObjDTO;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,18 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
                                  @PathVariable final UUID id) {
     try {
       return new ReturnObjDTO(service.findAllResp(id), true);
+    } catch (Exception e) {
+      return new ReturnObjDTO(e, false);
+    }
+  }
+
+  @PostMapping(value = "/private/msg/list/pageable")
+  @Operation(summary = "Listar msg", description = "Lista todas as mensagens")
+  public ReturnObjDTO listPageable(@RequestBody final PageableDTO page) {
+    try {
+      ReturnObjDTO obj = new ReturnObjDTO(service.searchMessages(page), true);
+//      obj.setPageable(page);
+      return obj;
     } catch (Exception e) {
       return new ReturnObjDTO(e, false);
     }
