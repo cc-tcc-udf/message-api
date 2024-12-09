@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.campus.connect.message.message.Message;
 import org.campus.connect.message.message.MessageDTO;
-import org.campus.connect.message.users.Users;
 import org.campus.connect.message.users.UsersDTO;
 import org.campus.connect.message.utils.AbstractEntityDTO;
 
@@ -23,5 +21,6 @@ public class ViewDTO extends AbstractEntityDTO {
   private boolean viewed;
   private boolean received;
   private boolean favorite;
+  private String course;
 }
 

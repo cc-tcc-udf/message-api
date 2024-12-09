@@ -88,6 +88,12 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
   }
 
   @Override
+  public CourseDTO getMinimalById(final UUID idCurso) {
+    CourseDTO course = this.findById(idCurso);
+    return new CourseDTO(course.getId(), course.getName(), course.getAbbreviation(), course.getResp());
+  }
+
+  @Override
   public List<CourseDTO> findGroups() {
     List<Course> all = this.repository.findAllByIsGroupIsTrue();
     List<CourseDTO> dto = all.stream()

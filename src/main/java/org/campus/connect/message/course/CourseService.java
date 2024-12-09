@@ -11,6 +11,8 @@ public interface CourseService extends GenericService<CourseDTO> {
 
   List<CourseDTO> findAll();
 
+  CourseDTO getMinimalById(UUID idCurso);
+
   List<CourseDTO> findGroups();
 
   List<CourseDTO> findGroupsMobile();

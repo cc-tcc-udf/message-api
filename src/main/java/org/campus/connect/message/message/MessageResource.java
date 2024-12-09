@@ -38,6 +38,17 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
     }
   }
 
+  @GetMapping(value = "/private/msg/remove/{id}")
+  @Operation(summary = "Buscar msg pelo id", description = "Lista todas as msg")
+  public ReturnObjDTO remove(@Parameter(description = "ID da message a ser retornada", required = true)
+                             @PathVariable final UUID id) {
+    try {
+      return new ReturnObjDTO(service.removeMessage(id), true);
+    } catch (Exception e) {
+      return new ReturnObjDTO(e, false);
+    }
+  }
+
   @GetMapping(value = "/private/msg/listAll")
   @Operation(summary = "Listar msg", description = "Lista todas as msg")
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -150,19 +161,18 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
     }
   }
 
-  @GetMapping(value = "/private/msg/mobile/get/{idMsg}")
+  @GetMapping(value = "/private/msg/mobile/get/{idMsg}/{alunoId}")
   @Operation(summary = "Buscar mensagem por ID", description = "Recupera detalhes da mensagem e seu status de visualização e favorito para um usuário")
   @Tag(name = "Mobile")
   public ReturnObjDTO getById(@Parameter(description = "ID da message a ser retornada", required = true)
                               @PathVariable final UUID idMsg,
                               @Parameter(description = "ID do aluno", required = true)
-                              @RequestParam UUID alunoId) {
+                              @PathVariable UUID alunoId) {
     try {
       return new ReturnObjDTO(service.findMsgByIdMobile(idMsg, alunoId), true);
     } catch (Exception e) {
       return new ReturnObjDTO(e, false);
     }
   }
-
 
 }

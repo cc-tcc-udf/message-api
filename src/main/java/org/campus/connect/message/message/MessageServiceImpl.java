@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -257,19 +254,18 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
       .orElse(null);
   }
 
-
-  //  @Override
-//  public Page<MessageDTO> searchMessages(PageableDTO pageableDTO) {
-//    Pageable springPageable = createSpringPageable(pageableDTO);
-//    Specification<Message> specification = createSpecification(pageableDTO);
-//
-//    Page<Message> messages = repository.findAll(specification, springPageable);
-//    return messages.map(msg -> {
-//      MessageDTO dto = mapper.toDto(msg);
-//      dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
-//      return dto;
-//    });
-//  }
+  @Override
+  public MessageDTO removeMessage(UUID msgId) throws Exception {
+    return repository.findById(msgId)
+      .map(msg -> {
+        msg.setStatus(Status.REMOVIDA);
+        Message savedMsg = repository.save(msg);
+        MessageDTO dto = mapper.toDto(savedMsg);
+        dto.setVlrViews(getViewsQtd(msgId, savedMsg.getCourses()));
+        return dto;
+      })
+      .orElse(null);
+  }
 
   @Override
   public List<MessageDTO> findAllResp(UUID id) {

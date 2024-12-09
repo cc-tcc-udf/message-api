@@ -61,6 +61,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
 
   @GetMapping("/public/refreshToken")
   @Operation(summary = "Buscar dados usuario", description = "Atualizar o token")
+  @Tag(name = "Mobile")
   public ResponseEntity<TokenRefreshDTO> refreshToken(@RequestParam String email, @RequestParam Boolean isMobile) {
     Optional<Users> usr = this.repository.findByEmail(email);
     UsersDTO user = new UsersDTO();
@@ -174,14 +175,13 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   @PostMapping(value = "/public/auth/register")
   @Operation(summary = "Cadastro", description = "Para o usuário realizar o registro")
   public ResponseEntity<?> register(
-    @RequestBody RegisterDTO body,
-    @RequestParam(required = false) boolean isMobile
+    @RequestBody RegisterDTO body
   ) throws Exception {
     Optional<Users> usr = this.repository.findByEmail(body.getEmail());
     if (usr.isEmpty()) {
-      Users user = this.service.register(body, isMobile);
-      String token = this.tokenService.generateToken(user, isMobile);
-      ReturnObjDTO objDTO = new ReturnObjDTO(isMobile ? new ResponseDTO(user.getEmail(), token) : null, true);
+      Users user = this.service.register(body, false);
+      String token = this.tokenService.generateToken(user, false);
+      ReturnObjDTO objDTO = new ReturnObjDTO(null, true);
       return ResponseEntity.ok(objDTO);
     }
     ReturnObjDTO objDTO = new ReturnObjDTO();

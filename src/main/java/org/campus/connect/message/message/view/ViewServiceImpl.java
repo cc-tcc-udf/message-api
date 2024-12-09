@@ -1,5 +1,7 @@
 package org.campus.connect.message.message.view;
 
+import org.campus.connect.message.course.CourseDTO;
+import org.campus.connect.message.course.CourseService;
 import org.campus.connect.message.message.MessageDTO;
 import org.campus.connect.message.message.MessageService;
 import org.campus.connect.message.message.mobile.MsgViewDTO;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ViewServiceImpl extends GenericServiceImpl<View, ViewDTO> implements ViewService {
@@ -19,15 +22,18 @@ public class ViewServiceImpl extends GenericServiceImpl<View, ViewDTO> implement
   private final ViewMapper mapper;
   private final UsersService usersService;
   private final MessageService messageService;
+  private final CourseService courseService;
 
   public ViewServiceImpl(
     final ViewRepository repository, final ViewMapper mapper,
-    final UsersService usersService, final MessageService messageService) {
+    final UsersService usersService, final MessageService messageService,
+    final CourseService courseService) {
     super(repository, mapper);
     this.repository = repository;
     this.mapper = mapper;
     this.usersService = usersService;
     this.messageService = messageService;
+    this.courseService = courseService;
   }
 
   @Override
@@ -48,7 +54,16 @@ public class ViewServiceImpl extends GenericServiceImpl<View, ViewDTO> implement
 
   @Override
   public List<ViewDTO> getByIdMsg(final UUID id) {
-    return this.mapper.toDto(this.repository.findAllByMessage(id));
+    return this.mapper.toDto(this.repository.findAllByMessage(id))
+      .stream()
+      .peek(viewDTO -> {
+        UsersDTO usersDTO = viewDTO.getUser();
+        if (usersDTO.getId_curso() != null) {
+          CourseDTO course = courseService.getMinimalById(usersDTO.getId_curso());
+          viewDTO.setCourse(course.getName());
+        }
+      })
+      .collect(Collectors.toList());
   }
 
   @Override
