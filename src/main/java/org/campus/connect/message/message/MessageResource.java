@@ -76,9 +76,7 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
   @Operation(summary = "Listar msg", description = "Lista todas as mensagens")
   public ReturnObjDTO listPageable(@RequestBody final PageableDTO page) {
     try {
-      ReturnObjDTO obj = new ReturnObjDTO(service.searchMessages(page), true);
-//      obj.setPageable(page);
-      return obj;
+      return new ReturnObjDTO(service.searchMessages(page), true);
     } catch (Exception e) {
       return new ReturnObjDTO(e, false);
     }
@@ -153,6 +151,20 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
   public ReturnObjDTO sendMessage(@RequestBody MessageDTO message) {
     try {
       MessageDTO msg = service.send(message);
+      if (msg != null)
+        return new ReturnObjDTO(msg, true);
+      else return new ReturnObjDTO(null, false);
+    } catch (Exception e) {
+      return new ReturnObjDTO(e, false);
+    }
+  }
+
+  @GetMapping(value = "/private/msg/send/{id}")
+  @Operation(summary = "Criar mensagem", description = "criação de mensagem")
+  public ReturnObjDTO sendMessage(@Parameter(description = "ID da msg", required = true)
+                                    @PathVariable final UUID id) {
+    try {
+      MessageDTO msg = service.sendById(id);
       if (msg != null)
         return new ReturnObjDTO(msg, true);
       else return new ReturnObjDTO(null, false);

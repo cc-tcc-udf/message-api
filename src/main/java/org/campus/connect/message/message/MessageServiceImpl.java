@@ -1,11 +1,12 @@
 package org.campus.connect.message.message;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import org.campus.connect.message.constants.Enums.Status;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.course.Course;
 import org.campus.connect.message.course.CourseDTO;
+import org.campus.connect.message.course.CourseMapper;
 import org.campus.connect.message.course.CourseService;
 import org.campus.connect.message.firebase.FirebaseMessageDTO;
 import org.campus.connect.message.firebase.FirebaseService;
@@ -23,9 +24,13 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -41,13 +46,14 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
   private final CourseService courseService;
   private final UsersRepository usersRepository;
   private final ViewRepository viewRepository;
+  private final CourseMapper courseMapper;
 
   public MessageServiceImpl(
     final MessageRepository repository,
     final MessageMapper mapper,
     final LinksService linksService, final FirebaseService firebaseService,
     final CourseService courseService, final UsersRepository usersRepository,
-    final ViewRepository viewRepository) {
+    final ViewRepository viewRepository, final CourseMapper courseMapper) {
     super(repository, mapper);
     this.repository = repository;
     this.mapper = mapper;
@@ -56,6 +62,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     this.courseService = courseService;
     this.usersRepository = usersRepository;
     this.viewRepository = viewRepository;
+    this.courseMapper = courseMapper;
   }
 
   @Override
@@ -109,7 +116,18 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     return this.save(msg);
   }
 
+  @Override
   public MessageDTO send(final MessageDTO msg) throws Exception {
+    return getMessageDTO(msg);
+  }
+
+  @Override
+  public MessageDTO sendById(final UUID id) throws Exception {
+    MessageDTO msg = findMsgById(id);
+    return getMessageDTO(msg);
+  }
+
+  private MessageDTO getMessageDTO(final MessageDTO msg) throws Exception {
     if (msg.getCourses().isEmpty()) {
       return null;
     }
@@ -117,6 +135,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     msg.setStatus(Status.ENVIADO);
     MessageDTO obj = this.create(msg);
     this.firebaseSend(obj);
+    obj.setVlrViews(getViewsQtd(msg.getId(), courseMapper.toEntity(msg.getCourses())));
     return obj;
   }
 
@@ -324,19 +343,26 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     return (root, query, cb) -> {
       Predicate predicate = cb.conjunction();
 
-//      // Aplica o filtro global em múltiplos campos
-//      if (pageableDTO.getGlobalFilter() != null && !pageableDTO.getGlobalFilter().isEmpty()) {
-//        String filterValue = "%" + pageableDTO.getGlobalFilter() + "%"; // Usar % para LIKE
-//
-//        // Buscando no título, resumo, e mensagem
-//        predicate = cb.and(predicate,
-//          cb.or(
-//            cb.like(root.get("title"), filterValue),
-//            cb.like(root.get("summary"), filterValue),
-//            cb.like(root.get("message"), filterValue)
-//          )
-//        );
-//      }
+      if (pageableDTO.getGlobalFilter() != null && !pageableDTO.getGlobalFilter().isEmpty()) {
+        String filterValue = "%" + pageableDTO.getGlobalFilter().toLowerCase() + "%";
+        String[] dateParts = filterValue.split("[/\\-]");
+        if (dateParts.length == 2) {
+          try {
+            int day = Integer.parseInt(dateParts[0]);
+            int month = Integer.parseInt(dateParts[1]);
+
+            LocalDateTime startDate = LocalDateTime.of(LocalDate.now().getYear(), month, day, 0, 0, 0);
+            LocalDateTime endDate = LocalDateTime.of(LocalDate.now().getYear(), month, day, 23, 59, 59);
+
+            predicate = cb.and(predicate,
+              cb.between(root.get("sendDate"), startDate, endDate));
+          } catch (NumberFormatException ignored) {
+
+          }
+        }
+        predicate = setPredicate(predicate, cb, root, filterValue);
+        query.distinct(true);
+      }
       if (pageableDTO.getFlag() != null && !pageableDTO.getFlag().isEmpty() && !pageableDTO.getFlag().equals("all")) {
         predicate = cb.and(predicate, cb.like(root.get("status"), "%" + pageableDTO.getFlag() + "%"));
       }
@@ -346,5 +372,28 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
       return predicate;
     };
   }
+
+  private Predicate setPredicate(Predicate predicate,
+                                 CriteriaBuilder cb,
+                                 Root<Message> root,
+                                 String filterValue) {
+    predicate = cb.and(predicate,
+      cb.or(
+        cb.like(cb.lower(root.get("title")), filterValue),
+        cb.like(cb.lower(root.get("summary")), filterValue),
+        cb.like(cb.lower(root.get("message")), filterValue),
+        cb.like(cb.lower(root.get("status").as(String.class)), filterValue)
+      )
+    );
+    Join<Message, Course> courseJoin = root.join("courses", JoinType.LEFT);
+    predicate = cb.and(predicate,
+      cb.or(
+        cb.like(cb.lower(courseJoin.get("name")), filterValue),
+        cb.like(cb.lower(courseJoin.get("abbreviation")), filterValue)
+      )
+    );
+    return predicate;
+  }
+
 }
 

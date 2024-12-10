@@ -35,4 +35,6 @@ public interface MessageService extends GenericService<MessageDTO> {
   MessageDTO findMsgByIdMobile(UUID idMsg, UUID alunoId);
 
   Page<MessageDTO> searchMessages(PageableDTO pageableDTO);
+
+  MessageDTO sendById(UUID id) throws Exception;
 }
