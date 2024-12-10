@@ -205,7 +205,6 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     required = true,
     example = "false"
   ) @RequestParam(value = "isGroup") Boolean isGroup) {
-    ReturnObjDTO dto = new ReturnObjDTO();
     try {
       List<CourseCompleteDTO> list = this.service.findAll(isGroup);
       return new ReturnObjDTO(list, true);

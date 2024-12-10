@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api")
@@ -57,6 +58,17 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
       obj.setMessage(GenericMessages.ResponseError);
     }
     return obj;
+  }
+
+  @GetMapping(value = "/private/auth/adm/users/{id}")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+  @Operation(summary = "Listar alunos", description = "Lista todos os alunos pelo curso")
+  public ReturnObjDTO listAlunos(@PathVariable("id") UUID id) {
+    try {
+      return new ReturnObjDTO(service.findByCourse(id), true);
+    } catch (Exception e) {
+      return new ReturnObjDTO(service.findByCourse(id), false);
+    }
   }
 
   @GetMapping("/public/refreshToken")

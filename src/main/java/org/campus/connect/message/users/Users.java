@@ -27,6 +27,7 @@ public class Users extends AbstractEntity {
   private String name;
   private String password;
   private String phone;
+  @Column(name = "id_curso")
   private UUID id_curso;
   @JoinColumn(name = "is_temp_pass")
   private boolean active;  private boolean isTempPass;

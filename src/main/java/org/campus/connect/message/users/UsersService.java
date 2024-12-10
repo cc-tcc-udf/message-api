@@ -30,4 +30,6 @@ public interface UsersService extends GenericService<UsersDTO> {
   UsersDTO update(UsersDTO user) throws Exception;
 
   List<UsersDTO> findResp();
+
+  List<UsersDTO> findByCourse(UUID id);
 }

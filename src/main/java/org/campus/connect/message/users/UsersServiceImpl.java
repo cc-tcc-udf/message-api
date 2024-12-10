@@ -195,4 +195,11 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
       .collect(Collectors.toList());
   }
 
+  @Override
+  public List<UsersDTO> findByCourse(UUID id) {
+    return this.repository.findByRolesAndIdCursoAndExcludedFalse(UserRoles.USER, id)
+      .stream()
+      .map(UsersDTO::new)
+      .collect(Collectors.toList());
+  }
 }
