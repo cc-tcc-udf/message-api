@@ -32,7 +32,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     this.mapper = mapper;
   }
 
-  @GetMapping(value = "/public/course/{id}")
+  @GetMapping(value = "/private/course/{id}")
   @Operation(
     summary = "Retorna um curso existente pelo ID",
     description = "Este endpoint retorna os detalhes de um curso específico com base no seu identificador único (ID). Se o curso existir, os detalhes completos serão retornados, incluindo informações sobre o curso e seus subcursos, se aplicável.",
@@ -66,10 +66,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
   ) {
     ReturnObjDTO returnObjDTO = new ReturnObjDTO();
     try {
-      CourseCompleteDTO course = service.findCourseById(id);
-      returnObjDTO.setData(course);
-      returnObjDTO.setSuccess(true);
-      returnObjDTO.setMessage("Requisição realizada com sucesso!");
+      returnObjDTO = new ReturnObjDTO(service.findCourseById(id), true);
     } catch (Exception e) {
       returnObjDTO.setSuccess(false);
       returnObjDTO.setMessage("Erro ao realizar requisição: " + e.getMessage());
@@ -79,7 +76,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
   }
 
 
-  @GetMapping(value = "/public/course/groups")
+  @GetMapping(value = "/private/course/groups")
   @Operation(
     summary = "Listar grupos de cursos",
     description = "Este endpoint retorna uma lista de grupos de cursos disponíveis.",
@@ -172,7 +169,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
   }
 
 
-  @GetMapping(value = "/public/course/list")
+  @GetMapping(value = "/private/course/list")
   @Operation(
     summary = "Listar cursos",
     description = "Lista todos os cursos com base no parâmetro 'isGroup'. Se 'isGroup' for verdadeiro," +
@@ -217,7 +214,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     }
   }
 
-  @PostMapping(value = "/public/course/create")
+  @PostMapping(value = "/private/course/create")
   @Operation(
     summary = "Criar um Novo Curso",
     description = "Este endpoint permite a criação de um novo curso. A requisição deve incluir todos os detalhes necessários para a criação do curso," +
@@ -274,7 +271,7 @@ public class CourseResource extends GenericResource<CourseDTO, CourseResource> {
     return ResponseEntity.ok(dtoReturn);
   }
 
-  @PutMapping(value = "/public/course/update")
+  @PutMapping(value = "/private/course/update")
   @Operation(
     summary = "Atualizar um Curso Existente",
     description = "Este endpoint permite a atualização dos detalhes de um curso existente." +
