@@ -150,9 +150,15 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
 
   private void firebaseSend(final MessageDTO msg) throws ExecutionException, InterruptedException {
     for (CourseDTO c : msg.getCourses()) {
-      CourseDTO group = courseService.findById(c.getCourseGroupId());
+      String vlr;
+      if (c.getCourseGroupId() != null) {
+        CourseDTO group = courseService.findById(c.getCourseGroupId());
+        vlr = group.getName();
+      }else{
+        vlr = "outros";
+      }
       String course = c.getName();
-      List<FirebaseMessageDTO> tokens = firebaseService.fetchTokens(course, group.getName());
+      List<FirebaseMessageDTO> tokens = firebaseService.fetchTokens(course, vlr);
       List<String> notificationTokens = tokens.stream()
         .map(FirebaseMessageDTO::getNotificationToken)
         .toList();
@@ -381,7 +387,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
               case "courses":
                 Join<Message, Course> courseJoin = root.join("courses", JoinType.LEFT);
                 if ("contains".equals(filter.getMatchMode())) {
-                  predicate = cb.and(predicate, cb.like(cb.lower(courseJoin.get("name")), "%" + value.toLowerCase() + "%"));
+                  predicate = cb.and(predicate, cb.like(cb.lower(courseJoin.get("abbreviation")), "%" + value.toLowerCase() + "%"));
                 }
                 break;
             }
@@ -389,7 +395,6 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
         }
       }
 
-      // Verifique o filtro global, se estiver presente
       if (pageableDTO.getGlobalFilter() != null && !pageableDTO.getGlobalFilter().isEmpty()) {
         String globalValue = "%" + pageableDTO.getGlobalFilter().toLowerCase() + "%";
         predicate = cb.and(predicate, cb.or(
@@ -405,7 +410,6 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
         ));
       }
 
-      // Caso algum outro filtro global seja necessário, pode ser adicionado aqui
       return predicate;
     };
   }

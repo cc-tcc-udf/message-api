@@ -179,8 +179,12 @@ public class CourseServiceImpl extends GenericServiceImpl<Course, CourseDTO> imp
     }
     CourseDTO newDto = this.save(dto);
     if (!newDto.getIsGroup()) {
+      if(newDto.getCourseGroupId() != null) {
       CourseDTO c = findById(newDto.getCourseGroupId());
       firebaseService.createCollection(newDto, c.getName());
+      }else{
+      firebaseService.createCollection(newDto);
+      }
     }
     return newDto;
   }

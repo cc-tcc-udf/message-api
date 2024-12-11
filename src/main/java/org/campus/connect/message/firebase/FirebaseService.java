@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -123,6 +124,14 @@ public class FirebaseService {
     Firestore db = FirestoreClient.getFirestore();
     db.collection("groups")
       .document(group)
+      .collection("courses")
+      .document(dto.getName()).set(new HashMap<>());
+  }
+
+  public void createCollection(final CourseDTO dto) {
+    Firestore db = FirestoreClient.getFirestore();
+    db.collection("groups")
+      .document("outros")
       .collection("courses")
       .document(dto.getName()).set(new HashMap<>());
   }
