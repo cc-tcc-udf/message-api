@@ -141,6 +141,28 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
     return ResponseEntity.ok(new ResponseDTO(user.getEmail(), token));
   }
 
+  @PostMapping("/public/auth/mobile/login")
+  @Operation(summary = "Login", description = "Para o usuario efetuar o login, retornando o token necessario na busca dos dados em '/private/auth/getUser'")
+  public ResponseEntity<?> loginMobile(@RequestBody LoginDTO body) {
+    Optional<Users> optionalUser = this.repository.findByEmail(body.email());
+
+    if (optionalUser.isPresent()) {
+      Users user = optionalUser.get();
+
+    if (!passwordEncoder.matches(body.password(), user.getPassword())) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\": \"Senha incorreta!\"}");
+    }
+      if (!user.isActive()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body("{\"message\": \"Sua conta ainda não foi ativada. Aguarde o e-mail de ativação enviado pelo administrador.\"}");
+      }
+      String token = this.tokenService.generateToken(user, true);
+      return ResponseEntity.ok(new ResponseDTO(user.getEmail(), token));
+    }
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"Usuário não cadastrado!\"}");
+
+  }
+
   @GetMapping("/private/auth/getUser")
   @Operation(summary = "Buscar dados usuario", description = "Apos login, buscar dados do usuario com o token")
   public ResponseEntity<UsersDTO> getUser(@RequestParam String email) {
