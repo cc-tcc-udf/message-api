@@ -100,9 +100,12 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
   @Override
   public UsersDTO createUser(UsersDTO usr) throws Exception {
     if (usr.getId() != null) {
-      return this.updateUser(usr);
+      if (usr.getPassword() != null) {
+        usr.setPassword(passwordEncoder.encode(usr.getPassword()));
+      }
+      return this.save(usr);
     }
-    if (usr.isActive()) {
+    if (usr.isActive() && !usr.isSendMail() && usr.getRoles().contains(UserRoles.PROF)) {
       MailDTO mailDTO = new MailDTO();
       mailDTO.setLink(frontUrl);
       mailDTO.setName(usr.getName());
@@ -110,6 +113,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
       mailDTO.setTo(usr.getEmail());
       mailDTO.setPass(usr.getPassword());
       mailService.sendWelcomeEmail(mailDTO);
+      usr.setSendMail(true);
     }
     usr.setPassword(passwordEncoder.encode(usr.getPassword()));
     return this.save(usr);

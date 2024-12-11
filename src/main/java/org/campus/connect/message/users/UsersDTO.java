@@ -29,6 +29,7 @@ public class UsersDTO extends AbstractEntityDTO {
   private CourseDTO course;
   private String group;
   private boolean active;
+  private boolean sendMail;
 
   public UsersDTO(Users usr) {
     setId(usr.getId());

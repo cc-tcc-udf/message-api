@@ -29,8 +29,11 @@ public class Users extends AbstractEntity {
   private String phone;
   @Column(name = "id_curso")
   private UUID id_curso;
+  private boolean active;
+  @Column(name = "send_email")
+  private boolean sendMail;
   @JoinColumn(name = "is_temp_pass")
-  private boolean active;  private boolean isTempPass;
+  private boolean isTempPass;
   private String temporary_password;
 
   @ManyToOne

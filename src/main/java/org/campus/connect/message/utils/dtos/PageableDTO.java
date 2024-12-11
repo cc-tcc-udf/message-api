@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -15,10 +16,10 @@ public class PageableDTO {
   private int first;
   private int rows;
   private String sortField;
-  private int total;
   private int sortOrder;
-  private String flag;
-  private Object filters;
   private String globalFilter;
+  private Map<String, FilterDTO> filters;
+  private int total;
+  private String flag;
   private UUID objectId;
 }

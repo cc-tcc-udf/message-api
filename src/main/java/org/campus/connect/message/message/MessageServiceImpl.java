@@ -1,7 +1,9 @@
 package org.campus.connect.message.message;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import org.campus.connect.message.constants.Enums.Status;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.course.Course;
@@ -17,6 +19,7 @@ import org.campus.connect.message.message.view.View;
 import org.campus.connect.message.message.view.ViewRepository;
 import org.campus.connect.message.users.UsersRepository;
 import org.campus.connect.message.utils.GenericServiceImpl;
+import org.campus.connect.message.utils.dtos.FilterDTO;
 import org.campus.connect.message.utils.dtos.PageableDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +30,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -296,7 +297,6 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     }).collect(Collectors.toList());
   }
 
-
   @Override
   public Page<MessageDTO> searchMessages(PageableDTO pageableDTO) {
     Pageable springPageable;
@@ -314,6 +314,7 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
         int comparison = m1.getVlrViews().compareTo(m2.getVlrViews());
         return pageableDTO.getSortOrder() == 1 ? comparison : -comparison;
       }).collect(Collectors.toList());
+
       int start = Math.min((int) springPageable.getOffset(), messageDTOs.size());
       int end = Math.min((start + springPageable.getPageSize()), messageDTOs.size());
       List<MessageDTO> paginatedList = messageDTOs.subList(start, end);
@@ -343,57 +344,169 @@ public class MessageServiceImpl extends GenericServiceImpl<Message, MessageDTO> 
     return (root, query, cb) -> {
       Predicate predicate = cb.conjunction();
 
-      if (pageableDTO.getGlobalFilter() != null && !pageableDTO.getGlobalFilter().isEmpty()) {
-        String filterValue = "%" + pageableDTO.getGlobalFilter().toLowerCase() + "%";
-        String[] dateParts = filterValue.split("[/\\-]");
-        if (dateParts.length == 2) {
-          try {
-            int day = Integer.parseInt(dateParts[0]);
-            int month = Integer.parseInt(dateParts[1]);
+      // Se existirem filtros, aplique-os
+      if (pageableDTO.getFilters() != null && !pageableDTO.getFilters().isEmpty()) {
+        for (Map.Entry<String, FilterDTO> entry : pageableDTO.getFilters().entrySet()) {
+          String field = entry.getKey();
+          FilterDTO filter = entry.getValue();
 
-            LocalDateTime startDate = LocalDateTime.of(LocalDate.now().getYear(), month, day, 0, 0, 0);
-            LocalDateTime endDate = LocalDateTime.of(LocalDate.now().getYear(), month, day, 23, 59, 59);
+          // Verifique se o filtro possui um valor válido
+          if (filter.getValue() != null && !filter.getValue().toString().isEmpty()) {
+            String value = filter.getValue().toString();
 
-            predicate = cb.and(predicate,
-              cb.between(root.get("sendDate"), startDate, endDate));
-          } catch (NumberFormatException ignored) {
-
+            // Lógica para aplicar filtros com base no campo
+            switch (field) {
+              case "title":
+              case "summary":
+              case "message":
+                if ("contains".equals(filter.getMatchMode())) {
+                  predicate = cb.and(predicate, cb.like(cb.lower(root.get(field)), "%" + value.toLowerCase() + "%"));
+                }
+                break;
+              case "custom_status":
+                if ("equals".equals(filter.getMatchMode())) {
+                  predicate = cb.and(predicate, cb.equal(cb.lower(root.get("status")), value.toLowerCase()));
+                }
+                break;
+              case "sendDate":
+                if ("contains".equals(filter.getMatchMode())) {
+                  try {
+                    LocalDate date = LocalDate.parse(value);
+                    predicate = cb.and(predicate, cb.between(root.get("sendDate"), date.atStartOfDay(), date.plusDays(1).atStartOfDay()));
+                  } catch (DateTimeParseException e) {
+                    // Handle parsing error
+                  }
+                }
+                break;
+              case "courses":
+                Join<Message, Course> courseJoin = root.join("courses", JoinType.LEFT);
+                if ("contains".equals(filter.getMatchMode())) {
+                  predicate = cb.and(predicate, cb.like(cb.lower(courseJoin.get("name")), "%" + value.toLowerCase() + "%"));
+                }
+                break;
+            }
           }
         }
-        predicate = setPredicate(predicate, cb, root, filterValue);
-        query.distinct(true);
       }
-      if (pageableDTO.getFlag() != null && !pageableDTO.getFlag().isEmpty() && !pageableDTO.getFlag().equals("all")) {
-        predicate = cb.and(predicate, cb.like(root.get("status"), "%" + pageableDTO.getFlag() + "%"));
+
+      // Verifique o filtro global, se estiver presente
+      if (pageableDTO.getGlobalFilter() != null && !pageableDTO.getGlobalFilter().isEmpty()) {
+        String globalValue = "%" + pageableDTO.getGlobalFilter().toLowerCase() + "%";
+        predicate = cb.and(predicate, cb.or(
+          cb.like(cb.lower(root.get("title")), globalValue),
+          cb.like(cb.lower(root.get("summary")), globalValue),
+          cb.like(cb.lower(root.get("message")), globalValue),
+          cb.like(cb.lower(root.get("status").as(String.class)), globalValue)
+        ));
+        Join<Message, Course> courseJoin = root.join("courses", JoinType.LEFT);
+        predicate = cb.and(predicate, cb.or(
+          cb.like(cb.lower(courseJoin.get("name")), globalValue),
+          cb.like(cb.lower(courseJoin.get("abbreviation")), globalValue)
+        ));
       }
-      if (pageableDTO.getObjectId() != null) {
-        predicate = cb.and(predicate, cb.equal(root.get("responsible"), pageableDTO.getObjectId()));
-      }
+
+      // Caso algum outro filtro global seja necessário, pode ser adicionado aqui
       return predicate;
     };
   }
 
-  private Predicate setPredicate(Predicate predicate,
-                                 CriteriaBuilder cb,
-                                 Root<Message> root,
-                                 String filterValue) {
-    predicate = cb.and(predicate,
-      cb.or(
-        cb.like(cb.lower(root.get("title")), filterValue),
-        cb.like(cb.lower(root.get("summary")), filterValue),
-        cb.like(cb.lower(root.get("message")), filterValue),
-        cb.like(cb.lower(root.get("status").as(String.class)), filterValue)
-      )
-    );
-    Join<Message, Course> courseJoin = root.join("courses", JoinType.LEFT);
-    predicate = cb.and(predicate,
-      cb.or(
-        cb.like(cb.lower(courseJoin.get("name")), filterValue),
-        cb.like(cb.lower(courseJoin.get("abbreviation")), filterValue)
-      )
-    );
-    return predicate;
-  }
+//  @Override
+//  public Page<MessageDTO> searchMessages(PageableDTO pageableDTO) {
+//    Pageable springPageable;
+//    Specification<Message> specification = createSpecification(pageableDTO);
+//
+//    if ("vlrViews".equals(pageableDTO.getSortField())) {
+//      springPageable = PageRequest.of(pageableDTO.getFirst() / pageableDTO.getRows(), pageableDTO.getRows());
+//      List<Message> messages = repository.findAll(specification);
+//
+//      List<MessageDTO> messageDTOs = messages.stream().map(msg -> {
+//        MessageDTO dto = mapper.toDto(msg);
+//        dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
+//        return dto;
+//      }).sorted((m1, m2) -> {
+//        int comparison = m1.getVlrViews().compareTo(m2.getVlrViews());
+//        return pageableDTO.getSortOrder() == 1 ? comparison : -comparison;
+//      }).collect(Collectors.toList());
+//      int start = Math.min((int) springPageable.getOffset(), messageDTOs.size());
+//      int end = Math.min((start + springPageable.getPageSize()), messageDTOs.size());
+//      List<MessageDTO> paginatedList = messageDTOs.subList(start, end);
+//      return new PageImpl<>(paginatedList, springPageable, messageDTOs.size());
+//    } else {
+//      springPageable = createSpringPageable(pageableDTO);
+//      Page<Message> messages = repository.findAll(specification, springPageable);
+//
+//      return messages.map(msg -> {
+//        MessageDTO dto = mapper.toDto(msg);
+//        dto.setVlrViews(getViewsQtd(msg.getId(), msg.getCourses()));
+//        return dto;
+//      });
+//    }
+//  }
+//
+//  private Pageable createSpringPageable(PageableDTO pageableDTO) {
+//    if (pageableDTO.getSortField() != null) {
+//      Sort sort = Sort.by(pageableDTO.getSortField());
+//      sort = pageableDTO.getSortOrder() == 1 ? sort.ascending() : sort.descending();
+//      return PageRequest.of(pageableDTO.getFirst() / pageableDTO.getRows(), pageableDTO.getRows(), sort);
+//    }
+//    return PageRequest.of(pageableDTO.getFirst() / pageableDTO.getRows(), pageableDTO.getRows());
+//  }
+//
+//  private Specification<Message> createSpecification(PageableDTO pageableDTO) {
+//    return (root, query, cb) -> {
+//      Predicate predicate = cb.conjunction();
+//
+//      if (pageableDTO.getGlobalFilter() != null && !pageableDTO.getGlobalFilter().isEmpty()) {
+//        String filterValue = "%" + pageableDTO.getGlobalFilter().toLowerCase() + "%";
+//        String[] dateParts = filterValue.split("[/\\-]");
+//        if (dateParts.length == 2) {
+//          try {
+//            int day = Integer.parseInt(dateParts[0]);
+//            int month = Integer.parseInt(dateParts[1]);
+//
+//            LocalDateTime startDate = LocalDateTime.of(LocalDate.now().getYear(), month, day, 0, 0, 0);
+//            LocalDateTime endDate = LocalDateTime.of(LocalDate.now().getYear(), month, day, 23, 59, 59);
+//
+//            predicate = cb.and(predicate,
+//              cb.between(root.get("sendDate"), startDate, endDate));
+//          } catch (NumberFormatException ignored) {
+//
+//          }
+//        }
+//        predicate = setPredicate(predicate, cb, root, filterValue);
+//        query.distinct(true);
+//      }
+//      if (pageableDTO.getFlag() != null && !pageableDTO.getFlag().isEmpty() && !pageableDTO.getFlag().equals("all")) {
+//        predicate = cb.and(predicate, cb.like(root.get("status"), "%" + pageableDTO.getFlag() + "%"));
+//      }
+//      if (pageableDTO.getObjectId() != null) {
+//        predicate = cb.and(predicate, cb.equal(root.get("responsible"), pageableDTO.getObjectId()));
+//      }
+//      return predicate;
+//    };
+//  }
+//
+//  private Predicate setPredicate(Predicate predicate,
+//                                 CriteriaBuilder cb,
+//                                 Root<Message> root,
+//                                 String filterValue) {
+//    predicate = cb.and(predicate,
+//      cb.or(
+//        cb.like(cb.lower(root.get("title")), filterValue),
+//        cb.like(cb.lower(root.get("summary")), filterValue),
+//        cb.like(cb.lower(root.get("message")), filterValue),
+//        cb.like(cb.lower(root.get("status").as(String.class)), filterValue)
+//      )
+//    );
+//    Join<Message, Course> courseJoin = root.join("courses", JoinType.LEFT);
+//    predicate = cb.and(predicate,
+//      cb.or(
+//        cb.like(cb.lower(courseJoin.get("name")), filterValue),
+//        cb.like(cb.lower(courseJoin.get("abbreviation")), filterValue)
+//      )
+//    );
+//    return predicate;
+//  }
 
 }
 
