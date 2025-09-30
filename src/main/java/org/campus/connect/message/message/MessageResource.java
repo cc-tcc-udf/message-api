@@ -69,7 +69,8 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
 
   }
 
-  @PostMapping("email")
+  @PostMapping("/public/msg/email")
+  @Operation(summary = "Teste de email", description = "Teste de email")
   public String enviarEmail(@RequestBody MailDTO dto) throws MessagingException {
     try {
       this.mailService.sendWelcomeEmail(dto);
