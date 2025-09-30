@@ -3,10 +3,14 @@ package org.campus.connect.message.message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
+import org.campus.connect.message.mail.MailDTO;
+import org.campus.connect.message.mail.MailService;
 import org.campus.connect.message.message.mobile.InfosDTO;
 import org.campus.connect.message.utils.GenericResource;
 import org.campus.connect.message.utils.dtos.PageableDTO;
 import org.campus.connect.message.utils.dtos.ReturnObjDTO;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +22,14 @@ import java.util.UUID;
 @Tag(name = "Message", description = "Gerenciamento de Mensagens")
 public class MessageResource extends GenericResource<MessageDTO, MessageResource> {
   private final MessageService service;
+  private final MailService mailService;
   private final MessageMapper mapper;
 
 
-  public MessageResource(MessageService service, MessageMapper mapper) {
+  public MessageResource(MessageService service, final MailService mailService, MessageMapper mapper) {
     super(service, "api/");
     this.service = service;
+    this.mailService = mailService;
     this.mapper = mapper;
   }
 
@@ -137,22 +143,22 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
 
   @PostMapping(value = "/private/msg/create")
   @Operation(summary = "Criar mensagem", description = "criação de mensagem")
-  public ReturnObjDTO createMessage(@RequestBody MessageDTO message) {
   public ResponseEntity<MessageDTO> createMessage(@RequestBody MessageDTO message) throws Exception {
     return ResponseEntity.ok(service.create(message));
 
   }
 
   @PostMapping("/public/msg/email")
-  @Operation(summary = "Teste de email", description = "Teste de email")
   public String enviarEmail(@RequestBody MailDTO dto) throws MessagingException {
     try {
-      MessageDTO msg = service.create(message);
-      return new ReturnObjDTO(msg, true);
+      this.mailService.sendWelcomeEmail(dto);
     } catch (Exception e) {
-      return new ReturnObjDTO(e, false);
+      return "Erro ao enviar e-mail" + e.getMessage();
     }
+
+    return "Email enviado com sucesso!";
   }
+
 
   @PostMapping(value = "/private/msg/send")
   @Operation(summary = "Criar mensagem", description = "criação de mensagem")
@@ -170,7 +176,7 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
   @GetMapping(value = "/private/msg/send/{id}")
   @Operation(summary = "Criar mensagem", description = "criação de mensagem")
   public ReturnObjDTO sendMessage(@Parameter(description = "ID da msg", required = true)
-                                    @PathVariable final UUID id) {
+                                  @PathVariable final UUID id) {
     try {
       MessageDTO msg = service.sendById(id);
       if (msg != null)
