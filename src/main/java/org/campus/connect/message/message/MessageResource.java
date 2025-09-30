@@ -138,6 +138,14 @@ public class MessageResource extends GenericResource<MessageDTO, MessageResource
   @PostMapping(value = "/private/msg/create")
   @Operation(summary = "Criar mensagem", description = "criação de mensagem")
   public ReturnObjDTO createMessage(@RequestBody MessageDTO message) {
+  public ResponseEntity<MessageDTO> createMessage(@RequestBody MessageDTO message) throws Exception {
+    return ResponseEntity.ok(service.create(message));
+
+  }
+
+  @PostMapping("/public/msg/email")
+  @Operation(summary = "Teste de email", description = "Teste de email")
+  public String enviarEmail(@RequestBody MailDTO dto) throws MessagingException {
     try {
       MessageDTO msg = service.create(message);
       return new ReturnObjDTO(msg, true);
