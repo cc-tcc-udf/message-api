@@ -2,6 +2,7 @@ package org.campus.connect.message.users;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.campus.connect.message.constants.Enums.UserRoles;
 import org.campus.connect.message.constants.GenericMessages;
 import org.campus.connect.message.infra.auth.TokenService;
@@ -123,7 +124,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
 
   @PostMapping("/public/auth/login")
   @Operation(summary = "Login", description = "Para o usuario efetuar o login, retornando o token necessario na busca dos dados em '/private/auth/getUser'")
-  public ResponseEntity<?> login(@RequestBody LoginDTO body) {
+  public ResponseEntity<?> login(@Valid @RequestBody LoginDTO body) {
     Optional<Users> optionalUser = this.repository.findByEmail(body.email());
     if (optionalUser.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"Usuário não cadastrado!\"}");
@@ -143,7 +144,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
 
   @PostMapping("/public/auth/mobile/login")
   @Operation(summary = "Login", description = "Para o usuario efetuar o login, retornando o token necessario na busca dos dados em '/private/auth/getUser'")
-  public ResponseEntity<?> loginMobile(@RequestBody LoginDTO body) {
+  public ResponseEntity<?> loginMobile(@Valid @RequestBody LoginDTO body) {
     Optional<Users> optionalUser = this.repository.findByEmail(body.email());
 
     if (optionalUser.isPresent()) {
@@ -190,7 +191,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   @Tag(name = "Mobile")
   @Operation(summary = "Cadastro", description = "Para o usuário realizar o registro")
   public ResponseEntity<?> register_mobile(
-    @RequestBody RegisterDTO body
+    @Valid @RequestBody RegisterDTO body
   ) throws Exception {
     Optional<Users> usr = this.repository.findByEmail(body.getEmail());
     if (usr.isEmpty()) {
@@ -209,7 +210,7 @@ public class UsersResource extends GenericResource<UsersDTO, UsersResource> {
   @PostMapping(value = "/public/auth/register")
   @Operation(summary = "Cadastro", description = "Para o usuário realizar o registro")
   public ResponseEntity<?> register(
-    @RequestBody RegisterDTO body
+    @Valid @RequestBody RegisterDTO body
   ) throws Exception {
     Optional<Users> usr = this.repository.findByEmail(body.getEmail());
     if (usr.isEmpty()) {

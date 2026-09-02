@@ -1,6 +1,7 @@
 package org.campus.connect.message.utils;
 
 import org.campus.connect.message.infra.auth.AuthUserService;
+import org.campus.connect.message.infra.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -56,7 +57,7 @@ public abstract class GenericServiceImpl<E extends AbstractEntity, D extends Abs
     } else {
       Optional<D> existingDto = findOneById(dto.getId());
       if (existingDto.isEmpty()) {
-        throw new Exception("Entity does not exist");
+        throw new ResourceNotFoundException("Registro não encontrado com ID: " + dto.getId());
       }
       setAuditFieldsOnUpdate(entity, existingDto.get());
     }

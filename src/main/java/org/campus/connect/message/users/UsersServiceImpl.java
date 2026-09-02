@@ -6,6 +6,7 @@ import org.campus.connect.message.course.CourseServiceImpl;
 import org.campus.connect.message.files.FileDTO;
 import org.campus.connect.message.files.FileMapper;
 import org.campus.connect.message.files.FileService;
+import org.campus.connect.message.infra.exceptions.ResourceNotFoundException;
 import org.campus.connect.message.mail.MailDTO;
 import org.campus.connect.message.mail.MailService;
 import org.campus.connect.message.users.records.RegisterDTO;
@@ -169,7 +170,7 @@ public class UsersServiceImpl extends GenericServiceImpl<Users, UsersDTO> implem
       dto.setRoles(new ArrayList<>(user.getRoles()));
       return save(dto);
     } else {
-      throw new Exception("Usuário nao encontrado" + dto.getEmail());
+      throw new ResourceNotFoundException("Usuário não encontrado: " + dto.getEmail());
     }
   }
 
