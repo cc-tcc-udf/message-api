@@ -42,7 +42,7 @@ public class FileServiceImpl extends GenericServiceImpl<File, FileDTO> implement
     @Value("${server.storagePath}") String storagePath,
     @Value("${image.maxWidth}") Integer maxWidth,
     @Value("${image.maxHeight}") Integer maxHeight,
-    @Value("${spring.profiles.active}") String profile,
+    @Value("${spring.profiles.active:dev}") String profile,
     final FileDriveService driveService,
     final CloudinaryService cloudinaryService
   ) {
