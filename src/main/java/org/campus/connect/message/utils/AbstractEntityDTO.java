@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -33,6 +34,8 @@ public abstract class AbstractEntityDTO implements Serializable {
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonFormat(pattern = UtilsConstants.DATE_TIME_PATTERN)
   private LocalDateTime updated;
+
+  @Builder.Default
   private Boolean excluded = false;
 
 }
