@@ -2,7 +2,9 @@
 
 ## Descrição
 
-api de gerenciamento e consumo das aplicações WEB | MOBILE do sistema de envio de mensagens
+API RESTful corporativa de mensageria e notificações push que atende ao ecossistema do **Campus Connect**:
+- 💻 **Frontend Web:** [Campus Connect Web App (Angular/TypeScript)](https://github.com/cc-tcc-udf/message-app)
+- 📱 **Aplicativo Móvel:** [Campus Connect Mobile (Flutter/Dart)](https://github.com/cc-tcc-udf/message-mobile)
 
 ## Requisitos
 
